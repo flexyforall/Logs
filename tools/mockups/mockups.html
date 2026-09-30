@@ -38,19 +38,18 @@
   #wood .face { width: 400px; height: 440px; display: grid; place-items: center; mix-blend-mode: multiply; }
   #wood .face img { width: 300px; filter: contrast(1.05); }
   #hat { background-image: url(src/hat.jpg); }
-  #hat .print { width: 300px; height: 150px; display: grid; place-items: center; mix-blend-mode: multiply; opacity: .92; }
-  #hat .print img { width: 250px; filter: blur(.35px); }
+  #hat .print { width: 340px; height: 180px; display: grid; place-items: center; mix-blend-mode: multiply; opacity: .92; }
+  #hat .print img { width: 310px; filter: blur(.35px); }
   #box { background-image: url(src/box.jpg); }
-  #box .lid { width: 500px; height: 520px; box-sizing: border-box; padding: 44px 40px;
-    background:
-      repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, rgba(0,0,0,.05) 1px 3px),
-      linear-gradient(160deg, #d9dadc 0%, #b9bbbf 45%, #9ea0a5 100%);
-    display: flex; flex-direction: column; justify-content: space-between; color: #1b1b1e; }
-  #box .lid .big { width: 330px; }
-  #box .lid .row { display: flex; justify-content: space-between; align-items: flex-end; font-size: 20px; letter-spacing: .02em; }
-  #box .lid .row b { font-weight: 600; font-size: 34px; letter-spacing: -.02em; }
-  #box .lid .rule { height: 2px; background: #1b1b1e; opacity: .6; }
-  #box .shade { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255,255,255,.18), transparent 35%, rgba(0,0,0,.28)); mix-blend-mode: soft-light; }
+  /* printed on the brushed lid: the logo centred, a thin rule and a line
+     of small type at the foot, multiplied so the metal shows through */
+  #box .lid { width: 540px; height: 640px; box-sizing: border-box; padding: 0 56px 58px;
+    display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+    color: #1d1d20; mix-blend-mode: multiply; }
+  #box .lid .big { width: 300px; margin: auto 0; filter: blur(.3px); }
+  #box .lid .foot { width: 100%; }
+  #box .lid .rule { height: 1.5px; background: #1d1d20; opacity: .55; }
+  #box .lid .row { display: flex; justify-content: space-between; margin-top: 14px; font-size: 17px; letter-spacing: .08em; opacity: .8; }
 </style>
 </head>
 <body>
@@ -103,11 +102,11 @@
 </div>
 
 <div class="scene photo" id="hat">
-  <div class="quad print" data-quad="672,236 972,236 968,392 676,392"><img src="../../assets/logos/logo-footer.svg" alt=""></div>
+  <div class="quad print" data-quad="628,226 972,226 968,408 632,408"><img src="../../assets/logos/logo-footer.svg" alt=""></div>
 </div>
 
 <div class="scene photo" id="box">
-  <div class="quad lid" data-quad="339,371 877,144 1293,704 728,944"><img class="big" src="../../assets/logos/logo-footer.svg" alt=""><div><div class="rule"></div><div class="row" style="margin-top:14px"><span>TIME TRACKER<br>TAP. TALK. TIME.</span><b>24h</b></div></div><div class="shade"></div></div>
+  <div class="quad lid" data-quad="341,381 878,147 1296,699 717,933"><img class="big" src="../../assets/logos/logo-footer.svg" alt=""><div class="foot"><div class="rule"></div><div class="row"><span>TIME TRACKER</span><span>TAP · TALK · TIME</span></div></div></div>
 </div>
 
 <script>
