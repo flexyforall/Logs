@@ -798,7 +798,8 @@
   height: 662px;
   overflow: hidden;
   border-radius: 32px;
-  background: linear-gradient(180deg, #ff7234 21.97%, #ffdb9e 44.53%, #fefcf8 116.53%);
+  /* the stage carries the colour, sampled off Webflow's card */
+  background: none;
 }
 .fs_chk {
   position: absolute;
