@@ -127,7 +127,7 @@
   border-radius: 1.25rem;
   overflow: hidden;
   background: #1a191e;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 30px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
   opacity: 0;
 }
 .loader_frame {
@@ -694,25 +694,33 @@
   color: rgba(3, 2, 10, 0.2);
   margin-bottom: -6px;
 }
-.fb_pill {
+.fb_chips {
+  /* the activity capsule, centred on the arc: three chips overlapping on a
+     white pill, each ringed in white so they read as separate */
   position: absolute;
-  left: 423.57px;
-  top: 0;
-  width: 268.41px;
-  height: 114.69px;
-  max-width: none;
-}
-.fb_bubble {
-  position: absolute;
+  left: 50%;
+  top: 8px;
   display: flex;
-  align-items: center;
-  padding: 22.4px;
-  border: 5.6px solid #fff;
+  padding: 7px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(160, 70, 20, 0.12);
+  transform: translateX(-50%);
+}
+.fb_chip {
+  width: 100px;
+  height: 100px;
+  display: grid;
+  place-items: center;
+  border: 6px solid #fff;
   border-radius: 50%;
   background: #f2f2f2;
-  transform: rotate(var(--r));
+  box-sizing: border-box;
 }
-.fb_bubble img {
+.fb_chip + .fb_chip {
+  margin-left: -16px;
+}
+.fb_chip img {
   width: 44.8px;
   height: 44.8px;
 }
@@ -1155,4 +1163,201 @@
   .s_flow_list {
     width: 100%;
   }
+}
+
+/* ---------- nav logo pill ----------------------------------------------- */
+
+/* The pill shows the mark alone; on hover it widens and "logs" slides in.
+   The svg keeps its full width inside a clip that opens. */
+.nav_logo_link {
+  --logo-h: 2.5rem;
+  padding: 0.625rem 0.75rem;
+  transition: padding 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav_logo_clip {
+  display: block;
+  width: calc(var(--logo-h) * 1.0075);
+  height: var(--logo-h);
+  overflow: hidden;
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav_logo_clip .nav_logo.logo_mark {
+  width: calc(var(--logo-h) * 2.525);
+  height: var(--logo-h);
+  max-width: none;
+}
+.logo_word {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.35s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav_logo_link:is(:hover, :focus-visible) {
+  padding-right: 1.125rem;
+}
+.nav_logo_link:is(:hover, :focus-visible) .nav_logo_clip {
+  width: calc(var(--logo-h) * 2.525);
+}
+.nav_logo_link:is(:hover, :focus-visible) .logo_word {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.08s;
+}
+@media screen and (max-width: 479px) {
+  .nav_logo_link {
+    --logo-h: 2rem;
+  }
+}
+
+/* ---------- the dial section's phone widget (js/widget.js) -------------- */
+
+/* A live copy of the home-screen widget in the phone photo, laid exactly
+   over the photo's own (its box, measured off the 2788x2504 image, is
+   37.34% / 14.78%, 1262x593). Drawn at those pixels, scaled to the photo. */
+.s_app_img_wrap {
+  position: relative;
+}
+.dw {
+  position: absolute;
+  left: 37.34%;
+  top: 14.78%;
+  width: 45.27%;
+  height: 23.68%;
+  pointer-events: none;
+}
+.dw_box {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1262px;
+  height: 593px;
+  overflow: hidden;
+  border-radius: 94px;
+  background: radial-gradient(ellipse at 50% 55%, #fff 0%, #fdfcf8 55%, #f9f7ef 100%);
+  transform-origin: 0 0;
+  transform: scale(var(--dw-scale, 0.5));
+  font-family: -apple-system, "SF Pro Display", var(--_typography---font--primary-family);
+}
+.dw_date {
+  position: absolute;
+  left: 58px;
+  top: 58px;
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: rgba(3, 2, 10, 0.6);
+}
+.dw_date b {
+  font-weight: 500;
+  color: #03020a;
+}
+.dw_plus {
+  position: absolute;
+  left: 1075px;
+  top: 39px;
+  width: 144px;
+  height: 144px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #2a2930, #03020a 70%);
+  box-shadow: inset 0 0 22px rgba(255, 255, 255, 0.35);
+}
+.dw_plus svg {
+  width: 64px;
+  height: 64px;
+}
+/* the arc: centre (630, 798), ticks between radius 551 and 662 */
+.dw_ring {
+  position: absolute;
+  left: -32px;
+  top: 136px;
+  width: 1324px;
+  height: 1324px;
+  border-radius: 50%;
+  -webkit-mask: radial-gradient(circle, transparent 551px, #000 552px, #000 661px, transparent 662px);
+  mask: radial-gradient(circle, transparent 551px, #000 552px, #000 661px, transparent 662px);
+}
+.dw_ticks,
+.dw_lit {
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(from -0.35deg, var(--tick) 0 0.7deg, transparent 0.7deg 1.25deg);
+}
+.dw_ticks {
+  --tick: rgba(196, 160, 118, 0.38);
+}
+.dw_lit {
+  --tick: #ff7234;
+  -webkit-mask: conic-gradient(from -100deg, transparent 0deg, rgba(0, 0, 0, 0.9) var(--sweep, 0deg), transparent var(--sweep, 0deg));
+  mask: conic-gradient(from -100deg, transparent 0deg, rgba(0, 0, 0, 0.9) var(--sweep, 0deg), transparent var(--sweep, 0deg));
+}
+.dw_needle {
+  position: absolute;
+  left: 630px;
+  top: 798px;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--needle, 0deg));
+}
+.dw_needle i {
+  position: absolute;
+  left: -2.5px;
+  top: -662px;
+  width: 5px;
+  height: 96px;
+  border-radius: 3px;
+  background: #03020a;
+}
+.dw_needle b {
+  position: absolute;
+  left: -7px;
+  top: -553px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff7234;
+}
+.dw_total {
+  position: absolute;
+  left: 50%;
+  top: 378px;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  transform: translateX(-50%);
+}
+.dw_digits {
+  display: flex;
+  gap: 22px;
+  align-items: flex-end;
+}
+.dw_digits .fb_glyph {
+  grid-template-columns: repeat(5, 14px);
+  grid-auto-rows: 14px;
+  gap: 3.5px;
+}
+.dw_digits .fb_glyph.is-dot {
+  grid-template-columns: 14px;
+}
+.dw_digits .fb_glyph.is-dim i.on {
+  background: rgba(3, 2, 10, 0.2);
+}
+.dw_unit {
+  font-weight: 700;
+  font-size: 66px;
+  line-height: 1;
+  color: rgba(3, 2, 10, 0.2);
+  margin-bottom: -8px;
+}
+.dw_toast {
+  position: absolute;
+  right: 170px;
+  top: 76px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: #03020a;
+  color: #fff;
+  font-size: 34px;
+  white-space: nowrap;
+  opacity: 0;
 }

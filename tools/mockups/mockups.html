@@ -31,6 +31,9 @@
      four corners by the script at the bottom. */
   .photo { background-size: 800px 600px; }
   .quad { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  #hoodie { background-image: url(src/hoodie.jpg); }
+  #hoodie .print { width: 330px; height: 130px; display: grid; place-items: center; mix-blend-mode: screen; opacity: .82; }
+  #hoodie .print img { width: 300px; filter: blur(.4px) contrast(1.1); }
   #wood { background-image: url(src/wood.jpg); }
   #wood .face { width: 400px; height: 440px; display: grid; place-items: center; mix-blend-mode: multiply; }
   #wood .face img { width: 300px; filter: contrast(1.05); }
@@ -52,16 +55,6 @@
 </head>
 <body>
 
-<div class="scene grain" id="grid">
-  <svg class="lines" viewBox="0 0 800 600" fill="none" stroke="#3a393f" stroke-width="1">
-    <circle cx="400" cy="300" r="70"/><circle cx="400" cy="300" r="140"/><circle cx="400" cy="300" r="230"/><circle cx="400" cy="300" r="330"/>
-    <line x1="0" y1="300" x2="800" y2="300"/><line x1="400" y1="0" x2="400" y2="600"/>
-    <line x1="0" y1="0" x2="800" y2="600"/><line x1="800" y1="0" x2="0" y2="600"/>
-    <line x1="0" y1="200" x2="800" y2="200" stroke-dasharray="2 6"/><line x1="0" y1="400" x2="800" y2="400" stroke-dasharray="2 6"/>
-    <line x1="250" y1="0" x2="250" y2="600" stroke-dasharray="2 6"/><line x1="550" y1="0" x2="550" y2="600" stroke-dasharray="2 6"/>
-  </svg>
-  <img class="logo" src="../../assets/logos/logo-nav.svg" alt="">
-</div>
 
 <div class="scene grain" id="paper">
   <div class="sheet">
@@ -100,6 +93,10 @@
 
 
 
+
+<div class="scene photo" id="hoodie">
+  <div class="quad print" data-quad="676,452 944,598 900,682 632,536"><img src="../../assets/logos/logo-nav.svg" alt=""></div>
+</div>
 
 <div class="scene photo" id="wood">
   <div class="quad face" data-quad="552,302 1170,128 1170,876 552,966"><img src="../../assets/logos/logo-footer.svg" alt=""></div>

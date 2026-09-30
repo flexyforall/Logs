@@ -23,6 +23,7 @@ js/loader.js            the loader (home page)
 js/hero.js              the hero: phone lines, orbiting activity bubbles
 js/features.js          the four feature cards
 js/flow.js              the three "Choose your flow" cards
+js/widget.js            the live widget on the dial section's phone
 js/text.js              text reveals
 js/logo.js              the live logo mark
 js/dots.js              the footer dot field
@@ -74,9 +75,10 @@ The references these follow are in Figma, `Animations` (2317:16838), with a
 note on each saying what to take from it.
 
 **Loader** (after Nudot). On black, "lo" and "gs" blur into focus either side
-of a tile that eases through five branding mockups: the mark on its
-construction grid, debossed paper, then the logo set into three photographed
-mockups from Figma (2325:18720): a wooden sign, a bucket hat, a box. Each one slowly pushes
+of a tile that eases through five branding mockups: the logo set into four
+photographed mockups from Figma (2325:18720), a hoodie, a wooden sign, a
+bucket hat and a box, and debossed paper. The hoodie's and hat's old prints
+are retouched out. Each one slowly pushes
 in and the next sharpens out of a blur over it. Behind the tile the dial's hand
 sweeps a full day, a dot-matrix counter runs 00.00 → 24.00h and
 Tap. / Talk. / Time. take turns. Then the letters part to the edges and a
@@ -93,7 +95,8 @@ sharpening out of a blur; `lines` does the same per line, for short copy;
 `words` lights a paragraph word by word, scrubbed with the scroll.
 `data-reveal-wait` holds it until the loader has gone (the hero).
 
-**Logo** (after Omosa). The mark is inline SVG. Its 24 ticks are shaded like a
+**Logo** (after Omosa). The mark is inline SVG. In the nav pill only the mark
+shows; on hover the pill widens and "logs" slides in. Its 24 ticks are shaded like a
 spinner, two arms fading from a bright head, and its hand leaves an orange trail
 over the ticks behind it, as in the Figma mark. The hand turns once from the top
 of the page to the bottom and does an extra lap on hover.
@@ -113,7 +116,8 @@ rebuilt as a stage (`assets/images/hero/`), so parts of it can move: the
 phone's line changes in three steps, each rising in out of a blur. The
 activity bubbles arrive along the middle of the band, in order: one, then
 three that close up until they touch, then two more that do the same, then the
-last. They sway a little along the arc and leave together. The phone screen is Figma's export
+last. From then on the formed train glides on clockwise along the arc, out at
+the bottom right and back in from the left, a lap every 70s. The phone screen is Figma's export
 with its baked-in line removed, so the text can change.
 
 **Feature cards.** Each card's art is rebuilt from Figma
@@ -125,6 +129,12 @@ with its baked-in line removed, so the text can change.
   lines and charge it, then it glows, drains and starts again.
 - **Custom activities:** a light wanders over the icons as if a cursor were
   there. With a mouse, it's your cursor.
+
+**Dial section widget.** A live copy of the home-screen widget sits exactly
+over the one in the phone photo. The needle sweeps the arc, lighting the ticks
+behind it, while the dot-matrix total counts to 3.50h. Then "+" is tapped, a
+"+30 min · Reading" toast appears, the total steps on to 4.00h, and the day
+empties for the next loop.
 
 **Flow cards.** Each is rebuilt from Figma (2292:12302,
 `assets/images/flow/`):
