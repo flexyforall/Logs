@@ -20,6 +20,8 @@ css/dial.css            the dial section
 css/motion.css          text reveals, logo, loader, assistant bar, footer dots
 js/site.js              Webflow's own scripts, in the order Webflow ran them
 js/loader.js            the loader (home page)
+js/hero.js              the hero: phone lines, orbiting activity bubbles
+js/features.js          the four feature cards
 js/text.js              text reveals
 js/logo.js              the live logo mark
 js/dots.js              the footer dot field
@@ -53,11 +55,13 @@ What moves, and where:
 | --- | --- | --- |
 | first visit | the loader, see below | `loader.js` |
 | everywhere | Lenis smooth scroll, driving ScrollTrigger | `site.js` |
+| hero | the phone's line changes in three steps; the activity bubbles drift round the band | `hero.js` |
 | nav | hides on scroll down, returns on scroll up | `site.js` |
 | logos | the mark is a live clock, see below | `logo.js` |
 | headings, copy | text reveals, see below | `text.js` |
 | Make every second count | icons pop in; on the way out they fly up with the scroll | `site.js` |
 | features | the four cards stack; each shrinks to 0.85-0.95 as the next covers it | `site.js` |
+| feature cards | each card's art moves, see below | `features.js` |
 | Choose your flow | cards slide in; the row can be dragged with inertia (not below 479px) | `site.js` |
 | **dial** | the Figma storyboard, pinned and scrubbed; see below | `site.js` |
 | every page, bottom | the assistant bar, see below | `assistant.js` |
@@ -68,13 +72,15 @@ The references these follow are in Figma, `Animations` (2317:16838), with a
 note on each saying what to take from it.
 
 **Loader** (after Nudot). On black, "lo" and "gs" blur into focus either side
-of a tile that flicks through Logs screens, each stamped with the logo, with a
-split-colour jolt on every cut, and it settles on the app icon. Behind it the
-dial's hand sweeps a full day, a dot-matrix counter runs 00.00 → 24.00h and
+of a tile that eases through four branding mockups: the mark on its
+construction grid, debossed paper, a box sign, a poster. Each one slowly pushes
+in and the next sharpens out of a blur over it. Behind the tile the dial's hand
+sweeps a full day, a dot-matrix counter runs 00.00 → 24.00h and
 Tap. / Talk. / Time. take turns. Then the letters part to the edges and a
-window opens from the centre, as one of the site's rounded cards. It waits
-for the page to load (at most 4.5s). It shows once per browser session;
-**add `?loader` to the URL to see it again.**
+window opens from the centre, as one of the site's rounded cards. It plays on
+every load, and waits for the page (at most 4.5s). The mockups are drawn, not
+photographed: `tools/mockups/mockups.html` holds the scenes, and
+`node tools/mockups/render.mjs` renders them to `assets/images/loader/`.
 
 **Text** (after Oimachi). `data-reveal` on an element picks the motion:
 `chars`, for headings, rises a character at a time from behind its line,
@@ -97,13 +103,28 @@ on screen. **`APP_STORE_URL` in `assistant.js` still needs the real listing**,
 and the QR code from Figma (`assets/images/qr-app-store.svg`) encodes App Store
 Connect's sign-in page, a placeholder, so it needs replacing too.
 
-**Footer dots** (after Fourmula and The Start). Dots snap rather than fade, each
-in two hard steps, and figures (the logo's rays, a clock, a snowflake, a
-diamond) alternate with a cloud that's dense in the middle. Each figure is
-drawn clockwise from twelve, like the dial's hand, and the field draws itself
-in the same way the first time it comes into view. The cursor swells the dots
-under it and leaves an orange trail that fades, its brush easing after the
-pointer like The Start's.
+**Hero** (after the app's welcome animation). Figma's hero layers are
+rebuilt as a stage (`assets/images/hero/`), so parts of it can move: the
+phone's line changes in three steps, each rising in out of a blur, and the
+activity bubbles drift round the band. The phone screen is Figma's export
+with its baked-in line removed, so the text can change.
+
+**Feature cards.** Each card's art is rebuilt from Figma
+(`assets/images/features/`) and runs while it's on screen:
+- **Visual breakdown:** the needle browses the day and the dot-matrix total
+  follows it. With a mouse, the needle follows the pointer.
+- **Habits awareness:** the day's logs drift up one after another.
+- **Google Sheets sync:** the sheet starts empty; pulses run in along the
+  lines and charge it, then it glows, drains and starts again.
+- **Custom activities:** a light wanders over the icons as if a cursor were
+  there. With a mouse, it's your cursor.
+
+**Footer dots** (after Fourmula, from its source). Round dots across the full
+width of the card. Figures (the logo's rays, a clock, a snowflake, a diamond)
+alternate with a cloud that's dense in the middle, every dot flipping in two
+hard steps in shuffled groups. The first time the field is seen, it draws
+itself in clockwise from twelve. Near the cursor the dots shrink, down to a
+quarter, 200px out.
 
 Everything honours `prefers-reduced-motion`: no loader and no pin, text in
 place, the footer holding one figure.

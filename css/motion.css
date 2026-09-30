@@ -20,13 +20,17 @@
 .rv-line {
   will-change: transform, opacity, filter;
 }
-/* The hero title is a gradient clipped to the text; every split level has
-   to carry it or the characters come out transparent. */
-.s_h_m_title * {
-  background: inherit;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* The hero title's white-to-half-white gradient, as a mask on the heading
+   instead of Webflow's background-clip: text. Clipping has to be repeated
+   on every split level, and browsers then draw moving characters twice
+   (a ghost glyph at the line start). A mask on the whole heading looks the
+   same and leaves the characters free to move. */
+.s_h_m_title {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: #fff;
+  -webkit-mask-image: linear-gradient(#000, rgba(0, 0, 0, 0.5));
+  mask-image: linear-gradient(#000, rgba(0, 0, 0, 0.5));
 }
 
 /* ---------- logo (js/logo.js) ------------------------------------------ */
@@ -93,7 +97,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: min(34vmin, 17rem);
+  gap: calc(min(34vmin, 17rem) + 2.5rem);
   pointer-events: none;
 }
 .loader_letter {
@@ -107,8 +111,8 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(26vmin, 13rem);
-  aspect-ratio: 1;
+  width: min(34vmin, 17rem);
+  aspect-ratio: 4 / 3;
   transform: translate(-50%, -50%);
   border-radius: 1.25rem;
   overflow: hidden;
@@ -119,36 +123,12 @@
 .loader_frame {
   position: absolute;
   inset: 0;
-  visibility: hidden;
-}
-.loader_frame.is-on {
-  visibility: visible;
 }
 .loader_frame img {
   width: 100%;
   height: 100%;
   max-width: none;
   object-fit: cover;
-}
-.loader_frame .loader_badge {
-  position: absolute;
-  left: 8%;
-  bottom: 8%;
-  width: 42%;
-  height: auto;
-  padding: 4% 6%;
-  border-radius: 999px;
-  background: rgba(3, 2, 10, 0.72);
-  backdrop-filter: blur(8px);
-  object-fit: contain;
-}
-/* the flick between frames: a split-colour jolt, a sliced band */
-.loader_media.is-glitch {
-  filter: drop-shadow(-4px 0 rgba(255, 60, 60, 0.75)) drop-shadow(4px 0 rgba(0, 210, 255, 0.75));
-}
-.loader_media.is-glitch .loader_frame.is-on img {
-  clip-path: var(--slice, none);
-  transform: translateX(var(--jolt, 0));
 }
 .loader_foot {
   position: absolute;
@@ -477,11 +457,393 @@
 
 /* ---------- footer dots (js/dots.js) ----------------------------------- */
 
-#dotsField .dot {
-  border-radius: 0;
+/* After Fourmula: the field runs the full width of the card, under the
+   footer's text, in round dots. The selectors carry the wrapper because
+   Webflow's own #dotsField rules sit later, in the footer's embed. */
+.s_footer_container_dot_wrap {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 0 2.75rem 2.75rem;
+  box-sizing: border-box;
+}
+.s_footer_container_dot_wrap #dotsField {
+  height: auto; /* Webflow's embed sets 100% */
+}
+.s_footer_container_dot_wrap #dotsField .dot {
+  width: 1rem;
+  height: 1rem;
+  margin: auto;
+  border-radius: 50%;
+  background: #0b0b0c;
   opacity: 0;
   transform-origin: 50% 50%;
 }
-.s_footer_content_wrap {
-  touch-action: pan-y;
+@media screen and (max-width: 991px) {
+  .s_footer_container_dot_wrap {
+    padding: 0 1.25rem 1.5rem;
+  }
+  .s_footer_container_dot_wrap #dotsField .dot {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+}
+@media screen and (max-width: 479px) {
+  .s_footer_container_dot_wrap #dotsField .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+}
+
+/* ---------- hero (js/hero.js) ------------------------------------------ */
+
+/* Figma's hero (2292:9483) rebuilt from its layers so parts of it can move.
+   Everything is placed in the design's own 1408x780 frame and the whole
+   stage is scaled to the card by js/hero.js (--hero-scale). */
+.hero_stage {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 1408px;
+  height: 780px;
+  transform-origin: 50% 100%;
+  transform: translateX(-50%) scale(var(--hero-scale, 1)) translateX(var(--hero-shift, 0px));
+  pointer-events: none;
+}
+.hero_layer,
+.hero_screen {
+  position: absolute;
+  max-width: none;
+}
+.hero_layer.is-flipped {
+  transform: scaleY(-1);
+}
+/* the mask is inlined: from file:// Chrome won't fetch an SVG mask */
+.hero_screen img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  display: block;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg preserveAspectRatio=%22none%22 overflow=%22visible%22 style=%22display: block;%22 width=%22433.529%22 height=%22796.852%22 viewBox=%220 0 433.529 796.852%22 fill=%22none%22 xmlns=%22http://www.w3.org/2000/svg%22%3E %3Cpath id=%22Mask%22 d=%22M141.776 796.811C141.7 796.743 140.092 796.611 138.201 796.518C110.459 795.146 89.4298 778.599 81.2909 751.738C78.2953 741.852 77.2368 735.218 73.7582 704.529C71.8186 687.418 69.7593 669.111 68.9995 662.225C68.5822 658.443 68.107 654.34 67.9437 653.107C67.6223 650.681 65.1911 629.396 64.5119 623.061C64.2827 620.923 63.3404 612.65 62.418 604.675C61.4955 596.7 59.8713 582.439 58.8086 572.985C57.7458 563.53 56.6716 554.045 56.4214 551.908C56.1711 549.77 55.6369 545.129 55.2341 541.593C54.8314 538.058 54.0931 531.6 53.5936 527.243C53.0941 522.886 52.5497 518.042 52.3837 516.48C52.2178 514.918 51.8835 511.958 51.6409 509.903C50.7424 502.292 48.7351 484.75 46.8515 468.048C45.7852 458.593 44.7052 449.041 44.4515 446.822C44.1978 444.602 43.8725 441.709 43.7285 440.394C43.5846 439.078 43.1217 435.042 42.6998 431.425C41.8116 423.808 41.8578 424.215 40.8842 415.43C40.4741 411.731 39.8714 406.417 39.5448 403.621C39.2182 400.826 38.2129 392.014 37.3107 384.039C36.4086 376.064 35.3963 367.185 35.0611 364.308C34.7259 361.43 34.1107 356.049 33.694 352.349C32.7004 343.528 30.7427 326.347 29.8102 318.267C29.4022 314.732 28.8714 310.023 28.6305 307.803C28.3896 305.583 27.8526 300.808 27.4371 297.19C25.7659 282.64 24.8052 274.23 23.5435 263.108C22.8159 256.695 21.6768 246.673 21.012 240.835C18.7786 221.224 17.7003 211.746 16.5057 201.223C14.6402 184.79 13.5808 175.537 13.083 171.326C12.8303 169.189 12.4229 165.623 12.1777 163.404C11.5993 158.168 11.4837 157.158 11.1344 154.285C10.9744 152.97 10.5719 149.337 10.2399 146.213C9.90788 143.089 9.50683 139.457 9.34868 138.141C9.19053 136.826 8.85639 133.967 8.60613 131.788C8.35588 129.609 7.94959 126.112 7.70328 124.015C7.45696 121.919 6.64769 114.755 5.90489 108.095C5.1621 101.436 4.35868 94.3727 4.11951 92.3996C3.88035 90.4264 3.33787 85.6505 2.91401 81.7863C2.49015 77.9222 1.88562 72.6081 1.57061 69.9773C-0.376617 53.7144 -0.514987 41.4152 1.16531 33.9521C2.49089 28.0644 4.29004 23.6556 7.17042 19.2366C13.6041 9.36598 23.3746 3.35957 36.7022 1.08177C42.9224 0.0186862 54.6739 -0.303729 64.9543 0.306641C66.352 0.389622 69.7826 0.529131 72.5779 0.61666C75.3732 0.704189 78.6693 0.842503 79.9025 0.924025C81.1358 1.00555 85.239 1.20596 89.0209 1.36939C92.8028 1.53282 97.3097 1.73422 99.0362 1.81694C100.763 1.89965 105.27 2.10042 109.052 2.26308C112.833 2.42574 117.273 2.62426 118.917 2.70423C120.562 2.78419 123.387 2.91542 125.196 2.99584C127.004 3.07626 130.031 3.21579 131.922 3.30592C137.794 3.58578 161.016 4.62418 175.422 5.25102C182.985 5.58015 190.385 5.92037 191.865 6.00705C193.345 6.09373 199.197 6.36363 204.87 6.60684C210.542 6.85004 217.875 7.17954 221.163 7.33906C224.452 7.49858 228.959 7.70214 231.178 7.79142C233.398 7.88069 236.291 8.01589 237.606 8.09185C238.922 8.16781 241.814 8.30067 244.034 8.38708C246.254 8.4735 249.213 8.61249 250.611 8.69594C252.009 8.7794 257.659 9.04846 263.168 9.29386C276.181 9.87359 283.07 10.4478 288.729 11.4241C310.616 15.2006 327.295 27.9013 335.99 47.4122C340.003 56.4175 341.774 64.015 344.63 84.477C345.376 89.821 346.116 95.0006 346.276 95.9871C346.435 96.9737 346.776 99.3953 347.033 101.368C347.29 103.342 347.627 105.831 347.782 106.899C347.938 107.968 348.541 112.34 349.122 116.616C349.704 120.891 350.441 126.205 350.761 128.425C351.397 132.848 353.723 149.543 355.405 161.759C355.994 166.034 356.866 172.29 357.343 175.661C357.82 179.032 358.628 184.817 359.137 188.517C359.647 192.216 360.731 200.019 361.546 205.857C362.361 211.694 363.5 219.9 364.078 224.093C364.655 228.286 365.319 233.062 365.552 234.707C366.889 244.145 370.816 272.284 372.288 282.989C373.915 294.817 376.718 314.959 377.073 317.37C377.23 318.439 377.83 322.744 378.406 326.937C378.982 331.13 380.269 340.413 381.267 347.566C382.265 354.718 383.548 363.934 384.118 368.045C384.689 372.155 385.414 377.335 385.73 379.555C386.046 381.774 386.523 385.205 386.791 387.178C387.059 389.151 387.331 391.102 387.394 391.513C387.457 391.924 388.05 396.229 388.711 401.08C389.372 405.931 390.048 410.774 390.212 411.843C390.376 412.912 390.924 416.813 391.429 420.513C391.934 424.212 393.016 432.015 393.832 437.853C395.754 451.598 396.623 457.858 397.399 463.564C397.746 466.112 398.418 470.956 398.893 474.326C399.368 477.697 400.169 483.482 400.673 487.182C401.177 490.881 401.724 494.716 401.888 495.702C402.053 496.689 402.662 500.994 403.241 505.269C404.989 518.157 407.256 534.453 407.566 536.361C407.727 537.348 408.538 543.2 409.368 549.366C410.198 555.532 411.204 562.865 411.602 565.66C412.593 572.621 414.996 589.843 416.983 604.226C417.892 610.803 418.767 617.059 418.928 618.128C419.09 619.197 419.831 624.511 420.576 629.937C421.321 635.363 422.262 642.157 422.668 645.035C423.82 653.198 428.618 687.856 429.559 694.812C429.648 695.47 429.913 697.219 430.148 698.699C430.656 701.897 432.554 716.933 432.96 720.972C435.138 742.654 431.093 758.365 420.376 769.84C416.599 773.885 411.18 777.704 406.268 779.783C397.43 783.524 389.602 784.892 371.542 785.849C368.418 786.015 364.786 786.215 363.47 786.294C360.485 786.475 355.557 786.72 321.466 788.384C306.42 789.119 292.9 789.789 291.42 789.873C289.94 789.957 287.316 790.095 285.59 790.179C283.863 790.263 279.827 790.466 276.621 790.63C273.415 790.795 266.621 791.13 261.523 791.375C256.426 791.62 251.045 791.889 249.565 791.973C246.857 792.125 227.451 793.069 215.782 793.616C212.329 793.778 208.495 793.977 207.261 794.058C206.028 794.139 203.405 794.277 201.431 794.364C199.458 794.451 196.7 794.586 195.303 794.663C193.905 794.74 191.282 794.875 189.473 794.963C187.664 795.051 184.839 795.191 183.195 795.274C181.55 795.358 176.236 795.622 171.386 795.862C166.535 796.102 161.221 796.369 159.577 796.457C155.171 796.691 141.936 796.954 141.776 796.811ZM214.213 49.3554C218.267 48.2996 220.968 46.1536 222.586 42.7043C223.403 40.9628 223.553 40.2698 223.655 37.7625C223.757 35.2536 223.666 34.5001 223.001 32.3671C220.965 25.8374 215.392 20.906 208.457 19.4989C207.213 19.2465 202.888 18.902 198.741 18.7251C189.933 18.3494 185.54 18.1567 181.251 17.9582C179.525 17.8782 176.7 17.7474 174.973 17.6674C173.247 17.5875 170.085 17.4476 167.948 17.3565C165.81 17.2655 162.985 17.1324 161.669 17.0608C160.354 16.9892 156.923 16.8483 154.046 16.7478C151.168 16.6472 148.202 16.5209 147.454 16.467C146.706 16.4131 143.477 16.2743 140.279 16.1586C137.08 16.0429 133.925 15.9094 133.268 15.8619C130.555 15.6661 126.807 16.3254 124.603 17.386C112.918 23.0077 116.567 40.9388 130.379 45.7643C133.654 46.9084 134.785 46.9947 157.783 47.854C160.085 47.94 164.995 48.1382 168.695 48.2945C172.395 48.4507 177.709 48.6651 180.504 48.7709C183.299 48.8767 189.286 49.1315 193.808 49.3371C205.848 49.8845 212.16 49.8902 214.213 49.3554Z%22 fill=%22black%22/%3E %3C/svg%3E") 6.74px 3.21px / 433.53px 796.85px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg preserveAspectRatio=%22none%22 overflow=%22visible%22 style=%22display: block;%22 width=%22433.529%22 height=%22796.852%22 viewBox=%220 0 433.529 796.852%22 fill=%22none%22 xmlns=%22http://www.w3.org/2000/svg%22%3E %3Cpath id=%22Mask%22 d=%22M141.776 796.811C141.7 796.743 140.092 796.611 138.201 796.518C110.459 795.146 89.4298 778.599 81.2909 751.738C78.2953 741.852 77.2368 735.218 73.7582 704.529C71.8186 687.418 69.7593 669.111 68.9995 662.225C68.5822 658.443 68.107 654.34 67.9437 653.107C67.6223 650.681 65.1911 629.396 64.5119 623.061C64.2827 620.923 63.3404 612.65 62.418 604.675C61.4955 596.7 59.8713 582.439 58.8086 572.985C57.7458 563.53 56.6716 554.045 56.4214 551.908C56.1711 549.77 55.6369 545.129 55.2341 541.593C54.8314 538.058 54.0931 531.6 53.5936 527.243C53.0941 522.886 52.5497 518.042 52.3837 516.48C52.2178 514.918 51.8835 511.958 51.6409 509.903C50.7424 502.292 48.7351 484.75 46.8515 468.048C45.7852 458.593 44.7052 449.041 44.4515 446.822C44.1978 444.602 43.8725 441.709 43.7285 440.394C43.5846 439.078 43.1217 435.042 42.6998 431.425C41.8116 423.808 41.8578 424.215 40.8842 415.43C40.4741 411.731 39.8714 406.417 39.5448 403.621C39.2182 400.826 38.2129 392.014 37.3107 384.039C36.4086 376.064 35.3963 367.185 35.0611 364.308C34.7259 361.43 34.1107 356.049 33.694 352.349C32.7004 343.528 30.7427 326.347 29.8102 318.267C29.4022 314.732 28.8714 310.023 28.6305 307.803C28.3896 305.583 27.8526 300.808 27.4371 297.19C25.7659 282.64 24.8052 274.23 23.5435 263.108C22.8159 256.695 21.6768 246.673 21.012 240.835C18.7786 221.224 17.7003 211.746 16.5057 201.223C14.6402 184.79 13.5808 175.537 13.083 171.326C12.8303 169.189 12.4229 165.623 12.1777 163.404C11.5993 158.168 11.4837 157.158 11.1344 154.285C10.9744 152.97 10.5719 149.337 10.2399 146.213C9.90788 143.089 9.50683 139.457 9.34868 138.141C9.19053 136.826 8.85639 133.967 8.60613 131.788C8.35588 129.609 7.94959 126.112 7.70328 124.015C7.45696 121.919 6.64769 114.755 5.90489 108.095C5.1621 101.436 4.35868 94.3727 4.11951 92.3996C3.88035 90.4264 3.33787 85.6505 2.91401 81.7863C2.49015 77.9222 1.88562 72.6081 1.57061 69.9773C-0.376617 53.7144 -0.514987 41.4152 1.16531 33.9521C2.49089 28.0644 4.29004 23.6556 7.17042 19.2366C13.6041 9.36598 23.3746 3.35957 36.7022 1.08177C42.9224 0.0186862 54.6739 -0.303729 64.9543 0.306641C66.352 0.389622 69.7826 0.529131 72.5779 0.61666C75.3732 0.704189 78.6693 0.842503 79.9025 0.924025C81.1358 1.00555 85.239 1.20596 89.0209 1.36939C92.8028 1.53282 97.3097 1.73422 99.0362 1.81694C100.763 1.89965 105.27 2.10042 109.052 2.26308C112.833 2.42574 117.273 2.62426 118.917 2.70423C120.562 2.78419 123.387 2.91542 125.196 2.99584C127.004 3.07626 130.031 3.21579 131.922 3.30592C137.794 3.58578 161.016 4.62418 175.422 5.25102C182.985 5.58015 190.385 5.92037 191.865 6.00705C193.345 6.09373 199.197 6.36363 204.87 6.60684C210.542 6.85004 217.875 7.17954 221.163 7.33906C224.452 7.49858 228.959 7.70214 231.178 7.79142C233.398 7.88069 236.291 8.01589 237.606 8.09185C238.922 8.16781 241.814 8.30067 244.034 8.38708C246.254 8.4735 249.213 8.61249 250.611 8.69594C252.009 8.7794 257.659 9.04846 263.168 9.29386C276.181 9.87359 283.07 10.4478 288.729 11.4241C310.616 15.2006 327.295 27.9013 335.99 47.4122C340.003 56.4175 341.774 64.015 344.63 84.477C345.376 89.821 346.116 95.0006 346.276 95.9871C346.435 96.9737 346.776 99.3953 347.033 101.368C347.29 103.342 347.627 105.831 347.782 106.899C347.938 107.968 348.541 112.34 349.122 116.616C349.704 120.891 350.441 126.205 350.761 128.425C351.397 132.848 353.723 149.543 355.405 161.759C355.994 166.034 356.866 172.29 357.343 175.661C357.82 179.032 358.628 184.817 359.137 188.517C359.647 192.216 360.731 200.019 361.546 205.857C362.361 211.694 363.5 219.9 364.078 224.093C364.655 228.286 365.319 233.062 365.552 234.707C366.889 244.145 370.816 272.284 372.288 282.989C373.915 294.817 376.718 314.959 377.073 317.37C377.23 318.439 377.83 322.744 378.406 326.937C378.982 331.13 380.269 340.413 381.267 347.566C382.265 354.718 383.548 363.934 384.118 368.045C384.689 372.155 385.414 377.335 385.73 379.555C386.046 381.774 386.523 385.205 386.791 387.178C387.059 389.151 387.331 391.102 387.394 391.513C387.457 391.924 388.05 396.229 388.711 401.08C389.372 405.931 390.048 410.774 390.212 411.843C390.376 412.912 390.924 416.813 391.429 420.513C391.934 424.212 393.016 432.015 393.832 437.853C395.754 451.598 396.623 457.858 397.399 463.564C397.746 466.112 398.418 470.956 398.893 474.326C399.368 477.697 400.169 483.482 400.673 487.182C401.177 490.881 401.724 494.716 401.888 495.702C402.053 496.689 402.662 500.994 403.241 505.269C404.989 518.157 407.256 534.453 407.566 536.361C407.727 537.348 408.538 543.2 409.368 549.366C410.198 555.532 411.204 562.865 411.602 565.66C412.593 572.621 414.996 589.843 416.983 604.226C417.892 610.803 418.767 617.059 418.928 618.128C419.09 619.197 419.831 624.511 420.576 629.937C421.321 635.363 422.262 642.157 422.668 645.035C423.82 653.198 428.618 687.856 429.559 694.812C429.648 695.47 429.913 697.219 430.148 698.699C430.656 701.897 432.554 716.933 432.96 720.972C435.138 742.654 431.093 758.365 420.376 769.84C416.599 773.885 411.18 777.704 406.268 779.783C397.43 783.524 389.602 784.892 371.542 785.849C368.418 786.015 364.786 786.215 363.47 786.294C360.485 786.475 355.557 786.72 321.466 788.384C306.42 789.119 292.9 789.789 291.42 789.873C289.94 789.957 287.316 790.095 285.59 790.179C283.863 790.263 279.827 790.466 276.621 790.63C273.415 790.795 266.621 791.13 261.523 791.375C256.426 791.62 251.045 791.889 249.565 791.973C246.857 792.125 227.451 793.069 215.782 793.616C212.329 793.778 208.495 793.977 207.261 794.058C206.028 794.139 203.405 794.277 201.431 794.364C199.458 794.451 196.7 794.586 195.303 794.663C193.905 794.74 191.282 794.875 189.473 794.963C187.664 795.051 184.839 795.191 183.195 795.274C181.55 795.358 176.236 795.622 171.386 795.862C166.535 796.102 161.221 796.369 159.577 796.457C155.171 796.691 141.936 796.954 141.776 796.811ZM214.213 49.3554C218.267 48.2996 220.968 46.1536 222.586 42.7043C223.403 40.9628 223.553 40.2698 223.655 37.7625C223.757 35.2536 223.666 34.5001 223.001 32.3671C220.965 25.8374 215.392 20.906 208.457 19.4989C207.213 19.2465 202.888 18.902 198.741 18.7251C189.933 18.3494 185.54 18.1567 181.251 17.9582C179.525 17.8782 176.7 17.7474 174.973 17.6674C173.247 17.5875 170.085 17.4476 167.948 17.3565C165.81 17.2655 162.985 17.1324 161.669 17.0608C160.354 16.9892 156.923 16.8483 154.046 16.7478C151.168 16.6472 148.202 16.5209 147.454 16.467C146.706 16.4131 143.477 16.2743 140.279 16.1586C137.08 16.0429 133.925 15.9094 133.268 15.8619C130.555 15.6661 126.807 16.3254 124.603 17.386C112.918 23.0077 116.567 40.9388 130.379 45.7643C133.654 46.9084 134.785 46.9947 157.783 47.854C160.085 47.94 164.995 48.1382 168.695 48.2945C172.395 48.4507 177.709 48.6651 180.504 48.7709C183.299 48.8767 189.286 49.1315 193.808 49.3371C205.848 49.8845 212.16 49.8902 214.213 49.3554Z%22 fill=%22black%22/%3E %3C/svg%3E") 6.74px 3.21px / 433.53px 796.85px no-repeat;
+}
+.hero_words {
+  position: absolute;
+  left: 49%;
+  top: 48.8%;
+  width: 80%;
+  margin: 0;
+  transform: translate(-50%, -50%) rotate(-1deg);
+  text-align: center;
+  font-family: var(--_typography---font--primary-family);
+  font-weight: var(--_typography---font--primary-semibold);
+  font-size: 36px;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  color: #fff;
+}
+.hero_words span {
+  display: block;
+}
+/* as in the app's welcome screens: the first line dimmed */
+.hero_words span:first-child {
+  color: rgba(255, 255, 255, 0.55);
+}
+.hero_orbit {
+  position: absolute;
+  left: 704.4px;
+  top: 834.6px;
+  width: 0;
+  height: 0;
+}
+.hero_bubble {
+  position: absolute;
+  left: -44.5px;
+  top: -44.5px;
+  width: 89px;
+  height: 89px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 5.35px rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  will-change: transform;
+}
+.hero_bubble img {
+  width: 36px;
+  height: 36px;
+}
+
+/* ---------- feature cards (js/features.js) ------------------------------ */
+
+/* Each card's art is drawn at Figma's 686x576 and scaled to the card by
+   js/features.js (--feat-scale). */
+.s_features_img_wrap {
+  position: relative;
+}
+.feat_stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 686px;
+  height: 576px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  transform: scale(var(--feat-scale, 1));
+}
+
+/* 1 — Visual breakdown (2292:10629) */
+.fb_group {
+  position: absolute;
+  left: 50%;
+  top: 64px;
+  width: 1163px;
+  height: 1110.73px;
+  transform: translateX(-50%);
+}
+.fb_arc {
+  position: absolute;
+  left: 108.27px;
+  top: 128.81px;
+  width: 943.65px;
+  height: 476.03px;
+}
+.fb_ticks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+.fb_needle {
+  position: absolute;
+  left: 472.29px;
+  top: 476.03px;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--needle, -32.5deg));
+}
+.fb_needle i {
+  position: absolute;
+  left: -1.87px;
+  top: -474.7px;
+  width: 3.73px;
+  height: 70.94px;
+  border-radius: 2px;
+  background: #03020a;
+}
+.fb_needle b {
+  position: absolute;
+  left: -4.67px;
+  top: -400px;
+  width: 9.33px;
+  height: 9.33px;
+  border-radius: 50%;
+  background: #ff7234;
+}
+.fb_total {
+  position: absolute;
+  left: 50%;
+  top: 300px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  transform: translateX(-50%);
+}
+.fb_digits {
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+}
+.fb_glyph {
+  display: grid;
+  grid-template-columns: repeat(5, 18px);
+  grid-auto-rows: 18px;
+  gap: 3px;
+}
+.fb_glyph.is-dot {
+  grid-template-columns: 18px;
+}
+.fb_glyph i {
+  background: transparent;
+}
+.fb_glyph i.on {
+  background: #03020a;
+}
+.fb_glyph.is-dim i.on {
+  background: rgba(3, 2, 10, 0.6);
+}
+.fb_unit {
+  font-family: -apple-system, "SF Pro Display", var(--_typography---font--primary-family);
+  font-weight: 700;
+  font-size: 63.47px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: rgba(3, 2, 10, 0.2);
+  margin-bottom: -6px;
+}
+.fb_pill {
+  position: absolute;
+  left: 423.57px;
+  top: 0;
+  width: 268.41px;
+  height: 114.69px;
+  max-width: none;
+}
+.fb_bubble {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  padding: 22.4px;
+  border: 5.6px solid #fff;
+  border-radius: 50.4px;
+  background: #f2f2f2;
+  transform: rotate(var(--r));
+}
+.fb_bubble img {
+  width: 44.8px;
+  height: 44.8px;
+}
+
+/* 2 — Habits awareness (2292:15105): the day's logs drifting up */
+.fh_window {
+  position: absolute;
+  left: 76.13px;
+  top: -32px;
+  width: 532.74px;
+  height: 641px;
+  overflow: hidden;
+  -webkit-mask: linear-gradient(180deg, transparent 0, #000 22%, #000 72%, transparent 96%);
+  mask: linear-gradient(180deg, transparent 0, #000 22%, #000 72%, transparent 96%);
+}
+.fh_list {
+  position: absolute;
+  left: 13.75px;
+  top: 0;
+  width: 515.55px;
+  display: flex;
+  flex-direction: column;
+  gap: 13.75px;
+  will-change: transform;
+}
+.fh_log {
+  flex: none;
+  padding: 27.5px;
+  border: 0.86px solid rgba(3, 2, 10, 0.1);
+  border-radius: 27.5px;
+  background: #fff;
+  font-family: -apple-system, "SF Pro Text", var(--_typography---font--primary-family);
+}
+.fh_title {
+  margin: 0;
+  font-size: 29.21px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+  color: #03020a;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.fh_time {
+  display: flex;
+  justify-content: space-between;
+  margin: 3.4px 0 0;
+  font-size: 25.78px;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+  color: rgba(3, 2, 10, 0.6);
+}
+
+/* 3 — Google Sheets sync (2292:15129): pulses charge the sheet */
+.fs_panel {
+  position: absolute;
+  left: 0.5px;
+  top: -43.38px;
+  width: 686px;
+  height: 662px;
+  overflow: hidden;
+  border-radius: 32px;
+  background: linear-gradient(180deg, #ff7234 21.97%, #ffdb9e 44.53%, #fefcf8 116.53%);
+}
+.fs_chk {
+  position: absolute;
+  width: 184px;
+  height: 146.4px;
+}
+.fs_chk i {
+  position: absolute;
+  width: 36.6px;
+  height: 36.6px;
+  background: #fff;
+}
+.fs_lines {
+  position: absolute;
+  left: -1.5px;
+  width: 689px;
+  height: 207.73px;
+  overflow: visible;
+}
+.fs_lines.is-top {
+  top: 133.42px;
+}
+.fs_lines.is-bottom {
+  top: 339.01px;
+  transform: scaleY(-1);
+}
+.fs_pulse {
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
+  opacity: 0;
+}
+.fs_glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 306px;
+  height: 306px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.4);
+  filter: blur(30px);
+  opacity: 0.6;
+  transform: translate(-50%, -50%);
+}
+.fs_tile {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 39.4px;
+  border-radius: 45px;
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(36px);
+  backdrop-filter: blur(36px);
+  box-shadow: 0 0 39.4px rgba(242, 175, 117, 0.5);
+  transform: translate(-50%, -50%);
+}
+.fs_battery {
+  display: block;
+  width: 118.2px;
+  height: 118.2px;
+  overflow: visible;
+}
+
+/* 4 — Custom activities (2292:15324): a light passes over the icons */
+.fa_icons {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+.fa_icons.is-dim {
+  opacity: 0.22;
+}
+.fa_icons.is-lit {
+  -webkit-mask: radial-gradient(circle 150px at var(--lx, 50%) var(--ly, 50%), #000 0, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
+  mask: radial-gradient(circle 150px at var(--lx, 50%) var(--ly, 50%), #000 0, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
 }

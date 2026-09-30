@@ -54,9 +54,10 @@ them in `srcset`, so keep them together.
 | File | Where | Source |
 | --- | --- | --- |
 | `fonts/nimbus-sans-novus_*.woff2`, `nimbussannovd-sembol.woff2` | everywhere (400/500/600) | Webflow |
-| `images/hero*.avif`, `mob-hero*.avif` | hero, desktop / mobile | Webflow |
+| `images/hero/` | the hero stage: phone, hand, band, dial, bubbles | Figma `2292:9485`, `2292:10057` |
+| `images/loader/` | the loader's branding mockups | drawn in `tools/mockups` |
+| `images/features/` | the feature cards' art | Figma `2292:10629`, `15105`, `15129`, `15324` |
 | `icons/dog.svg`, `gamecontroller-fill.svg`, `window-dev-edit.svg` | Make every second count | Webflow |
-| `images/visual-breakdown*`, `habits-awareness*`, `google-sheets-sync*`, `custom-activities*` | the four feature cards | Webflow |
 | `images/ai-voice-logging*`, `precision-manual-entry*`, `one-tap-live-timer.avif` | Choose your flow | Webflow |
 | `images/track-time-with-elegance.avif` | the phone in the dial section's last frame | Webflow |
 | `images/dial-ticks.png` | the dial's tick ring | Figma `2292:15596` (Ellipse 2), 2424px |

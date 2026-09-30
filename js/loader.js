@@ -1,12 +1,12 @@
 // The loader. After Nudot: on black, the name blurs into focus either side
-// of a small flickering tile, then the letters part to the edges and a
-// window opens from the centre onto the page. Ours spells "lo · gs" round
-// a tile that flicks through Logs screens, each stamped with the logo, and
-// settles on the app icon; behind it the dial's hand sweeps a full day
-// while a dot-matrix counter runs 00.00 → 24.00h. The window opens as one
-// of the site's rounded cards.
+// of a small tile showing the brand in the world — a sign, a poster, the
+// app — then the letters part to the edges and a window opens from the
+// centre onto the page. Ours spells "lo · gs" round a tile that eases
+// through four branding mockups (assets/images/loader, drawn in
+// tools/mockups); behind it the dial's hand sweeps a full day while a
+// dot-matrix counter runs 00.00 → 24.00h. The window opens as one of the
+// site's rounded cards. It plays on every load.
 //
-// Shown once per browser session; add ?loader to the URL to see it again.
 // window.logsReady resolves as the window starts to open — js/text.js holds
 // the hero title for it.
 (() => {
@@ -19,7 +19,6 @@
     resolveReady();
     return;
   }
-  try { sessionStorage.setItem("logs-loader", "1"); } catch (e) {}
 
   const $ = (s) => root.querySelector(s);
   const $$ = (s) => [...root.querySelectorAll(s)];
@@ -63,27 +62,21 @@
   };
   showCount(0);
 
-  // --- the flicker: frames swap faster and faster, each with a jolt
-  let current = 0, flicking = true, gap = 170;
-  const show = (i) => {
-    frames[current].classList.remove("is-on");
-    current = i;
-    frames[current].classList.add("is-on");
-  };
-  const glitch = () => {
-    const top = Math.random() * 70, h = 8 + Math.random() * 22;
-    media.style.setProperty("--slice", `inset(${top}% 0 ${Math.max(0, 100 - top - h)}% 0)`);
-    media.style.setProperty("--jolt", `${(Math.random() - 0.5) * 14}px`);
-    media.classList.add("is-glitch");
-    setTimeout(() => media.classList.remove("is-glitch"), 70);
-  };
-  const flick = () => {
-    if (!flicking) return;
-    show(1 + (current % (frames.length - 1)));
-    glitch();
-    gap = Math.max(60, gap * 0.9);
-    setTimeout(flick, gap);
-  };
+  // --- the mockups: each holds, then eases into the next — a slow push
+  // in, the next one sharpening out of a blur over it
+  const HOLD = 0.72;
+  gsap.set(frames, { autoAlpha: 0 });
+  gsap.set(frames[0], { autoAlpha: 1 });
+  const reel = gsap.timeline({ paused: true });
+  frames.forEach((f, i) => {
+    const img = f.querySelector("img");
+    reel.fromTo(img, { scale: 1.12 }, { scale: 1, duration: HOLD + 0.5, ease: "power2.out" }, i * HOLD);
+    if (i) {
+      reel.fromTo(f, { autoAlpha: 0, filter: "blur(12px)" },
+        { autoAlpha: 1, filter: "blur(0px)", duration: 0.45, ease: "power2.inOut" }, i * HOLD - 0.2);
+    }
+  });
+  const REEL = frames.length * HOLD;
 
   // --- words: Tap. / Talk. / Time.
   const WORDS = ["Tap.", "Talk.", "Time."];
@@ -114,14 +107,10 @@
     .fromTo(dial, { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.9, ease: "power3.out" }, 0.2)
     .fromTo(media, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 0.35)
     .to(foot, { opacity: 1, duration: 0.5 }, 0.5)
-    .add(() => setTimeout(flick, gap), 0.7)
-    .to(day, { p: 1, duration: 2.4, ease: "power1.inOut", onUpdate: paintDay }, 0.5);
+    .add(() => reel.play(), 0.45)
+    .to(day, { p: 1, duration: REEL, ease: "power1.inOut", onUpdate: paintDay }, 0.45);
 
   Promise.all([intro.then(), capped]).then(() => {
-    // settle on the app icon — the logo itself
-    flicking = false;
-    show(0);
-    glitch();
     cycle.pause();
 
     const out = gsap.timeline({

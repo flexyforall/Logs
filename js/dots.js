@@ -1,61 +1,62 @@
-// Footer dot field. After Fourmula: dots don't fade, they snap — each one
-// flips in two hard steps — and figures alternate with a "cloud" that's
-// dense in the middle and ragged at the edge. Ours draws each figure
-// clockwise from twelve, like the dial's hand, and the cursor (after The
-// Start) swells the dots under it and leaves an orange trail that fades.
+// Footer dot field, after Fourmula (fourmula.ai, read from its source):
+// round dots across the full width of the card, 14 rows. Figures alternate
+// with a "cloud" that's dense in the middle and ragged at the edge; every
+// dot flips in two hard steps (steps(2)), in 20 shuffled groups, so the
+// field crackles rather than fades. Near the cursor the dots shrink, down
+// to a quarter at its centre, 200px out. Ours draws its figures — the
+// logo's rays, a clock, a snowflake, a diamond — and draws itself in, the
+// first time it's seen, clockwise from twelve like the dial's hand.
 document.addEventListener("DOMContentLoaded", () => {
   const field = document.getElementById("dotsField");
   if (!field) return;
-  const card = field.closest(".s_footer_content_wrap") || field;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const ROWS = 15;
-  const OFF = 0.12;          // resting dot
-  const STEP = 0.07;         // each flip is two hard steps this far apart (s)
-  const SWEEP = 0.9;         // one clockwise pass over the field (s)
-  const HOLD = 2.4;          // a figure stays this long (s)
-  const CLOUD = 1.1;         // the cloud between figures (s)
-  const BRUSH = 130;         // cursor reach (px)
-  const FADE = 0.9;          // trail half-life (s)
-  const INK = [17, 17, 17], ORANGE = [255, 114, 52];
+  const ROWS = 14;
+  const DIM = 0.15;          // resting dot (Fourmula's)
+  const FLIP = 1;            // one pass over the field (s)
+  const GROUPS = 20;
+  const HOLD = 1;            // a figure stays after its pass (s)
+  const REACH = 200;         // cursor reach (px)
+  const MIN_SCALE = 0.25;
 
   let cols, cx, cy, dots = [], figures = [];
 
-  const pickCols = () => {
-    const w = innerWidth;
-    return w < 480 ? 21 : w < 768 ? 31 : w < 1100 ? 41 : 51;
-  };
+  // Fourmula: 52 columns on desktop, 24 on tablet, 22 on a phone
+  const pickCols = () => (innerWidth >= 992 ? 51 : innerWidth >= 768 ? 25 : 21);
 
-  // Figures on the 15-row grid, centred. Ours: the logo's rays, a clock,
-  // and two of the Webflow originals.
   const makeFigures = () => {
-    const shape = (fn) => { const s = new Set(); fn((dx, dy) => s.add(`${Math.round(cx + dx)},${Math.round(cy + dy)}`)); return s; };
+    const shape = (fn) => {
+      const s = new Set();
+      fn((dx, dy) => s.add(`${Math.round(cx + dx)},${Math.round(cy + dy)}`));
+      return s;
+    };
     const rays = shape((p) => {
       for (let k = 0; k < 12; k++) {
         const t = (k / 12) * Math.PI * 2;
-        for (let r = 3; r <= 6.5; r += 0.5) p(r * Math.sin(t) * 1.15, -r * Math.cos(t));
+        for (let r = 3; r <= 6; r += 0.5) p(r * Math.sin(t), -r * Math.cos(t));
       }
     });
     const clock = shape((p) => {
-      for (let a = 0; a < 360; a += 6) { const t = a * Math.PI / 180; p(6.6 * Math.sin(t) * 1.15, -6.6 * Math.cos(t)); }
-      for (let r = 0; r <= 4.5; r++) p(0, -r);            // minute hand to twelve
-      for (let r = 0; r <= 3; r++) p(r * 0.8, r * 0.6);    // hour hand towards four
+      for (let a = 0; a < 360; a += 7) { const t = a * Math.PI / 180; p(6 * Math.sin(t), -6 * Math.cos(t)); }
+      for (let r = 0; r <= 4; r++) p(0, -r);
+      for (let r = 1; r <= 3; r++) p(r * 0.85, r * 0.55);
     });
     const snowflake = shape((p) => {
       for (let i = 2; i <= 6; i++) { p(0, -i); p(0, i); p(-i, 0); p(i, 0); }
       for (let j = 2; j <= 4; j++) { p(-j, -j); p(j, -j); p(-j, j); p(j, j); }
     });
     const diamond = shape((p) => {
-      const R = 6; for (let dx = -R; dx <= R; dx++) { const dy = R - Math.abs(dx); p(dx, dy); p(dx, -dy); }
+      for (let dx = -6; dx <= 6; dx++) { const dy = 6 - Math.abs(dx); p(dx, dy); p(dx, -dy); }
     });
     return [rays, clock, snowflake, diamond];
   };
 
   const build = () => {
     cols = pickCols();
-    cx = (cols - 1) / 2; cy = (ROWS - 1) / 2;
+    cx = Math.floor(cols / 2); cy = Math.floor(ROWS / 2) - 0.5;
     field.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     field.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
+    field.style.aspectRatio = `${cols} / ${ROWS}`;
     field.innerHTML = "";
     dots = [];
     for (let r = 0; r < ROWS; r++) {
@@ -66,132 +67,108 @@ document.addEventListener("DOMContentLoaded", () => {
         const dx = c - cx, dy = r - cy;
         dots.push({
           el, c, r, key: `${c},${r}`,
-          // clockwise from twelve, 0..1
           turn: ((Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360) / 360,
-          dist: Math.hypot(dx / (cols / 2), dy / (ROWS / 2)),
-          from: 0, to: 0, at: Infinity,   // a pending two-step flip
-          op: 0, paint: 0, hover: 0, drawn: ""
+          dist: Math.hypot(dx, dy),
+          from: 0, to: 0, at: Infinity, op: 0,
+          scale: 1, drawn: ""
         });
       }
     }
+    cy = Math.round(cy);
     figures = makeFigures();
   };
 
-  // Schedule every dot to flip to `level(d)`, the pass ordered by `order(d)`.
-  const flipTo = (level, order, now) => {
-    dots.forEach((d) => {
-      const to = level(d);
-      if (Math.abs(to - d.to) < 0.01 && d.at === Infinity) return;
-      d.from = d.op; d.to = to;
-      d.at = now + order(d) * SWEEP + Math.random() * 0.12;
+  // Every dot flips to level(d); the pass is cut into shuffled groups, as
+  // Fourmula's is, or run clockwise for the draw-in.
+  const flipTo = (level, now, clockwise = false) => {
+    const order = clockwise ? null : dots.map(() => Math.floor(Math.random() * GROUPS));
+    dots.forEach((d, i) => {
+      d.from = d.op;
+      d.to = level(d);
+      const slot = clockwise ? d.turn : order[i] / GROUPS;
+      d.at = now + slot * FLIP + Math.random() * (FLIP / GROUPS / 4);
     });
   };
-  const clockwise = (d) => d.turn;
-  const scattered = () => Math.random();
   const cloud = (d) => {
-    const core = Math.max(0, 1 - d.dist * 1.1);
+    const core = Math.max(0, 1 - d.dist / 12);
     const v = 0.15 + core * 0.7 + (Math.random() - 0.5) * 0.35;
-    return Math.round(Math.min(1, Math.max(OFF, v)) * 4) / 4; // quantised: crisp
+    return Math.min(1, Math.max(DIM, v));
   };
 
-  // cursor, smoothed like The Start's brush (≈0.55s catch-up)
-  const brush = { x: 0, y: 0, tx: 0, ty: 0, on: false, px: 0, py: 0 };
-  card.addEventListener("pointerenter", (e) => {
-    const r = field.getBoundingClientRect();
-    brush.on = true;
-    brush.x = brush.tx = brush.px = e.clientX - r.left;
-    brush.y = brush.ty = brush.py = e.clientY - r.top;
-  });
-  card.addEventListener("pointermove", (e) => {
-    const r = field.getBoundingClientRect();
-    brush.tx = e.clientX - r.left; brush.ty = e.clientY - r.top;
-  });
-  card.addEventListener("pointerleave", () => { brush.on = false; });
+  const pointer = { x: -1e4, y: -1e4 };
+  addEventListener("pointermove", (e) => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
+  document.addEventListener("pointerleave", () => { pointer.x = pointer.y = -1e4; });
 
-  let last = 0, phase = null, nextAt = 0, figure = 0;
+  let last = 0, phase = null, nextAt = 0, figure = 0, centres = null;
 
-  const tick = (now) => {
+  const measure = () => {
+    centres = dots.map((d) => {
+      const r = d.el.getBoundingClientRect();
+      return [r.left + r.width / 2 + scrollX, r.top + r.height / 2 + scrollY];
+    });
+  };
+
+  const tick = () => {
+    const now = performance.now() / 1000;
     const dt = Math.min(0.05, now - (last || now)); last = now;
 
-    // the cycle: figure → cloud → next figure
     if (now >= nextAt) {
       if (phase === "figure") {
-        phase = "cloud"; nextAt = now + CLOUD + SWEEP;
-        flipTo(cloud, scattered, now);
+        phase = "cloud"; nextAt = now + FLIP;
+        flipTo(cloud, now);
       } else {
-        phase = "figure"; nextAt = now + SWEEP + HOLD;
+        phase = "figure"; nextAt = now + FLIP + HOLD + FLIP;
         const set = figures[figure++ % figures.length];
-        flipTo((d) => (set.has(d.key) ? 1 : OFF), clockwise, now);
+        flipTo((d) => (set.has(d.key) ? 1 : DIM), now);
       }
     }
 
-    // brush: ease towards the pointer, paint along the way
-    const rect = field.getBoundingClientRect();
-    const cw = rect.width / cols, ch = rect.height / ROWS;
-    const k = 1 - Math.exp(-dt / 0.14);
-    brush.x += (brush.tx - brush.x) * k;
-    brush.y += (brush.ty - brush.y) * k;
-    const decay = Math.pow(0.5, dt / FADE);
-
-    dots.forEach((d) => {
+    if (!centres) measure();
+    const k = 1 - Math.exp(-dt / 0.08); // ≈ Fourmula's 0.2s power2 ease
+    dots.forEach((d, i) => {
       if (now >= d.at) {
-        // two hard steps: halfway, then there
-        d.op = now >= d.at + STEP ? d.to : (d.from + d.to) / 2;
-        if (now >= d.at + STEP) d.at = Infinity;
+        // steps(2): halfway at once, all the way after half the flip
+        const half = FLIP / 2;
+        d.op = now >= d.at + half ? d.to : (d.from + d.to) / 2;
+        if (now >= d.at + half) d.at = Infinity;
       }
-      let hover = 0;
-      if (brush.on) {
-        const x = (d.c + 0.5) * cw, y = (d.r + 0.5) * ch;
-        // distance to the segment the brush travelled this frame
-        const vx = brush.x - brush.px, vy = brush.y - brush.py;
-        const len = vx * vx + vy * vy;
-        const t = len ? Math.max(0, Math.min(1, ((x - brush.px) * vx + (y - brush.py) * vy) / len)) : 0;
-        const dist = Math.hypot(x - (brush.px + vx * t), y - (brush.py + vy * t));
-        hover = Math.max(0, 1 - dist / BRUSH);
-        hover *= hover;
-      }
-      d.paint = Math.max(d.paint * decay, hover);
-      d.hover += (hover - d.hover) * 0.25;
+      const [x, y] = centres[i];
+      const dist = Math.hypot(x - scrollX - pointer.x, y - scrollY - pointer.y);
+      const target = Math.max(MIN_SCALE, 1 - (1 - MIN_SCALE) * Math.max(0, (REACH - dist) / REACH));
+      d.scale += (target - d.scale) * k;
 
-      const op = Math.max(d.op, d.paint * 0.95);
-      const scale = 1 + d.hover * 0.7;
-      const col = d.paint > 0.02
-        ? INK.map((v, i) => Math.round(v + (ORANGE[i] - v) * Math.min(1, d.paint * 1.3)))
-        : INK;
-      const key = `${op.toFixed(2)}|${scale.toFixed(2)}|${col}`;
+      const key = `${d.op.toFixed(2)}|${d.scale.toFixed(3)}`;
       if (key === d.drawn) return;
       d.drawn = key;
-      d.el.style.opacity = op.toFixed(2);
-      d.el.style.transform = scale > 1.005 ? `scale(${scale.toFixed(2)})` : "";
-      d.el.style.backgroundColor = `rgb(${col})`;
+      d.el.style.opacity = d.op.toFixed(2);
+      d.el.style.transform = d.scale < 0.999 ? `scale(${d.scale.toFixed(3)})` : "";
     });
-    brush.px = brush.x; brush.py = brush.y;
   };
 
   build();
 
   if (reduce) {
     const set = figures[0];
-    dots.forEach((d) => { d.el.style.opacity = set.has(d.key) ? 1 : OFF; });
+    dots.forEach((d) => { d.el.style.opacity = set.has(d.key) ? 1 : DIM; });
     return;
   }
 
   let running = false, drawnIn = false;
-  const loop = () => tick(performance.now() / 1000);
   const start = () => {
     if (running) return;
     running = true;
+    centres = null;
     if (!drawnIn) {
-      // first sight: the field draws itself in, clockwise, as a cloud
       drawnIn = true;
       const now = performance.now() / 1000;
-      flipTo(cloud, clockwise, now);
-      phase = "cloud"; nextAt = now + SWEEP + 0.6;
+      flipTo(cloud, now, true);
+      phase = "cloud"; nextAt = now + FLIP * 1.4;
     }
-    gsap.ticker.add(loop);
+    gsap.ticker.add(tick);
   };
-  const stop = () => { running = false; gsap.ticker.remove(loop); };
+  const stop = () => { running = false; gsap.ticker.remove(tick); };
 
+  ScrollTrigger.addEventListener("refresh", () => (centres = null));
   ScrollTrigger.create({
     trigger: "[data-section-dot]",
     start: "top bottom",
@@ -203,6 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
   addEventListener("resize", () => {
     clearTimeout(rt);
     rt = setTimeout(() => {
+      centres = null;
       if (pickCols() === cols) return;
       build();
       drawnIn = false;

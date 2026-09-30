@@ -1,0 +1,135 @@
+<!doctype html>
+<!-- Branding mockups for the loader, drawn rather than photographed: no
+     stock-photo host is reachable from where this was built, and the loader
+     wants the logo in real-looking places, as Nudot's does. `node render.mjs`
+     shoots each .scene to assets/images/loader/<id>.jpg at 800x600.
+     Black and white like Nudot's, the mark keeps its orange. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Nimbus; src: url(../../assets/fonts/nimbussannovd-sembol.woff2); font-weight: 600; }
+  @font-face { font-family: Nimbus; src: url(../../assets/fonts/nimbus-sans-novus_regular-d.woff2); font-weight: 400; }
+  body { margin: 0; background: #222; display: grid; gap: 20px; padding: 20px; font-family: Nimbus, Arial, sans-serif; }
+  .scene { position: relative; width: 800px; height: 600px; overflow: hidden; }
+  .grain::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .18; mix-blend-mode: overlay;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+
+  /* 1 — the mark on its construction grid */
+  #grid { background: radial-gradient(circle at 50% 45%, #1b1a1f, #050506 70%); }
+  #grid svg.lines { position: absolute; inset: 0; }
+  #grid .logo { position: absolute; left: 50%; top: 50%; width: 300px; transform: translate(-50%, -50%); }
+
+  /* 2 — debossed into paper, leaf shadows across it */
+  #paper { background: #d9d7d3; perspective: 900px; }
+  #paper .sheet { position: absolute; inset: -80px; transform: rotateX(28deg) rotateZ(-14deg) translateY(10px); transform-origin: 50% 60%; }
+  #paper .shade { position: absolute; inset: 0; mix-blend-mode: multiply; filter: blur(14px); opacity: .55; }
+
+  /* 3 — a lit box sign on a concrete wall */
+  #sign { background: #8d8c89; }
+  #sign .wall { position: absolute; inset: 0; }
+  #sign .box { position: absolute; left: 300px; top: 150px; width: 250px; height: 250px; transform-style: preserve-3d;
+    transform: perspective(900px) rotateY(-32deg) rotateX(4deg); }
+  #sign .face { position: absolute; inset: 0; background: linear-gradient(135deg, #fbfbfa, #e6e5e3); border: 10px solid #151515;
+    display: grid; place-items: center; }
+  #sign .face img { width: 150px; }
+  #sign .side { position: absolute; top: 0; right: -34px; width: 34px; height: 100%; background: linear-gradient(90deg, #1d1d1d, #0b0b0b);
+    transform-origin: 0 50%; transform: rotateY(90deg); }
+  #sign .arm { position: absolute; left: 220px; top: 250px; width: 90px; height: 14px; background: #1a1a1a; }
+  #sign .cast { position: absolute; left: 330px; top: 175px; width: 250px; height: 260px; background: rgba(0,0,0,.55); filter: blur(18px);
+    transform: skewY(8deg) translateX(40px); }
+
+  /* 4 — a poster in a glazed facade */
+  #poster { background: #6f6e6c; }
+  #poster .facade { position: absolute; inset: -40px; transform: perspective(1000px) rotateY(18deg) rotateX(-4deg); transform-origin: 30% 50%; }
+  #poster .glass { position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(90deg, #1c1c1c 0 6px, transparent 6px 118px),
+      repeating-linear-gradient(0deg, #1c1c1c 0 6px, transparent 6px 150px),
+      linear-gradient(180deg, #5b5a58, #3a3938); }
+  #poster .sheet { position: absolute; left: 126px; top: 156px; width: 344px; height: 444px; background: #f1f0ee; padding: 30px; box-sizing: border-box;
+    box-shadow: 0 30px 60px rgba(0,0,0,.45); display: flex; flex-direction: column; justify-content: space-between; color: #0b0b0c; }
+  #poster .sheet h1 { margin: 0; font-size: 58px; line-height: .86; letter-spacing: -.04em; font-weight: 600; }
+  #poster .sheet h1 span { color: #9a9894; }
+  #poster .sheet .row { display: flex; align-items: flex-end; justify-content: space-between; font-size: 13px; line-height: 1.3; }
+  #poster .sheet img { width: 150px; }
+  #poster .sun { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255,255,255,.22), transparent 40%, rgba(0,0,0,.35)); }
+
+</style>
+</head>
+<body>
+
+<div class="scene grain" id="grid">
+  <svg class="lines" viewBox="0 0 800 600" fill="none" stroke="#3a393f" stroke-width="1">
+    <circle cx="400" cy="300" r="70"/><circle cx="400" cy="300" r="140"/><circle cx="400" cy="300" r="230"/><circle cx="400" cy="300" r="330"/>
+    <line x1="0" y1="300" x2="800" y2="300"/><line x1="400" y1="0" x2="400" y2="600"/>
+    <line x1="0" y1="0" x2="800" y2="600"/><line x1="800" y1="0" x2="0" y2="600"/>
+    <line x1="0" y1="200" x2="800" y2="200" stroke-dasharray="2 6"/><line x1="0" y1="400" x2="800" y2="400" stroke-dasharray="2 6"/>
+    <line x1="250" y1="0" x2="250" y2="600" stroke-dasharray="2 6"/><line x1="550" y1="0" x2="550" y2="600" stroke-dasharray="2 6"/>
+  </svg>
+  <img class="logo" src="../../assets/logos/logo-nav.svg" alt="">
+</div>
+
+<div class="scene grain" id="paper">
+  <div class="sheet">
+    <svg width="960" height="760" viewBox="0 0 960 760">
+      <defs>
+        <filter id="paperTex" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="4" seed="3" result="n"/>
+          <feDiffuseLighting in="n" surfaceScale="1.2" lighting-color="#f4f2ee" result="lit"><feDistantLight azimuth="235" elevation="62"/></feDiffuseLighting>
+          <feComposite in="lit" in2="SourceGraphic" operator="in"/>
+        </filter>
+        <!-- deboss: the logo's alpha as a height map, lit from the top left -->
+        <filter id="deboss" x="-10%" y="-10%" width="120%" height="120%">
+          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 -1 1  0 0 0 -1 1  0 0 0 -1 1  0 0 0 0 1" result="inv"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.6" result="b"/>
+          <feSpecularLighting in="b" surfaceScale="-4" specularConstant=".9" specularExponent="18" lighting-color="#fff" result="spec"><feDistantLight azimuth="225" elevation="40"/></feSpecularLighting>
+          <feDiffuseLighting in="b" surfaceScale="-4" diffuseConstant="1" lighting-color="#e9e6e1" result="diff"><feDistantLight azimuth="225" elevation="40"/></feDiffuseLighting>
+          <feComposite in="diff" in2="SourceAlpha" operator="in" result="d2"/>
+          <feComposite in="spec" in2="SourceAlpha" operator="in" result="s2"/>
+          <feMerge><feMergeNode in="d2"/><feMergeNode in="s2"/></feMerge>
+        </filter>
+      </defs>
+      <rect width="960" height="760" fill="#e4e1dc" filter="url(#paperTex)"/>
+      <image href="../../assets/logos/logo-footer.svg" x="330" y="330" width="300" height="118" filter="url(#deboss)"/>
+      <text x="330" y="500" font-family="Nimbus" font-size="15" fill="#bdb9b2" letter-spacing=".08em">TIME TRACKING, ON ONE CLEAR DIAL</text>
+    </svg>
+  </div>
+  <svg class="shade" viewBox="0 0 800 600"><g fill="#2a2926">
+    <path d="M-40 60 C 120 20, 200 120, 330 60 S 520 10, 560 -30 L -40 -30Z"/>
+    <path d="M600 620 C 640 520, 720 480, 840 500 L 840 620Z"/>
+    <ellipse cx="120" cy="520" rx="90" ry="26" transform="rotate(-30 120 520)"/>
+    <ellipse cx="200" cy="580" rx="70" ry="20" transform="rotate(-20 200 580)"/>
+    <ellipse cx="690" cy="120" rx="60" ry="18" transform="rotate(40 690 120)"/>
+    <ellipse cx="740" cy="200" rx="80" ry="22" transform="rotate(55 740 200)"/>
+  </g></svg>
+</div>
+
+<div class="scene grain" id="sign">
+  <svg class="wall" viewBox="0 0 800 600">
+    <filter id="conc"><feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="3" seed="8"/><feColorMatrix type="matrix" values="0 0 0 0 .55  0 0 0 0 .55  0 0 0 0 .54  0 0 0 .55 0"/></filter>
+    <rect width="800" height="600" fill="#9a9996"/>
+    <rect width="800" height="600" filter="url(#conc)"/>
+    <g stroke="#6d6c69" stroke-width="2"><line x1="200" y1="0" x2="200" y2="600"/><line x1="600" y1="0" x2="600" y2="600"/><line x1="0" y1="440" x2="800" y2="440"/></g>
+    <g fill="#5d5c59"><circle cx="228" cy="30" r="5"/><circle cx="572" cy="30" r="5"/><circle cx="228" cy="410" r="5"/><circle cx="572" cy="410" r="5"/></g>
+    <rect width="800" height="600" fill="url(#vign)"/>
+    <defs><radialGradient id="vign" cx=".45" cy=".4" r=".8"><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient></defs>
+  </svg>
+  <div class="cast"></div>
+  <div class="box"><div class="face"><img src="../../assets/logos/logo-footer.svg" alt=""></div><div class="side"></div></div>
+</div>
+
+<div class="scene grain" id="poster">
+  <div class="facade">
+    <div class="glass"></div>
+    <div class="sheet">
+      <h1>Own your hours.<br><span>Free your mind.</span></h1>
+      <div class="row"><img src="../../assets/logos/logo-footer.svg" alt=""><span>Tap. Talk.<br>Time.</span></div>
+    </div>
+    <div class="sun"></div>
+  </div>
+</div>
+
+
+</body>
+</html>
