@@ -16,8 +16,14 @@ index.html              the landing page
 privacy-policy.html     the two legal pages, as on Webflow
 terms-of-service.html
 css/webflow.css         Webflow's stylesheet, as published (paths made local)
-css/dial.css            the dial section, the one part not from Webflow
-js/site.js              every script the pages run, in the order Webflow ran them
+css/dial.css            the dial section
+css/motion.css          text reveals, logo, loader, assistant bar, footer dots
+js/site.js              Webflow's own scripts, in the order Webflow ran them
+js/loader.js            the loader (home page)
+js/text.js              text reveals
+js/logo.js              the live logo mark
+js/dots.js              the footer dot field
+js/assistant.js         the assistant bar
 js/vendor/              GSAP 3.15 + plugins, Lenis, jQuery, webflow.js
 assets/                 fonts, images, icons, logos — see assets/README.md
 tools/                  optional checks, not needed to run the site
@@ -25,27 +31,82 @@ tools/                  optional checks, not needed to run the site
 
 ## Where it came from
 
-Everything but the dial section is the Webflow site as published. The pages
+The layout and copy are the Webflow site as published; the dial section and
+everything under "Motion" below were added here. The pages
 keep Webflow's markup, class names and inline `<style>` embeds. The inline
 `<script>` blocks moved into `js/site.js` in document order; the legal pages
 ran a subset of them, and each block returns early when its section is missing.
-The only change to the markup is dropping `data-wf-domain` from `<html>`:
-webflow.js shows the "Made in Webflow" badge whenever that names a
-`*.webflow.io` host other than the one serving the page.
+Changes to Webflow's markup:
 
-What moves, and where (all in `js/site.js`):
+- **`data-wf-domain` dropped from `<html>`.** webflow.js shows the "Made in
+  Webflow" badge whenever that names a `*.webflow.io` host other than the one
+  serving the page.
+- **Logo `<img>`s replaced with inline SVG**, so `logo.js` can reach the ticks.
+- **`data-reveal` hooks** in place of Webflow's `data-split-*`.
+- **The loader's markup** at the top of the home page's `<body>`.
 
-| Where | What |
-| --- | --- |
-| everywhere | Lenis smooth scroll, driving ScrollTrigger |
-| nav | hides on scroll down, returns on scroll up |
-| hero, flow | titles and descriptions rise in line by line (SplitText) |
-| Make every second count | title fades up, icons pop in; on the way out the icons fly up with the scroll |
-| features | the four cards stack; each shrinks to 0.85-0.95 as the next covers it |
-| Choose your flow | cards slide in; the row can be dragged with inertia (not below 479px) |
-| **dial** | the Figma storyboard, pinned and scrubbed; see below |
-| footer | 51x15 dot field cycling snowflake, diamond, circle, cross every 4.5s |
-| footer links | letters roll up on hover |
+## Motion
+
+What moves, and where:
+
+| Where | What | File |
+| --- | --- | --- |
+| first visit | the loader, see below | `loader.js` |
+| everywhere | Lenis smooth scroll, driving ScrollTrigger | `site.js` |
+| nav | hides on scroll down, returns on scroll up | `site.js` |
+| logos | the mark is a live clock, see below | `logo.js` |
+| headings, copy | text reveals, see below | `text.js` |
+| Make every second count | icons pop in; on the way out they fly up with the scroll | `site.js` |
+| features | the four cards stack; each shrinks to 0.85-0.95 as the next covers it | `site.js` |
+| Choose your flow | cards slide in; the row can be dragged with inertia (not below 479px) | `site.js` |
+| **dial** | the Figma storyboard, pinned and scrubbed; see below | `site.js` |
+| every page, bottom | the assistant bar, see below | `assistant.js` |
+| footer | the dot field, see below | `dots.js` |
+| footer links | letters roll up on hover | `site.js` |
+
+The references these follow are in Figma, `Animations` (2317:16838), with a
+note on each saying what to take from it.
+
+**Loader** (after Nudot). On black, "lo" and "gs" blur into focus either side
+of a tile that flicks through Logs screens, each stamped with the logo, with a
+split-colour jolt on every cut, and it settles on the app icon. Behind it the
+dial's hand sweeps a full day, a dot-matrix counter runs 00.00 → 24.00h and
+Tap. / Talk. / Time. take turns. Then the letters part to the edges and a
+window opens from the centre, as one of the site's rounded cards. It waits
+for the page to load (at most 4.5s). It shows once per browser session;
+**add `?loader` to the URL to see it again.**
+
+**Text** (after Oimachi). `data-reveal` on an element picks the motion:
+`chars`, for headings, rises a character at a time from behind its line,
+sharpening out of a blur; `lines` does the same per line, for short copy;
+`words` lights a paragraph word by word, scrubbed with the scroll.
+`data-reveal-wait` holds it until the loader has gone (the hero).
+
+**Logo** (after Omosa). The mark is inline SVG. Its 24 ticks are shaded like a
+spinner, two arms fading from a bright head, and its hand leaves an orange trail
+over the ticks behind it, as in the Figma mark. The hand turns once from the top
+of the page to the bottom and does an extra lap on hover.
+
+**Assistant bar** (after Hobbes). A dark-glass pill pinned to the bottom of
+every page: the logo ticking in the corner and a placeholder that types the
+questions people ask. It answers from what the site and privacy policy already
+say. It's a fixed set of answers matched on keywords, with no AI behind it; to
+change them, edit `ANSWERS` in `assistant.js`. Download opens the "Scan with
+your phone" card from the Figma hero hover. It steps aside while the footer is
+on screen. **`APP_STORE_URL` in `assistant.js` still needs the real listing**,
+and the QR code from Figma (`assets/images/qr-app-store.svg`) encodes App Store
+Connect's sign-in page, a placeholder, so it needs replacing too.
+
+**Footer dots** (after Fourmula and The Start). Dots snap rather than fade, each
+in two hard steps, and figures (the logo's rays, a clock, a snowflake, a
+diamond) alternate with a cloud that's dense in the middle. Each figure is
+drawn clockwise from twelve, like the dial's hand, and the field draws itself
+in the same way the first time it comes into view. The cursor swells the dots
+under it and leaves an orange trail that fades, its brush easing after the
+pointer like The Start's.
+
+Everything honours `prefers-reduced-motion`: no loader and no pin, text in
+place, the footer holding one figure.
 
 ## The dial section
 
