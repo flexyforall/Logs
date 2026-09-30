@@ -173,7 +173,9 @@ The section pins for 3.5 screens and one scrubbed timeline plays through:
    Logs.", white, lit the same way.
 3. **Dark.** The dial opens from 872 to 1212px and "Less Noise. More Progress."
    arrives in the middle.
-4. **The phone comes up** and the title moves up to make room. This is Webflow's
+4. **The phone comes up** and the title moves up to make room. The
+   storyboard's dial hands over to Webflow's own ring (ticks only, no rim,
+   70.25rem), which turns slowly, once every two minutes. This is Webflow's
    layout.
 
 One dial turns clockwise through all four frames. The wedge, the rim and the

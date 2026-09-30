@@ -1374,3 +1374,22 @@
   white-space: nowrap;
   opacity: 0;
 }
+
+/* The dial section's last frame: Webflow's ring at its own size (70.25rem;
+   the img alone would stretch it to the card's width). */
+.s-dial .s_app_circle_wrap {
+  width: 70.25rem;
+  pointer-events: none;
+}
+.s-dial .s_app_circle_wrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+@media screen and (max-width: 991px) {
+  .s-dial .s_app_circle_wrap { width: 55.25rem; }
+}
+@media screen and (max-width: 479px) {
+  .s-dial .s_app_circle_wrap { width: 50.25rem; }
+}

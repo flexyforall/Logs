@@ -228,6 +228,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const [busy, meet] = section.querySelectorAll("[data-dial-line]");
   const title = section.querySelector("[data-dial-title]");
   const phone = section.querySelector("[data-dial-phone]");
+  // Webflow's own ring for the last frame: ticks only, turning slowly
+  const circle = section.querySelector("[data-dial-circle]");
 
   // Each line lights word by word; the two tones live on the line in CSS.
   const split = (line) => {
@@ -267,13 +269,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const mm = gsap.matchMedia();
 
   mm.add("(prefers-reduced-motion: reduce)", () => {
-    gsap.set([busy, meet, wedge, hand], { autoAlpha: 0 });
+    gsap.set([busy, meet, wedge, hand, dial], { autoAlpha: 0 });
     gsap.set(dark, { opacity: 1 });
     gsap.set(dial, { scale: BIG });
     gsap.set(turn, { rotation: FRAME_3 });
   });
 
   mm.add("(prefers-reduced-motion: no-preference)", () => {
+    gsap.to(circle, { rotation: 360, duration: 120, ease: "none", repeat: -1 });
     const tl = gsap.timeline({
       defaults: { ease: "none" },
       scrollTrigger: {
@@ -307,9 +310,11 @@ document.addEventListener("DOMContentLoaded", () => {
       .to(turn, { rotation: FRAME_3, duration: 1.4, ease: "power2.out" }, 6.2)
       .fromTo(title, { y: titleDrop, autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8 }, 6.7)
 
-    // Frame 4 — the hand and wedge step back, the phone comes up and the
-    // title makes room: Webflow's s-app layout, untouched.
-      .to([wedge, hand], { autoAlpha: 0, duration: 0.8 }, 7.8)
+    // Frame 4 — the storyboard's dial hands over to Webflow's ring (ticks
+    // only, no rim, at its own size, turning once every two minutes), the
+    // phone comes up and the title makes room: Webflow's s-app layout.
+      .to(dial, { autoAlpha: 0, duration: 0.9, ease: "power1.inOut" }, 7.6)
+      .fromTo(circle, { autoAlpha: 0, scale: 1.14 }, { autoAlpha: 1, scale: 1, duration: 1.4, ease: "power2.out" }, 7.6)
       .to(title, { y: 0, duration: 1.6, ease: "power2.inOut" }, 7.8)
       .fromTo(phone, { y: phoneDrop }, { y: 0, duration: 1.8, ease: "power2.out" }, 7.8)
       .to({}, { duration: 0.4 }, 9.6);
