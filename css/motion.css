@@ -92,13 +92,23 @@
   filter: invert(1);
 }
 .loader_letters {
+  /* three columns: the words hug a middle column as wide as the tile plus
+     the same margin each side, so both sit equally far from it whatever
+     their own widths */
   position: absolute;
   inset: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr calc(min(34vmin, 17rem) + 2 * clamp(1rem, 2.4vw, 2rem)) 1fr;
   align-items: center;
-  justify-content: center;
-  gap: calc(min(34vmin, 17rem) + 2.5rem);
   pointer-events: none;
+}
+.loader_letter:first-child {
+  grid-column: 1;
+  justify-self: end;
+}
+.loader_letter:last-child {
+  grid-column: 3;
+  justify-self: start;
 }
 .loader_letter {
   font-weight: 600;
@@ -698,7 +708,7 @@
   align-items: center;
   padding: 22.4px;
   border: 5.6px solid #fff;
-  border-radius: 50.4px;
+  border-radius: 50%;
   background: #f2f2f2;
   transform: rotate(var(--r));
 }
@@ -846,4 +856,303 @@
 .fa_icons.is-lit {
   -webkit-mask: radial-gradient(circle 150px at var(--lx, 50%) var(--ly, 50%), #000 0, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
   mask: radial-gradient(circle 150px at var(--lx, 50%) var(--ly, 50%), #000 0, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
+}
+
+/* ---------- flow cards (js/flow.js) ------------------------------------- */
+
+/* Each card is drawn at Figma's 560x640 and scaled to cover the card
+   (--flow-scale), centred, like the photos they replace. */
+.flow_stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 560px;
+  height: 640px;
+  overflow: hidden;
+  transform: translate(-50%, -50%) scale(var(--flow-scale, 1));
+}
+.s_flow_card:has(.flow_stage) {
+  background: #fff;
+}
+
+/* 1 — AI voice logging (2292:10651) */
+.fv_photo {
+  position: absolute;
+  left: -202px;
+  top: -41px;
+  width: 964px;
+  height: 723px;
+}
+.fv_photo img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+.fv_photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+.fv_input {
+  position: absolute;
+  left: 24px;
+  top: 521px;
+  width: 512px;
+  height: 95px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 36px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 60px;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+.fv_label {
+  font-family: -apple-system, "SF Pro Display", var(--_typography---font--primary-family);
+  font-weight: 500;
+  font-size: 24.9px;
+  color: #fff;
+  white-space: nowrap;
+}
+.fv_ellipsis i {
+  font-style: normal;
+}
+.fv_wave {
+  display: grid;
+  grid-template-columns: repeat(40, 4.39px);
+  grid-template-rows: repeat(9, 4.39px);
+  column-gap: 2.99px;
+  row-gap: 2.93px;
+}
+.fv_wave i {
+  width: 4.39px;
+  height: 4.39px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.15;
+}
+
+/* 2 — Precision manual entry (2292:12680) */
+.fm_phone {
+  position: absolute;
+  left: 102px;
+  top: 214px;
+  width: 357px;
+  height: 739.7px;
+  will-change: transform;
+}
+.fm_frame {
+  /* the render's own screen is black; Figma lays the screenshot over it */
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+.fm_screen {
+  position: absolute;
+  z-index: 1;
+  left: 13.75px;
+  top: 11.3px;
+  width: 329.7px;
+  height: 716.4px;
+  overflow: hidden;
+  border-radius: 47px;
+}
+.fm_screen > img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  display: block;
+}
+/* the input's text, over the emptied field in the screenshot */
+.fm_field {
+  position: absolute;
+  left: 29px;
+  top: 229px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  font-family: -apple-system, "SF Pro Text", var(--_typography---font--primary-family);
+  font-size: 15.4px;
+  line-height: 22px;
+  letter-spacing: -0.02em;
+  color: #03020a;
+  white-space: nowrap;
+}
+.fm_caret {
+  width: 1.5px;
+  height: 18px;
+  margin-left: 1px;
+  background: #ff7234;
+  animation: fmBlink 1s steps(2) infinite;
+}
+@keyframes fmBlink {
+  50% { opacity: 0; }
+}
+/* the send button, redrawn over the screenshot's so it can be pressed */
+.fm_send {
+  position: absolute;
+  left: 252px;
+  top: 362px;
+  width: 64px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 19px;
+  background: #1c1b20;
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.35);
+}
+.fm_send svg {
+  width: 20px;
+  height: 20px;
+}
+.fm_toast {
+  position: absolute;
+  left: 50%;
+  top: 56px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: #03020a;
+  color: #fff;
+  font-family: -apple-system, "SF Pro Text", var(--_typography---font--primary-family);
+  font-size: 13px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  opacity: 0;
+}
+.fm_toast b {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff7234;
+}
+
+/* 3 — One tap live timer (2292:12693) */
+.ft_photo {
+  position: absolute;
+  left: -206px;
+  top: 0;
+  width: 972px;
+  height: 648px;
+}
+.ft_photo img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+.ft_photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+.ft_log {
+  position: absolute;
+  left: 21px;
+  top: 364px;
+  width: 518px;
+  height: 118px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 24px;
+  border: 0.75px solid rgba(3, 2, 10, 0.1);
+  border-radius: 24px;
+  background: #f7f7f7;
+  font-family: -apple-system, "SF Pro Text", var(--_typography---font--primary-family);
+}
+.ft_live {
+  position: relative;
+  flex: none;
+  width: 12px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+}
+.ft_live i,
+.ft_live::before {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff7234;
+}
+.ft_live::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  animation: ftPulse 1.4s ease-out infinite;
+}
+@keyframes ftPulse {
+  from { transform: scale(1); opacity: 0.6; }
+  to { transform: scale(3); opacity: 0; }
+}
+.ft_log.is-done .ft_live::before {
+  animation: none;
+  opacity: 0;
+}
+.ft_log.is-done .ft_live i {
+  background: #11bc5c;
+}
+.ft_text {
+  flex: 1;
+  min-width: 0;
+}
+.ft_title {
+  font-size: 25.67px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+  color: #03020a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ft_time {
+  font-size: 22.65px;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+  color: rgba(3, 2, 10, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+.ft_btn {
+  position: relative;
+  flex: none;
+  width: 63px;
+  height: 63px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  background: #fff;
+  box-sizing: border-box;
+}
+.ft_btn > * {
+  grid-area: 1 / 1;
+  width: 36px;
+  height: 36px;
+}
+.ft_check {
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+}
+/* In a column (phones) the list is sized by its content; with the photos
+   gone, nothing gives the cards a width, so the list takes the row. */
+@media screen and (max-width: 479px) {
+  .s_flow_list {
+    width: 100%;
+  }
 }

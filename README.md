@@ -22,6 +22,7 @@ js/site.js              Webflow's own scripts, in the order Webflow ran them
 js/loader.js            the loader (home page)
 js/hero.js              the hero: phone lines, orbiting activity bubbles
 js/features.js          the four feature cards
+js/flow.js              the three "Choose your flow" cards
 js/text.js              text reveals
 js/logo.js              the live logo mark
 js/dots.js              the footer dot field
@@ -55,7 +56,7 @@ What moves, and where:
 | --- | --- | --- |
 | first visit | the loader, see below | `loader.js` |
 | everywhere | Lenis smooth scroll, driving ScrollTrigger | `site.js` |
-| hero | the phone's line changes in three steps; the activity bubbles drift round the band | `hero.js` |
+| hero | the phone's line changes in three steps; the activity bubbles gather along the band | `hero.js` |
 | nav | hides on scroll down, returns on scroll up | `site.js` |
 | logos | the mark is a live clock, see below | `logo.js` |
 | headings, copy | text reveals, see below | `text.js` |
@@ -63,6 +64,7 @@ What moves, and where:
 | features | the four cards stack; each shrinks to 0.85-0.95 as the next covers it | `site.js` |
 | feature cards | each card's art moves, see below | `features.js` |
 | Choose your flow | cards slide in; the row can be dragged with inertia (not below 479px) | `site.js` |
+| flow cards | each card plays its own scene, see below | `flow.js` |
 | **dial** | the Figma storyboard, pinned and scrubbed; see below | `site.js` |
 | every page, bottom | the assistant bar, see below | `assistant.js` |
 | footer | the dot field, see below | `dots.js` |
@@ -72,15 +74,18 @@ The references these follow are in Figma, `Animations` (2317:16838), with a
 note on each saying what to take from it.
 
 **Loader** (after Nudot). On black, "lo" and "gs" blur into focus either side
-of a tile that eases through four branding mockups: the mark on its
-construction grid, debossed paper, a box sign, a poster. Each one slowly pushes
+of a tile that eases through five branding mockups: the mark on its
+construction grid, debossed paper, then the logo set into three photographed
+mockups from Figma (2325:18720): a wooden sign, a bucket hat, a box. Each one slowly pushes
 in and the next sharpens out of a blur over it. Behind the tile the dial's hand
 sweeps a full day, a dot-matrix counter runs 00.00 → 24.00h and
 Tap. / Talk. / Time. take turns. Then the letters part to the edges and a
 window opens from the centre, as one of the site's rounded cards. It plays on
-every load, and waits for the page (at most 4.5s). The mockups are drawn, not
-photographed: `tools/mockups/mockups.html` holds the scenes, and
-`node tools/mockups/render.mjs` renders them to `assets/images/loader/`.
+every load, and waits for the page (at most 4.5s). `tools/mockups/mockups.html`
+composites the scenes: the photos are in `tools/mockups/src/` (the hat's old
+print retouched out), and the logo is set in with a four-corner perspective
+transform. `node tools/mockups/render.mjs` renders them to
+`assets/images/loader/`.
 
 **Text** (after Oimachi). `data-reveal` on an element picks the motion:
 `chars`, for headings, rises a character at a time from behind its line,
@@ -105,8 +110,10 @@ Connect's sign-in page, a placeholder, so it needs replacing too.
 
 **Hero** (after the app's welcome animation). Figma's hero layers are
 rebuilt as a stage (`assets/images/hero/`), so parts of it can move: the
-phone's line changes in three steps, each rising in out of a blur, and the
-activity bubbles drift round the band. The phone screen is Figma's export
+phone's line changes in three steps, each rising in out of a blur. The
+activity bubbles arrive along the middle of the band, in order: one, then
+three that close up until they touch, then two more that do the same, then the
+last. They sway a little along the arc and leave together. The phone screen is Figma's export
 with its baked-in line removed, so the text can change.
 
 **Feature cards.** Each card's art is rebuilt from Figma
@@ -118,6 +125,16 @@ with its baked-in line removed, so the text can change.
   lines and charge it, then it glows, drains and starts again.
 - **Custom activities:** a light wanders over the icons as if a cursor were
   there. With a mouse, it's your cursor.
+
+**Flow cards.** Each is rebuilt from Figma (2292:12302,
+`assets/images/flow/`):
+- **AI voice logging:** the "Listening…" pill's dot waveform plays back like
+  a voice message while the card is hovered (on touch, while it's in view).
+- **Precision manual entry:** the phone rises into the card. A log is typed
+  into the empty field (the screenshot's own text was retouched out), the tick
+  is pressed, and a "Logged" toast drops in.
+- **One tap live timer:** a live entry counts up with its dot pulsing, then
+  stop is tapped, the tick lands, the entry saves, and the next one starts.
 
 **Footer dots** (after Fourmula, from its source). Round dots across the full
 width of the card. Figures (the logo's rays, a clock, a snowflake, a diamond)

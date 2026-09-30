@@ -25,36 +25,29 @@
   #paper .sheet { position: absolute; inset: -80px; transform: rotateX(28deg) rotateZ(-14deg) translateY(10px); transform-origin: 50% 60%; }
   #paper .shade { position: absolute; inset: 0; mix-blend-mode: multiply; filter: blur(14px); opacity: .55; }
 
-  /* 3 — a lit box sign on a concrete wall */
-  #sign { background: #8d8c89; }
-  #sign .wall { position: absolute; inset: 0; }
-  #sign .box { position: absolute; left: 300px; top: 150px; width: 250px; height: 250px; transform-style: preserve-3d;
-    transform: perspective(900px) rotateY(-32deg) rotateX(4deg); }
-  #sign .face { position: absolute; inset: 0; background: linear-gradient(135deg, #fbfbfa, #e6e5e3); border: 10px solid #151515;
-    display: grid; place-items: center; }
-  #sign .face img { width: 150px; }
-  #sign .side { position: absolute; top: 0; right: -34px; width: 34px; height: 100%; background: linear-gradient(90deg, #1d1d1d, #0b0b0b);
-    transform-origin: 0 50%; transform: rotateY(90deg); }
-  #sign .arm { position: absolute; left: 220px; top: 250px; width: 90px; height: 14px; background: #1a1a1a; }
-  #sign .cast { position: absolute; left: 330px; top: 175px; width: 250px; height: 260px; background: rgba(0,0,0,.55); filter: blur(18px);
-    transform: skewY(8deg) translateX(40px); }
-
-  /* 4 — a poster in a glazed facade */
-  #poster { background: #6f6e6c; }
-  #poster .facade { position: absolute; inset: -40px; transform: perspective(1000px) rotateY(18deg) rotateX(-4deg); transform-origin: 30% 50%; }
-  #poster .glass { position: absolute; inset: 0;
+  /* 3-5 — photographed mockups from Figma (2325:18720), the logo set into
+     them in perspective. Sources in src/, 1600x1200, shown at 800x600;
+     the hat's old print was retouched out. .quad elements are mapped onto
+     four corners by the script at the bottom. */
+  .photo { background-size: 800px 600px; }
+  .quad { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  #wood { background-image: url(src/wood.jpg); }
+  #wood .face { width: 400px; height: 440px; display: grid; place-items: center; mix-blend-mode: multiply; }
+  #wood .face img { width: 300px; filter: contrast(1.05); }
+  #hat { background-image: url(src/hat.jpg); }
+  #hat .print { width: 300px; height: 150px; display: grid; place-items: center; mix-blend-mode: multiply; opacity: .92; }
+  #hat .print img { width: 250px; filter: blur(.35px); }
+  #box { background-image: url(src/box.jpg); }
+  #box .lid { width: 500px; height: 520px; box-sizing: border-box; padding: 44px 40px;
     background:
-      repeating-linear-gradient(90deg, #1c1c1c 0 6px, transparent 6px 118px),
-      repeating-linear-gradient(0deg, #1c1c1c 0 6px, transparent 6px 150px),
-      linear-gradient(180deg, #5b5a58, #3a3938); }
-  #poster .sheet { position: absolute; left: 126px; top: 156px; width: 344px; height: 444px; background: #f1f0ee; padding: 30px; box-sizing: border-box;
-    box-shadow: 0 30px 60px rgba(0,0,0,.45); display: flex; flex-direction: column; justify-content: space-between; color: #0b0b0c; }
-  #poster .sheet h1 { margin: 0; font-size: 58px; line-height: .86; letter-spacing: -.04em; font-weight: 600; }
-  #poster .sheet h1 span { color: #9a9894; }
-  #poster .sheet .row { display: flex; align-items: flex-end; justify-content: space-between; font-size: 13px; line-height: 1.3; }
-  #poster .sheet img { width: 150px; }
-  #poster .sun { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255,255,255,.22), transparent 40%, rgba(0,0,0,.35)); }
-
+      repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, rgba(0,0,0,.05) 1px 3px),
+      linear-gradient(160deg, #d9dadc 0%, #b9bbbf 45%, #9ea0a5 100%);
+    display: flex; flex-direction: column; justify-content: space-between; color: #1b1b1e; }
+  #box .lid .big { width: 330px; }
+  #box .lid .row { display: flex; justify-content: space-between; align-items: flex-end; font-size: 20px; letter-spacing: .02em; }
+  #box .lid .row b { font-weight: 600; font-size: 34px; letter-spacing: -.02em; }
+  #box .lid .rule { height: 2px; background: #1b1b1e; opacity: .6; }
+  #box .shade { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255,255,255,.18), transparent 35%, rgba(0,0,0,.28)); mix-blend-mode: soft-light; }
 </style>
 </head>
 <body>
@@ -105,31 +98,40 @@
   </g></svg>
 </div>
 
-<div class="scene grain" id="sign">
-  <svg class="wall" viewBox="0 0 800 600">
-    <filter id="conc"><feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="3" seed="8"/><feColorMatrix type="matrix" values="0 0 0 0 .55  0 0 0 0 .55  0 0 0 0 .54  0 0 0 .55 0"/></filter>
-    <rect width="800" height="600" fill="#9a9996"/>
-    <rect width="800" height="600" filter="url(#conc)"/>
-    <g stroke="#6d6c69" stroke-width="2"><line x1="200" y1="0" x2="200" y2="600"/><line x1="600" y1="0" x2="600" y2="600"/><line x1="0" y1="440" x2="800" y2="440"/></g>
-    <g fill="#5d5c59"><circle cx="228" cy="30" r="5"/><circle cx="572" cy="30" r="5"/><circle cx="228" cy="410" r="5"/><circle cx="572" cy="410" r="5"/></g>
-    <rect width="800" height="600" fill="url(#vign)"/>
-    <defs><radialGradient id="vign" cx=".45" cy=".4" r=".8"><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient></defs>
-  </svg>
-  <div class="cast"></div>
-  <div class="box"><div class="face"><img src="../../assets/logos/logo-footer.svg" alt=""></div><div class="side"></div></div>
+
+
+
+<div class="scene photo" id="wood">
+  <div class="quad face" data-quad="552,302 1170,128 1170,876 552,966"><img src="../../assets/logos/logo-footer.svg" alt=""></div>
 </div>
 
-<div class="scene grain" id="poster">
-  <div class="facade">
-    <div class="glass"></div>
-    <div class="sheet">
-      <h1>Own your hours.<br><span>Free your mind.</span></h1>
-      <div class="row"><img src="../../assets/logos/logo-footer.svg" alt=""><span>Tap. Talk.<br>Time.</span></div>
-    </div>
-    <div class="sun"></div>
-  </div>
+<div class="scene photo" id="hat">
+  <div class="quad print" data-quad="672,236 972,236 968,392 676,392"><img src="../../assets/logos/logo-footer.svg" alt=""></div>
 </div>
 
+<div class="scene photo" id="box">
+  <div class="quad lid" data-quad="339,371 877,144 1293,704 728,944"><img class="big" src="../../assets/logos/logo-footer.svg" alt=""><div><div class="rule"></div><div class="row" style="margin-top:14px"><span>TIME TRACKER<br>TAP. TALK. TIME.</span><b>24h</b></div></div><div class="shade"></div></div>
+</div>
+
+<script>
+  // Map each .quad onto four corners (in the 1600x1200 source's pixels):
+  // the homography from the element's rectangle to the quad, as matrix3d.
+  function homography(w, h, q) {
+    const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = q;
+    const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2;
+    const sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3;
+    const den = dx1 * dy2 - dx2 * dy1;
+    const g = (sx * dy2 - dx2 * sy) / den, hh = (dx1 * sy - sx * dy1) / den;
+    const a = x1 - x0 + g * x1, b = x3 - x0 + hh * x3, c = x0;
+    const d = y1 - y0 + g * y1, e = y3 - y0 + hh * y3, f = y0;
+    // unit square -> quad, then scale the element into the unit square
+    return [a / w, d / w, 0, g / w,  b / h, e / h, 0, hh / h,  0, 0, 1, 0,  c, f, 0, 1];
+  }
+  document.querySelectorAll('[data-quad]').forEach((el) => {
+    const q = el.dataset.quad.split(' ').map((p) => p.split(',').map((v) => +v / 2));
+    el.style.transform = `matrix3d(${homography(el.offsetWidth, el.offsetHeight, q).join(',')})`;
+  });
+</script>
 
 </body>
 </html>

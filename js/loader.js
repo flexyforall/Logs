@@ -2,7 +2,7 @@
 // of a small tile showing the brand in the world — a sign, a poster, the
 // app — then the letters part to the edges and a window opens from the
 // centre onto the page. Ours spells "lo · gs" round a tile that eases
-// through four branding mockups (assets/images/loader, drawn in
+// through five branding mockups (assets/images/loader, composited in
 // tools/mockups); behind it the dial's hand sweeps a full day while a
 // dot-matrix counter runs 00.00 → 24.00h. The window opens as one of the
 // site's rounded cards. It plays on every load.
