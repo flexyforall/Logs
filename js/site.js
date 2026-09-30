@@ -306,15 +306,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Frame 3 — fully dark, the dial opens out, the title arrives centred.
       .to(dark, { opacity: 1, duration: 1.2, ease: "power1.inOut" }, 6.2)
       .to(meet, { autoAlpha: 0, duration: 0.5 }, 6.2)
-      .fromTo(dial, { scale: 1 }, { scale: BIG, duration: 1.4, ease: "power2.inOut" }, 6.2)
+      .fromTo(dial, { scale: 1 }, { scale: () => circle.offsetWidth / dial.offsetWidth, duration: 1.4, ease: "power2.inOut" }, 6.2)
       .to(turn, { rotation: FRAME_3, duration: 1.4, ease: "power2.out" }, 6.2)
       .fromTo(title, { y: titleDrop, autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8 }, 6.7)
 
     // Frame 4 — the storyboard's dial hands over to Webflow's ring (ticks
     // only, no rim, at its own size, turning once every two minutes), the
     // phone comes up and the title makes room: Webflow's s-app layout.
-      .to(dial, { autoAlpha: 0, duration: 0.9, ease: "power1.inOut" }, 7.6)
-      .fromTo(circle, { autoAlpha: 0, scale: 1.14 }, { autoAlpha: 1, scale: 1, duration: 1.4, ease: "power2.out" }, 7.6)
+      // one after the other, never both: the dial (grown to the ring's own
+      // size) fades out, then the ring fades in where it stood
+      .to(dial, { autoAlpha: 0, duration: 0.5, ease: "power1.in" }, 7.6)
+      .fromTo(circle, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8, ease: "power1.out" }, 8.1)
       .to(title, { y: 0, duration: 1.6, ease: "power2.inOut" }, 7.8)
       .fromTo(phone, { y: phoneDrop }, { y: 0, duration: 1.8, ease: "power2.out" }, 7.8)
       .to({}, { duration: 0.4 }, 9.6);
