@@ -1,0 +1,126 @@
+/* The dial section — Figma storyboard 2292:15522 → 15602 → 15590 → 15530.
+   Its last frame is the Webflow s-app section (same card, same phone), so the
+   card and the title/phone block keep Webflow's s_app_* classes; everything
+   here is what the frames before it add. js/site.js scrubs it on scroll. */
+
+.s_dial_card {
+  /* frame 1: the light card. Frames 2-4 darken it by fading .s_dial_dark in. */
+  background: linear-gradient(180deg, #e5e5e5 0%, #c9c9c9 139.02%);
+  isolation: isolate;
+}
+.s_dial_dark {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #4d4b53 0%, #c9c9c9 139.02%);
+  opacity: 0;
+}
+
+/* The dial. 872px is the tick ring in frames 1-2; frames 3-4 scale the
+   whole thing to 1212px (x1.39), strokes included, as Figma does. */
+.s_dial {
+  --dial: min(54.5rem, 140vw);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--dial);
+  height: var(--dial);
+  margin: calc(var(--dial) / -2) 0 0 calc(var(--dial) / -2);
+  pointer-events: none;
+}
+.s_dial_ticks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  opacity: 0.6;
+}
+/* Wedge, ring and hand turn together: in Figma all three carry the same
+   rotation (158.06deg, 0, 60deg). Unrotated, the hand points at 336deg. */
+.s_dial_turn {
+  position: absolute;
+  inset: 0;
+}
+/* Ellipse 3: the time already swept, a white trail fading out behind the
+   hand — transparent at 128deg rising to 25% at 336deg, then cut off. */
+.s_dial_wedge {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0.5;
+  background: conic-gradient(
+    from 128deg,
+    rgba(255, 255, 255, 0) 0deg,
+    rgba(255, 255, 255, 0.25) 208deg,
+    rgba(255, 255, 255, 0) 208deg
+  );
+}
+/* "clock": the 3.33px rim, white at the hand and fading anticlockwise. */
+.s_dial_ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 336deg, rgba(255, 255, 255, 0), #fff);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 0.382%), #000 calc(100% - 0.382% + 0.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 0.382%), #000 calc(100% - 0.382% + 0.5px));
+}
+/* The hand: white from the centre out to the rim (435 of 594), then an
+   orange tail past it that fades to nothing. */
+.s_dial_hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  width: 0.382%;
+  height: 68.2%;
+  transform-origin: 50% 100%;
+  transform: translateX(-50%) rotate(336deg);
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0) 0%,
+    #fff 73.2%,
+    #ff9466 73.2%,
+    rgba(255, 196, 170, 0) 100%
+  );
+}
+
+/* Frames 1 and 2: one line each, lit word by word as the hand sweeps. */
+.s_dial_line {
+  --lit: #03020a;
+  --dim: rgba(3, 2, 10, 0.2);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  width: min(27.8rem, calc(100% - 3rem));
+  margin: 0;
+  transform: translate(-50%, -50%);
+  color: var(--dim);
+  font-family: var(--_typography---font--primary-family);
+  font-weight: var(--_typography---font--primary-semibold);
+  font-size: 2.5rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-align: center;
+  mix-blend-mode: hard-light;
+  pointer-events: none;
+}
+.s_dial_line.is-inverted {
+  --lit: #fff;
+  --dim: rgba(255, 255, 255, 0.2);
+  width: min(21.5rem, calc(100% - 3rem));
+  opacity: 0;
+}
+.s_dial_word {
+  color: var(--dim);
+}
+
+/* Frame 3-4 title: Figma sets the second line at half white. */
+.s_dial_title_dim {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media screen and (max-width: 479px) {
+  .s_dial_line {
+    font-size: 1.75rem;
+  }
+}

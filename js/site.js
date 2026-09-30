@@ -287,45 +287,109 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-  document.addEventListener("DOMContentLoaded", () => {
-  gsap.registerPlugin(ScrollTrigger);
-  const section = document.querySelector('[data-section-app]');
+// The dial section: Figma storyboard 2292:15522 → 15602 → 15590 → 15530,
+// pinned and scrubbed. One dial turns clockwise through all four frames;
+// its last frame is Webflow's own s-app layout, so every earlier frame is
+// built as an offset from that.
+document.addEventListener("DOMContentLoaded", () => {
+  const section = document.querySelector("[data-section-dial]");
   if (!section) return;
-  const title   = section.querySelector('[data-title-item]');
-  const circle  = section.querySelector('[data-img-circle]');
-  const app     = section.querySelector('[data-img-app]');
-  const content = section.querySelector('[data-app-content]');
 
-  gsap.set([title, app], { autoAlpha: 0 });
-  gsap.set(circle, { autoAlpha: 0, transformOrigin: "50% 50%" });
+  const card  = section.querySelector("[data-dial-card]");
+  const dark  = section.querySelector("[data-dial-dark]");
+  const dial  = section.querySelector("[data-dial]");
+  const turn  = section.querySelector("[data-dial-turn]");
+  const wedge = section.querySelector("[data-dial-wedge]");
+  const hand  = section.querySelector("[data-dial-hand]");
+  const [busy, meet] = section.querySelectorAll("[data-dial-line]");
+  const title = section.querySelector("[data-dial-title]");
+  const phone = section.querySelector("[data-dial-phone]");
 
-  const spin = gsap.to(circle, {
-    rotation: "+=360",
-    duration: 120,
-    ease: "none",
-    repeat: -1,
-    paused: true
+  // Each line lights word by word; the two tones live on the line in CSS.
+  const split = (line) => {
+    const words = line.textContent.trim().split(/\s+/);
+    line.textContent = "";
+    return words.map((word, i) => {
+      if (i) line.append(" ");
+      const span = document.createElement("span");
+      span.className = "s_dial_word";
+      span.textContent = word;
+      line.append(span);
+      return span;
+    });
+  };
+  const lit = (line) => getComputedStyle(line).getPropertyValue("--lit").trim();
+  const busyWords = split(busy);
+  const meetWords = split(meet);
+
+  // Layout offsets inside the card, which transforms don't disturb.
+  const offsetIn = (el) => {
+    let y = 0;
+    for (let n = el; n && n !== card; n = n.offsetParent) y += n.offsetTop;
+    return y;
+  };
+  // Frame 3 centres the title in the card; the last frame has it up top.
+  const titleDrop = () => card.clientHeight / 2 - (offsetIn(title) + title.offsetHeight / 2);
+  // Before the last frame the phone waits just below the card's edge.
+  const phoneDrop = () => card.clientHeight - offsetIn(phone);
+
+  // Figma's dial is 872px in frames 1-2 and 1212px in frames 3-4.
+  const BIG = 1212 / 872;
+  // Rotation of the wedge/ring/hand group. Unrotated the hand points at
+  // 336deg; Figma has the group at 158deg in frame 1, 0 in frame 2 and 60deg
+  // in frames 3-4. Counted as one continuous clockwise turn: 158, 360, 420.
+  const FRAME_3 = 420;
+
+  const mm = gsap.matchMedia();
+
+  mm.add("(prefers-reduced-motion: reduce)", () => {
+    gsap.set([busy, meet, wedge, hand], { autoAlpha: 0 });
+    gsap.set(dark, { opacity: 1 });
+    gsap.set(dial, { scale: BIG });
+    gsap.set(turn, { rotation: FRAME_3 });
   });
 
-  const tl = gsap.timeline({
-    defaults: { duration: 0.6, ease: "power2.out" },
-    scrollTrigger: {
-      trigger: section,
-      start: "top 70%",
-      toggleActions: "play none none none"
-    }
-  });
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    const tl = gsap.timeline({
+      defaults: { ease: "none" },
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: "+=350%",
+        pin: true,
+        // .page_main is a flex column, where ScrollTrigger defaults this off.
+        pinSpacing: true,
+        scrub: 1,
+        invalidateOnRefresh: true
+      }
+    });
 
-  tl.to(content, { "--grad-top": "#4D4B53", duration: 1, ease: "power1.inOut" })
-    .to(title, { autoAlpha: 1}, "-=0.5")
-    .to(circle, {
-      autoAlpha: 1,
-      duration: 0.8,
-      ease: "power2.out",
-      onComplete: () => spin.play()
-    }, "-=0.5")
-    .to(app, { autoAlpha: 1, y: 0 }, "-=0.3")
-   
+    // Frame 1 — light card, the hand sweeps and "You've been busy…" lights up.
+    tl.fromTo(turn, { rotation: 100 }, { rotation: 290, duration: 3 }, 0)
+      .to(busyWords, { color: lit(busy), duration: 0.2, stagger: 2.4 / busyWords.length }, 0.2)
+
+    // Frame 2 — the card goes half dark and the line turns over.
+      .to(dark, { opacity: 0.5, duration: 1, ease: "power1.inOut" }, 3)
+      .to(busy, { autoAlpha: 0, duration: 0.6 }, 3)
+      .to(turn, { rotation: 330, duration: 1 }, 3)
+      .to(meet, { autoAlpha: 1, duration: 0.5 }, 3.7)
+      .to(turn, { rotation: 400, duration: 2.2 }, 4)
+      .to(meetWords, { color: lit(meet), duration: 0.2, stagger: 1.6 / meetWords.length }, 4.2)
+
+    // Frame 3 — fully dark, the dial opens out, the title arrives centred.
+      .to(dark, { opacity: 1, duration: 1.2, ease: "power1.inOut" }, 6.2)
+      .to(meet, { autoAlpha: 0, duration: 0.5 }, 6.2)
+      .fromTo(dial, { scale: 1 }, { scale: BIG, duration: 1.4, ease: "power2.inOut" }, 6.2)
+      .to(turn, { rotation: FRAME_3, duration: 1.4, ease: "power2.out" }, 6.2)
+      .fromTo(title, { y: titleDrop, autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8 }, 6.7)
+
+    // Frame 4 — the hand and wedge step back, the phone comes up and the
+    // title makes room: Webflow's s-app layout, untouched.
+      .to([wedge, hand], { autoAlpha: 0, duration: 0.8 }, 7.8)
+      .to(title, { y: 0, duration: 1.6, ease: "power2.inOut" }, 7.8)
+      .fromTo(phone, { y: phoneDrop }, { y: 0, duration: 1.8, ease: "power2.out" }, 7.8)
+      .to({}, { duration: 0.4 }, 9.6);
+  });
 });
 
 document.addEventListener("DOMContentLoaded", function () {
