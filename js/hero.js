@@ -31,7 +31,7 @@
   // --- the bubbles ride the middle of the grey band (radius 501-611 in
   // the design), placed by angle round its centre, 0deg at twelve. Their
   // design angles are where they come to rest; they never leave the arc.
-  const CX = 704.4, CY = 834.6, R = 556;
+  const CX = 704.4, CY = 834.6, R = 556, SPAN = 190;
   const orbit = bubbles.map((el) => {
     const dx = +el.dataset.x - CX, dy = +el.dataset.y - CY;
     return { el, rest: Math.atan2(dx, -dy) * 180 / Math.PI, a: 0, s: 0, name: el.querySelector("img").src.match(/icon-(\w+)/)[1] };
@@ -41,10 +41,11 @@
   const train = { flow: 0 };
   const place = () => {
     orbit.forEach((o) => {
-      // wrap to -180..180: the seam is straight down, below the card, so a
-      // bubble that sinks off the right comes back up on the left unseen
+      // The loop is only the visible arc, -95..95deg: past 95 a bubble is
+      // just below the card's bottom edge on the right, and it comes back
+      // at -95, just below it on the left. So the stream never runs dry.
       let a = o.a + train.flow;
-      a = ((a + 180) % 360 + 360) % 360 - 180;
+      a = ((a + SPAN / 2) % SPAN + SPAN) % SPAN - SPAN / 2;
       o.el.style.transform = `rotate(${a.toFixed(2)}deg) translateY(${-R}px) rotate(${(-a * 0.35).toFixed(2)}deg) scale(${o.s.toFixed(3)})`;
       o.el.style.opacity = Math.min(1, o.s * 1.4).toFixed(2);
     });
@@ -67,7 +68,8 @@
   // Once, in order: one bubble, then three that arrive apart and slide
   // together until they touch, then two more that do the same, then the
   // last. From then on the formed train glides on clockwise along the arc
-  // for good: down and out at the bottom right, back in from the left.
+  // for good: down and out at the bottom right and straight back in from the
+  // bottom left, so the arc is never left empty.
   const GROUPS = [["dev"], ["headphones", "paw", "house"], ["car", "phone"], ["gamecontroller"]];
   gsap.ticker.add(place);
   const gather = () => {
@@ -85,9 +87,9 @@
         tl.to(group, { s: 1.08, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1 }, at + 1.25);
       }
     });
-    // ease into the glide, then hold a steady pace: a lap every 70s
-    tl.to(train, { flow: 12, duration: 3, ease: "power1.in" }, 4.6)
-      .add(() => gsap.to(train, { flow: "+=360", duration: 70, ease: "none", repeat: -1 }));
+    // ease into the glide, then hold a steady pace, ~5deg a second
+    tl.to(train, { flow: 8, duration: 3, ease: "power1.in" }, 4.6)
+      .add(() => gsap.to(train, { flow: "+=" + SPAN, duration: 38, ease: "none", repeat: -1 }));
   };
 
   let step = 0;

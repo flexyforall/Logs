@@ -61,7 +61,7 @@ What moves, and where:
 | nav | hides on scroll down, returns on scroll up | `site.js` |
 | logos | the mark is a live clock, see below | `logo.js` |
 | headings, copy | text reveals, see below | `text.js` |
-| Make every second count | icons pop in; on the way out they fly up with the scroll | `site.js` |
+| Make every second count | icons pop in; on the way out they fly up with the scroll; hovered, they tremble | `site.js`, `features.js` |
 | features | the four cards stack; each shrinks to 0.85-0.95 as the next covers it | `site.js` |
 | feature cards | each card's art moves, see below | `features.js` |
 | Choose your flow | cards slide in; the row can be dragged with inertia (not below 479px) | `site.js` |
@@ -74,7 +74,7 @@ What moves, and where:
 The references these follow are in Figma, `Animations` (2317:16838), with a
 note on each saying what to take from it.
 
-**Loader** (after Nudot). On black, "lo" and "gs" blur into focus either side
+**Loader** (after Nudot). On black, "LO" and "GS" blur into focus either side
 of a tile that eases through five branding mockups: the logo set into four
 photographed mockups from Figma (2325:18720), a hoodie, a wooden sign, a
 bucket hat and a box, and debossed paper. The hoodie's and hat's old prints
@@ -116,8 +116,9 @@ rebuilt as a stage (`assets/images/hero/`), so parts of it can move: the
 phone's line changes in three steps, each rising in out of a blur. The
 activity bubbles arrive along the middle of the band, in order: one, then
 three that close up until they touch, then two more that do the same, then the
-last. From then on the formed train glides on clockwise along the arc, out at
-the bottom right and back in from the left, a lap every 70s. The phone screen is Figma's export
+last. From then on they stream clockwise along the arc without a break. The
+loop is only the visible arc, so one sinking out at the bottom right comes
+straight back in at the bottom left. The phone screen is Figma's export
 with its baked-in line removed, so the text can change.
 
 **Feature cards.** Each card's art is rebuilt from Figma

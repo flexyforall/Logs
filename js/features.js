@@ -202,3 +202,28 @@
     card.addEventListener("pointerleave", () => (pointer = null));
   })();
 })();
+
+// The icon tiles round "Make every second count" tremble a little while
+// hovered: a soft wobble about their own tilt, easing in and settling back.
+(() => {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!matchMedia("(hover: hover)").matches) return;
+  document.querySelectorAll("[data-icon]").forEach((el) => {
+    let base = null, wobble = null;
+    el.addEventListener("mouseenter", () => {
+      if (base === null) base = gsap.getProperty(el, "rotation");
+      if (wobble) wobble.kill();
+      wobble = gsap.timeline({ repeat: -1 })
+        .to(el, { rotation: base + 4, x: 1.5, duration: 0.14, ease: "sine.inOut" })
+        .to(el, { rotation: base - 4, x: -1.5, duration: 0.28, ease: "sine.inOut" })
+        .to(el, { rotation: base, x: 0, duration: 0.14, ease: "sine.inOut" });
+      // grow into the tremble rather than start at full strength
+      gsap.fromTo(wobble, { timeScale: 0.3 }, { timeScale: 1, duration: 0.5, ease: "power2.out" });
+    });
+    el.addEventListener("mouseleave", () => {
+      if (wobble) wobble.kill();
+      wobble = null;
+      gsap.to(el, { rotation: base, x: 0, duration: 0.6, ease: "elastic.out(1, 0.4)" });
+    });
+  });
+})();

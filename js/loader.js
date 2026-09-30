@@ -74,6 +74,9 @@
     if (i) {
       reel.fromTo(f, { autoAlpha: 0, filter: "blur(12px)" },
         { autoAlpha: 1, filter: "blur(0px)", duration: 0.45, ease: "power2.inOut" }, i * HOLD - 0.2);
+      // once it's in, the one under it goes: stacked frames bled a light
+      // rim through the tile's rounded corners
+      reel.set(frames[i - 1], { autoAlpha: 0 }, i * HOLD + 0.25);
     }
   });
   const REEL = frames.length * HOLD;
