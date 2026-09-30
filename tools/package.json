@@ -1,0 +1,12 @@
+{
+  "name": "logs-tools",
+  "private": true,
+  "type": "module",
+  "description": "Optional dev tooling. The site itself needs none of this.",
+  "scripts": {
+    "compare": "node compare.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}
