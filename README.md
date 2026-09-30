@@ -147,8 +147,8 @@ empties for the next loop.
 - **One tap live timer:** a live entry counts up with its dot pulsing, then
   stop is tapped, the tick lands, the entry saves, and the next one starts.
 
-**Footer dots** (after Fourmula, from its source). Round dots across the full
-width of the card. Figures (the logo's rays, a clock, a snowflake, a diamond)
+**Footer dots** (after Fourmula, from its source). Round dots across the
+footer's content column, where Webflow had them. Figures (the logo's rays, a clock, a snowflake, a diamond)
 alternate with a cloud that's dense in the middle, every dot flipping in two
 hard steps in shuffled groups. The first time the field is seen, it draws
 itself in clockwise from twelve. Near the cursor the dots shrink, down to a

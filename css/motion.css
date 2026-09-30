@@ -474,15 +474,13 @@
 
 /* ---------- footer dots (js/dots.js) ----------------------------------- */
 
-/* After Fourmula: the field runs the full width of the card, under the
-   footer's text, in round dots. The selectors carry the wrapper because
-   Webflow's own #dotsField rules sit later, in the footer's embed. */
+/* In Webflow's place, the footer's content column, in round dots. The
+   selectors carry the wrapper because Webflow's own #dotsField rules sit
+   later, in the footer's embed. */
 .s_footer_container_dot_wrap {
   display: block;
   width: 100%;
   height: auto;
-  padding: 0 2.75rem 2.75rem;
-  box-sizing: border-box;
 }
 .s_footer_container_dot_wrap #dotsField {
   height: auto; /* Webflow's embed sets 100% */
@@ -497,9 +495,6 @@
   transform-origin: 50% 50%;
 }
 @media screen and (max-width: 991px) {
-  .s_footer_container_dot_wrap {
-    padding: 0 1.25rem 1.5rem;
-  }
   .s_footer_container_dot_wrap #dotsField .dot {
     width: 0.625rem;
     height: 0.625rem;
