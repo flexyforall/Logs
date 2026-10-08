@@ -241,7 +241,8 @@
   var sh = shade.getContext('2d');
 
   function moveSomeone() {
-    var ids = IDS.filter(function (id) { var s = SEATS[id]; return s.idle && !s.moving && !s.busy && id !== moves.last; });
+    // Don Marco is not in the rotation: he smokes all the time (see smokeForever)
+    var ids = IDS.filter(function (id) { var s = SEATS[id]; return id !== 'top' && s.idle && !s.moving && !s.busy && id !== moves.last; });
     if (!ids.length) return;
     var id = ids[Math.random() * ids.length | 0], s = SEATS[id];
     moves.last = id;
@@ -337,7 +338,24 @@
         if (id === 'top') smoke(CIGAR_TIP[0], CIGAR_TIP[1], 8);
         return anim(1.4, function (p) { if (!s.vidReady) GREET[s.greet](s, p); });
       })
-      .then(function () { if (my === run) { resetPose(s); s.idle = true; } });
+      .then(function () {
+        if (my !== run) return;
+        resetPose(s); s.idle = true;
+        if (id === 'top') smokeForever(s, my);
+      });
+  }
+
+  // Don Marco never stops smoking: his video (a seamless 10 s loop of him drawing on the cigar)
+  // plays on repeat; without the video the cut-out keeps puffing, with smoke and the glowing tip.
+  function smokeForever(s, my) {
+    if (my !== run || !active) return;
+    if (s.vidReady) {
+      s.moving = true; s.vid.loop = true;
+      if (s.vid.paused) s.vid.play().catch(function () {});
+      return;
+    }
+    if (!s.busy) act(s, 'puff');
+    setTimeout(function () { smokeForever(s, my); }, 2600);
   }
 
   async function play() {
