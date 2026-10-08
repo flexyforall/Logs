@@ -232,17 +232,17 @@
 
 /* switching rooms: the play button and the cost go away while the cards move and come back
    once the new room is in the middle */
-.st-play.is-swapping > span { animation: st-swap-btn .75s linear; }
-.st-cost.is-swapping > * { animation: st-swap-cost .75s ease; }
+.st-play.is-swapping > span { animation: st-swap-btn .45s linear; }
+.st-cost.is-swapping > * { animation: st-swap-cost .45s ease; }
 @keyframes st-swap-btn {
   0% { transform: scale(1); opacity: 1; animation-timing-function: ease-in; }
-  25% { transform: scale(.3); opacity: 0; }
-  50% { transform: scale(.3); opacity: 0; animation-timing-function: cubic-bezier(.34, 1.56, .64, 1); }
+  20% { transform: scale(.3); opacity: 0; }
+  28% { transform: scale(.3); opacity: 0; animation-timing-function: cubic-bezier(.34, 1.56, .64, 1); }
   100% { transform: scale(1); opacity: 1; }
 }
 @keyframes st-swap-cost {
   0% { opacity: 1; transform: none; }
-  25%, 55% { opacity: 0; transform: translateY(8px); }
+  20%, 35% { opacity: 0; transform: translateY(8px); }
   100% { opacity: 1; transform: none; }
 }
 

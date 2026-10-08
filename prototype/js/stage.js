@@ -51,7 +51,7 @@
     });
     // the new price shows once the cost line has faded out
     clearTimeout(layout.t);
-    if (costLine.classList.contains('is-swapping')) layout.t = setTimeout(function () { costEl.textContent = fmt(STAGES[selected].cost); }, 220);
+    if (costLine.classList.contains('is-swapping')) layout.t = setTimeout(function () { costEl.textContent = fmt(STAGES[selected].cost); }, 110);
     else costEl.textContent = fmt(STAGES[selected].cost);
   }
 
