@@ -36,7 +36,7 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    The HUD follows Figma (Mansion Table Example, node `1886:1866`): nicknames with rank badge
    and level next to the bots (each shows as that player sits down), a bid chip next to each bidder (only
    the contract stays after the bidding), last trick top left, score top right, and along the
-   bottom 48px buttons with filled icons: settings and info on the left, chat and reactions on the right; all
+   bottom 48px buttons: settings and info on the left, chat and reactions on the right; all
    24px from the screen edges. Everything except
    the nicknames comes in once the first hand has been dealt. Chat sends a quick phrase, reactions an emoji. The
    settings gear goes back to the stage select (prototype shortcut); info does nothing yet.
@@ -103,6 +103,5 @@ as dark bands above and below the cards.
 The PLAY NOW button's decorative layer (`play-effects.webp`) is a Figma export of
 its "effects" group, because the generated code placed those layers incorrectly.
 
-`gear-fill-web.svg` is the uploaded `gear-fill 1.svg` without its outer inner-shadow filter
-(it lit up the icon's drop shadow as a light halo in browsers); `info-fill-web.svg` and
-`chat-fill-web.svg` are the uploads as they are.
+`gear-web.svg`, `chat-web.svg` and `info-web.svg` are the Figma icons with their filters removed (the clipped drop shadow and
+inner shadow rendered as a light square in browsers); the shadow is done in CSS instead.

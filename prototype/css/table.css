@@ -112,23 +112,24 @@
 .tb-score_divider { position: relative; width: 1px; height: 30px; background: rgba(255, 255, 255, .2); }
 
 /* ---- bottom bar: settings, info on the left; chat, reactions on the right */
-.tb-bottom { position: absolute; left: 24px; right: 24px; bottom: 24px; height: 48px; display: flex; gap: 6px; }
+.tb-bottom { position: absolute; left: 24px; right: 24px; bottom: 24px; height: 48px; display: flex; gap: 8px; }
 /* the bar spans the full width over your cards: only its buttons and popovers take taps */
 .tb-ui > .tb-bottom { pointer-events: none; }
 .tb-bottom > * { pointer-events: auto; }
-/* 48x48 buttons with 28px filled icons (Figma 1886:3186); the icons carry their own shadows */
-.table .tb-btn { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; flex: none; background: rgba(0, 0, 0, .5); }
+.table .tb-btn { width: 48px; height: 48px; border-radius: 10px; overflow: hidden; flex: none; background: rgba(0, 0, 0, .5); }
+/* the Figma 40x40 content, scaled up to the 48px button */
+.tb-btn_in { position: absolute; left: 4px; top: 4px; width: 40px; height: 40px; transform: scale(1.2); }
 .tb-btn--chat { margin-left: auto; }
-.tb-btn_icon { position: absolute; top: 10px; }
+.tb-btn_icon { position: absolute; filter: brightness(1.15) drop-shadow(0 0 2px #000) drop-shadow(0 2px 6px rgba(0, 0, 0, .5)); }
 .table .tb-btn:active { transform: scale(.94); }
 .tb-btn[aria-expanded="true"] { background: rgba(0, 0, 0, .75); }
-/* reactions: the laughing face, 32x32 */
-.tb-btn_face { position: absolute; left: 8px; top: 8px; width: 32px; height: 32px; box-shadow: 0 0 20px #000; border-radius: 50%; }
-.tb-btn_face img { width: 32px; height: 32px; }
+/* reactions: the laughing face, 29x29 */
+.tb-btn_face { position: absolute; left: calc(50% - .5px); top: calc(50% - .5px); width: 29px; height: 29px; transform: translate(-50%, -50%); box-shadow: 0 0 20px #000; border-radius: 50%; }
+.tb-btn_face img { width: 29px; height: 29px; }
 
 .tb-pop {
   position: absolute;
-  right: 54px;
+  right: 56px;
   bottom: calc(100% + 8px);
   display: flex;
   gap: 4px;
