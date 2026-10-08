@@ -28,9 +28,8 @@
 .tb-trick { position: absolute; left: 24px; top: 24px; height: 40px; }
 .tb-trick_cards[hidden], .tb-trick_empty[hidden] { display: none; }
 .tb-trick_cards { display: flex; gap: 3.529px; }
-.tb-trick_cards img, .tb-mini { width: 27.882px; height: 38.824px; border-radius: 1.765px; box-shadow: 0 2.353px 11.765px rgba(0, 0, 0, .8); }
-/* a card from the 9x4 atlas (8 ranks + back, 4 suits) */
-.tb-mini { display: block; background: #fff url("../assets/table/cards.webp") no-repeat; background-size: 900% 400%; animation: tb-mini .3s ease backwards; }
+/* the card PNGs have transparent rounded corners, so the shadow is a drop-shadow on the art */
+.tb-mini { display: block; width: 27.882px; height: 39.035px; filter: drop-shadow(0 2.353px 5px rgba(0, 0, 0, .8)); animation: tb-mini .3s ease backwards; }
 .tb-mini:nth-child(2) { animation-delay: .05s; }
 .tb-mini:nth-child(3) { animation-delay: .1s; }
 .tb-mini:nth-child(4) { animation-delay: .15s; }

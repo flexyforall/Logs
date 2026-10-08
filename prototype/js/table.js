@@ -58,7 +58,6 @@
   // ---------- Assets ----------
   var img = new Image(); img.src = A + 'scene.webp';    // characters are cut from this
   var room = new Image(); room.src = A + 'room.webp';   // the same room with empty chairs
-  var atlas = new Image(); atlas.src = A + 'cards.webp'; // classic deck, 7-A, 240x336 cells
   var cardBack, cardFaces = {};
 
   function feathered(r, core) {
@@ -76,24 +75,36 @@
   }
 
   // ---------- Cards ----------
-  var CW = 78, CH = 110, RES = 3, PAD = 10;
+  // The deck: one transparent PNG per card in assets/table/cards/play/ (cut by tools/cut_cards.py),
+  // 300x420, so a card is 78 x 109.2 scene units.
+  var CW = 78, CH = 109.2, RES = 3, PAD = 10, CR = 3;   // CR: corner radius, as on the card art
   var RANKS = ['7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-  var SUITS = [{ s: '♠' }, { s: '♥' }, { s: '♣' }, { s: '♦' }];
+  var SUITS = [{ s: '♠', l: 'S' }, { s: '♥', l: 'H' }, { s: '♣', l: 'C' }, { s: '♦', l: 'D' }];
+  var faceArt = {};
+  SUITS.forEach(function (su) {
+    RANKS.forEach(function (r) { var im = new Image(); im.src = A + 'cards/play/' + r + su.l + '.png'; faceArt[r + su.s] = im; });
+  });
   function rr(g, x, y, w, h, r) { g.beginPath(); if (g.roundRect) g.roundRect(x, y, w, h, r); else g.rect(x, y, w, h); }
   function cardCanvas(paint) {
     var c = document.createElement('canvas');
     c.width = (CW + PAD * 2) * RES; c.height = (CH + PAD * 2) * RES;
     var g = c.getContext('2d'); g.scale(RES, RES); g.translate(PAD, PAD);
     g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 6; g.shadowOffsetY = 2;
-    rr(g, 0, 0, CW, CH, 5); g.fillStyle = '#fdfbf6'; g.fill();
+    rr(g, 0, 0, CW, CH, CR); g.fillStyle = '#f6ecdc'; g.fill();
     g.shadowColor = 'transparent';
-    g.save(); rr(g, 0, 0, CW, CH, 5); g.clip(); paint(g); g.restore();
-    rr(g, 0, 0, CW, CH, 5); g.strokeStyle = 'rgba(0,0,0,.2)'; g.lineWidth = .5; g.stroke();
+    g.save(); rr(g, 0, 0, CW, CH, CR); g.clip(); paint(g); g.restore();
+    rr(g, 0, 0, CW, CH, CR); g.strokeStyle = 'rgba(0,0,0,.2)'; g.lineWidth = .5; g.stroke();
     return c;
   }
+  // A face is the card art itself; its drop shadow follows the art's own rounded shape.
   function makeFace(rank, suit) {
-    var col = RANKS.indexOf(rank), row = SUITS.indexOf(suit);
-    return cardCanvas(function (g) { g.drawImage(atlas, col * 240 + 1, row * 336 + 1, 238, 334, 0, 0, CW, CH); });
+    var c = document.createElement('canvas');
+    c.width = (CW + PAD * 2) * RES; c.height = (CH + PAD * 2) * RES;
+    var g = c.getContext('2d'); g.scale(RES, RES); g.translate(PAD, PAD);
+    g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 6; g.shadowOffsetY = 2;
+    g.imageSmoothingQuality = 'high';
+    g.drawImage(faceArt[rank + suit.s], 0, 0, CW, CH);
+    return c;
   }
   // Red back in the classic "rider" spirit: white border, fine red filigree field, central medallion.
   function makeBack() {
@@ -656,7 +667,8 @@
   }
 
   // ---------- Boot: cut the sprites and paint the deck once the art has loaded ----------
-  var booting = Promise.all([img, room, atlas].map(function (im) { return im.decode().catch(function () {}); })).then(function () {
+  var art = [img, room].concat(Object.keys(faceArt).map(function (k) { return faceArt[k]; }));
+  var booting = Promise.all(art.map(function (im) { return im.decode().catch(function () {}); })).then(function () {
     IDS.forEach(function (id) {
       var s = SEATS[id];
       s.sprite = feathered(s.crop);
@@ -707,13 +719,11 @@
       });
     });
   }
-  // cards: [{rank, suit}] (engine cards) or [] for none yet. Drawn from the card atlas.
-  var ATLAS_ROW = { S: 0, H: 1, C: 2, D: 3 };
+  // cards: [{rank, suit}] (engine cards) or [] for none yet. Small copies of the card PNGs.
   function setLastTrick(cards) {
     var box = screen.querySelector('[data-trick-cards]');
     box.innerHTML = (cards || []).map(function (c) {
-      var col = RANKS.indexOf(c.rank), row = ATLAS_ROW[c.suit];
-      return '<span class="tb-mini" role="img" aria-label="' + c.rank + c.suit + '" style="background-position:' + (col / 8 * 100) + '% ' + (row / 3 * 100) + '%"></span>';
+      return '<img class="tb-mini" src="' + A + 'cards/play/' + c.rank + c.suit + '.png" alt="' + c.rank + c.suit + '">';
     }).join('');
     box.hidden = !(cards && cards.length);
     screen.querySelector('[data-trick-empty]').hidden = !box.hidden;

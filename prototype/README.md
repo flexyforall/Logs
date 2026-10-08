@@ -86,13 +86,16 @@ assets/play/figma/         stage select assets (stage art from the uploads, WebP
 assets/play/               the original uploaded stage select assets
 assets/table/ui/           table HUD: panel backgrounds (rendered from the uploaded SVGs,
                            which stay as the originals), last-trick cards, gear
-assets/table/              salon art (2000x923: room with empty chairs, full scene), card
-                           atlas, seat video loops (WebM + MP4, 960x540) and their masks
+assets/table/              salon art (2000x923: room with empty chairs, full scene),
+                           seat video loops (WebM + MP4, 960x540) and their masks
+assets/table/cards/        the deck: 52 uploaded cards cut out of their background (lossless
+                           RGBA PNG, 1060x1484); play/ has the 32 Blot cards at 300x420 for the game
 assets/fonts/              Poppins 600 and 800 italic
 assets/sounds/             lobby music loop and UI sounds (MP3)
 tools/make_sounds.py       synthesises the lobby music and UI sounds
 tools/make_room_music.py   synthesises one music loop per room
 tools/test_rules.js        checks the rules engine (node)
+tools/cut_cards.py         cuts the cards out of their background and makes the play/ copies
 ```
 
 `users-web.svg` and `clipboard-web.svg` are copies of the Figma exports with the
@@ -106,3 +109,9 @@ its "effects" group, because the generated code placed those layers incorrectly.
 
 `chat-web.svg` and `info-web.svg` are the Figma icons with their filters removed (the clipped drop shadow and
 inner shadow rendered as a light square in browsers); the shadow is done in CSS instead.
+
+The uploaded cards sit on a light background of almost the same colour as the card, so
+`tools/cut_cards.py` does not key by colour: the alpha is the exact card shape (a rounded
+rectangle along the card's thin outline, corner radius 40.25px, anti-aliased by signed
+distance), and the colour pixels stay exactly as uploaded. The card back is still drawn in
+code (there is no back image yet).
