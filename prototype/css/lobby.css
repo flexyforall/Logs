@@ -244,7 +244,9 @@
 .lb-top_tile img { position: absolute; left: 0; top: -36px; width: 446px; height: 251px; object-fit: cover; }
 .lb-top_art { left: 0; top: -35px; width: 446px; height: 251px; border-radius: 0 0 8px 8px; }
 .lb-top_art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
-.lb-top_art::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 4px 4px rgba(0, 0, 0, .25); }
+/* Figma's inner shadow on this image follows the artwork's alpha; a CSS inset shadow would
+   darken the transparent strip above the card, so it is drawn only over the card itself. */
+.lb-top_art::after { content: ""; position: absolute; left: 0; right: 0; top: 36px; bottom: 0; border-radius: 8px; box-shadow: inset 0 4px 4px rgba(0, 0, 0, .25); }
 .lb-top_shade { left: 0; top: 37px; width: 446px; height: 179px; object-fit: cover; border-radius: 8px; }
 .lb-top_row { left: 16px; top: 155px; width: 414px; display: flex; align-items: flex-end; justify-content: space-between; }
 .lb-top_copy { display: flex; flex-direction: column; gap: 2px; width: 178px; }
