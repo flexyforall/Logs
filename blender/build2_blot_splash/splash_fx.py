@@ -2,7 +2,11 @@
 Blot Bazar splash: whirlpool-dissolve of the video into black + animated logo
 with a light sweep, colour shimmer and sparkles.
 
-    python3 splash_fx.py <video.mp4> <logo.png> <out.mp4>
+    python3 splash_fx.py <video.mp4> <logo.png> <out.mp4> [WIDTHxHEIGHT]
+
+Default size is 1920x1080. Other sizes (e.g. 2556x1180 for iPhone landscape)
+fill the frame: the video is scaled to cover and cropped at the centre, and
+the logo is centred on its letters. Width and height must be even.
 
 The logo is expected on a black background (black becomes transparent).
 Audio is copied from the input video and faded out at the end.
@@ -16,7 +20,9 @@ import cv2
 import numpy as np
 
 SRC, LOGO, OUT = sys.argv[1:4]
-W, H, FPS = 1920, 1080, 24
+W, H = map(int, sys.argv[4].lower().split("x")) if len(sys.argv) > 4 else (1920, 1080)
+FPS = 24
+assert W % 2 == 0 and H % 2 == 0, "H.264 4:2:0 needs even width and height"
 
 # Timeline (seconds)
 SWIRL_START = 3.7     # video starts twisting as the card comes down
@@ -26,7 +32,7 @@ VIDEO_END = 4.35      # video fully gone
 LOGO_START = 4.0      # logo appears out of the whirlpool
 POP = 0.5             # easeOutBack pop duration
 SHRINK = 0.10         # logo shrinks by 10% towards the end
-LOGO_H = 880          # logo height in pixels at scale 1.0
+LOGO_H = int(0.62 * H)  # height of the letters at scale 1.0
 SWEEPS = (0.7, 1.9, 3.0)   # light sweeps, seconds after LOGO_START
 SWEEP_LEN = 0.55
 
@@ -48,7 +54,7 @@ probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=durat
                         "-of", "csv=p=0", SRC], capture_output=True, text=True)
 DURATION = float(probe.stdout.strip())
 N = int(round(DURATION * FPS))
-dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", SRC, "-vf", f"fps={FPS},scale={W}:{H}",
+dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", SRC, "-vf", f"fps={FPS},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H}",
                         "-f", "rawvideo", "-pix_fmt", "bgr24", "-"], stdout=subprocess.PIPE,
                        stderr=subprocess.DEVNULL)
 
@@ -56,6 +62,10 @@ dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", SRC, "-vf", f"fps={FPS},s
 logo = cv2.imread(LOGO, cv2.IMREAD_COLOR).astype(np.float32) / 255.0
 lum = logo.max(axis=2)
 alpha = np.clip((lum - 0.04) / 0.12, 0, 1)
+# crop to the letters so the logo centres on them, not on the image's empty margins
+ys, xs = np.nonzero(alpha > 0.02)
+logo = logo[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+alpha = alpha[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
 PAD = 140
 logo = cv2.copyMakeBorder(logo, PAD, PAD, PAD, PAD, cv2.BORDER_CONSTANT, value=0)
 alpha = cv2.copyMakeBorder(alpha, PAD, PAD, PAD, PAD, cv2.BORDER_CONSTANT, value=0)
