@@ -22,6 +22,7 @@
       el.classList.toggle('is-active', el.getAttribute('data-screen-id') === id);
     });
     // Restart the lobby's entrance animation every time it opens.
+    document.dispatchEvent(new CustomEvent('screen:show', { detail: id }));
     if (id === 'lobby') {
       lobby.classList.remove('lb-enter');
       void lobby.offsetWidth;
@@ -34,14 +35,15 @@
   function playSplash() {
     show('splash');
     video.currentTime = 0;
-    video.muted = false;
+    var soundOff = function () { return window.BlotSound && window.BlotSound.muted(); };
+    video.muted = !!soundOff();
     var p = video.play();
     if (p && p.catch) {
       p.catch(function () {
         video.muted = true;
         video.play();
         document.addEventListener('pointerdown', function unmute() {
-          video.muted = false;
+          video.muted = !!soundOff();
           document.removeEventListener('pointerdown', unmute);
         });
       });
