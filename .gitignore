@@ -13,3 +13,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 tools/shots/
+
+# Blender backup files
+*.blend1
