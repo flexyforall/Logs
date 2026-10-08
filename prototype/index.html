@@ -213,8 +213,16 @@
             </div>
           </div>
 
-          <!-- current contract, under the score -->
-          <div class="tb-contract" data-contract hidden></div>
+          <!-- players: rank badge, nickname, level (Figma 1888:3552, 1888:3560, 1889:3568) -->
+          <div class="tb-plate tb-plate--left" data-plate="left"><img src="assets/table/ui/rank-purple.webp" alt=""><p><b>HasmikG</b><span>Lvl. 14</span></p></div>
+          <div class="tb-plate tb-plate--top" data-plate="top"><img src="assets/table/ui/rank-purple.webp" alt=""><p><b>GarikAv</b><span>Lvl. 16</span></p></div>
+          <div class="tb-plate tb-plate--right" data-plate="right"><img src="assets/table/ui/rank-blue.webp" alt=""><p><b>Vazgen1972</b><span>Lvl. 54</span></p></div>
+
+          <!-- each player's bid next to them; after the bidding only the contract stays (Figma 1889:3622) -->
+          <div class="tb-chip tb-chip--left" data-chip="left" hidden></div>
+          <div class="tb-chip tb-chip--top" data-chip="top" hidden></div>
+          <div class="tb-chip tb-chip--right" data-chip="right" hidden></div>
+          <div class="tb-chip tb-chip--bottom" data-chip="bottom" hidden></div>
 
           <!-- your bid -->
           <div class="tb-panel tb-bid" data-bid hidden>
@@ -246,23 +254,19 @@
             <button class="tb-result_next" type="button" data-result-next>Next round</button>
           </div>
 
-          <!-- bottom bar: settings, chat, reactions | info -->
+          <!-- bottom bar (Figma 1886:3186): settings, info | chat, reactions -->
           <div class="tb-bottom">
             <button class="tb-btn" type="button" data-table-settings aria-label="Настройки">
-              <img class="tb-btn_bg" src="assets/table/ui/btn-bg.webp" alt="">
               <img class="tb-btn_icon" src="assets/table/ui/gear-web.svg" alt="" style="left:-1px;top:1px;width:41.99px;height:41.99px">
             </button>
-            <button class="tb-btn" type="button" data-social="chat" aria-label="Чат" aria-expanded="false">
-              <img class="tb-btn_bg" src="assets/table/ui/btn-bg.webp" alt="">
+            <button class="tb-btn" type="button" data-table-info aria-label="Информация">
+              <img class="tb-btn_icon" src="assets/table/ui/info-web.svg" alt="" style="left:-.94px;top:1.06px;width:41.88px;height:41.88px">
+            </button>
+            <button class="tb-btn tb-btn--chat" type="button" data-social="chat" aria-label="Чат" aria-expanded="false">
               <img class="tb-btn_icon" src="assets/table/ui/chat-web.svg" alt="" style="left:-.94px;top:1.07px;width:41.88px;height:41.87px">
             </button>
             <button class="tb-btn" type="button" data-social="react" aria-label="Реакции" aria-expanded="false">
-              <img class="tb-btn_bg" src="assets/table/ui/btn-bg.webp" alt="">
-              <img class="tb-btn_icon" src="assets/table/ui/thumbs-web.svg" alt="" style="left:-1.63px;top:.38px;width:43.25px;height:41.19px">
-            </button>
-            <button class="tb-btn tb-btn--info" type="button" data-table-info aria-label="Информация">
-              <img class="tb-btn_bg" src="assets/table/ui/btn-bg.webp" alt="">
-              <img class="tb-btn_icon" src="assets/table/ui/info-web.svg" alt="" style="left:-.94px;top:1.06px;width:41.88px;height:41.88px">
+              <span class="tb-btn_face"><img src="assets/table/ui/react-face.webp" alt=""></span>
             </button>
             <div class="tb-pop tb-pop--chat" data-pop="chat" hidden>
               <button type="button">Good luck!</button>

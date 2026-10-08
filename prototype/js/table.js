@@ -365,7 +365,6 @@
 
     tween(S, { black: 0 }, 1.2);
     await wait(.6); if (!ok()) return;
-    screen.classList.remove('tb-enter'); void screen.offsetWidth; screen.classList.add('tb-enter');
 
     for (var j = 0; j < JOIN_ORDER.length; j++) {
       join(JOIN_ORDER[j], my);
@@ -491,7 +490,12 @@
     // pulsing ring around whoever has to act; null for nobody
     turn: function (seat) { IDS.forEach(function (id) { SEATS[id].turn = id === seat; }); },
     say: function (seat, text, kind) { bubble(seat, text, kind); },
-    chime: function () { chime(); }
+    chime: function () { chime(); },
+    // the HUD (last trick, score, buttons) comes in once the first hand has been dealt
+    showHud: function () {
+      if (screen.classList.contains('tb-enter')) return;
+      screen.classList.add('tb-enter');
+    }
   };
 
   // tap on one of your legal cards plays it

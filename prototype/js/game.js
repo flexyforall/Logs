@@ -1,11 +1,11 @@
 // Blot game controller: runs whole games on the table screen with the rules from
-// js/blot-rules.js. You play the bottom seat; Laura (left), Don Marco (top, your partner)
-// and Billy (right) are bots. Animations go through the table's view API (js/table.js),
+// js/blot-rules.js. You play the bottom seat; HasmikG (left, Laura's seat), GarikAv (top,
+// Don Marco, your partner) and Vazgen1972 (right, Billy) are bots. Animations go through the table's view API (js/table.js),
 // the bidding / result panels and the HUD are DOM elements of the table screen.
 (function () {
   var R = window.BlotRules;
   var screen = document.querySelector('[data-screen-id="table"]');
-  var NAMES = { bottom: 'You', left: 'Laura', top: 'Don Marco', right: 'Billy' };
+  var NAMES = { bottom: 'You', left: 'HasmikG', top: 'GarikAv', right: 'Vazgen1972' };
   var SUIT_SIGN = { C: '♣', D: '♦', H: '♥', S: '♠', NT: 'NT' };
   var RED = { D: true, H: true };
   var COMBO_NAME = { terz: 'Terz', fifty: '50', hundred: '100', four: 'Four' };
@@ -17,7 +17,6 @@
   // ---------- small helpers ----------
   function team(seat) { return R.teamOf(seat); }
   function suitHtml(suit) { return '<span class="tb-suit' + (RED[suit] ? ' is-red' : '') + '">' + SUIT_SIGN[suit] + '</span>'; }
-  function bidText(b) { return b.kaput ? 'Kaput ' + SUIT_SIGN[b.suit] : b.value + ' ' + SUIT_SIGN[b.suit]; }
   function bidHtml(b) { return (b.kaput ? 'Kaput ' : b.value + ' ') + suitHtml(b.suit); }
   function alive() { return view && view.alive(tok); }
   function sortHand(hand, trump) {
@@ -110,15 +109,25 @@
 
   // ---------- DOM: bidding panel, contract chip, result panel ----------
   var bidEl = screen.querySelector('[data-bid]');
-  var contractEl = screen.querySelector('[data-contract]');
   var resultEl = screen.querySelector('[data-result]');
 
-  function setContract(c) {
-    if (!c) { contractEl.hidden = true; return; }
-    contractEl.hidden = false;
-    contractEl.innerHTML = '<span>' + NAMES[c.seat] + '</span><b>' + bidHtml(c) + '</b>' +
-      (c.sur ? '<i>Sur ×4</i>' : c.contra ? '<i>Contra ×2</i>' : '');
+  // Bid chips next to the players: their latest bid (or "Pass") during the bidding,
+  // then only the contract, with ×2 / ×4 for contra / sur.
+  function setChip(seat, bid, mods) {
+    var el = screen.querySelector('[data-chip="' + seat + '"]');
+    if (!bid) { el.hidden = true; return; }
+    el.classList.toggle('is-pass', bid === 'pass');
+    el.innerHTML = bid === 'pass' ? 'Pass'
+      : '<i class="' + (RED[bid.suit] ? 'is-red' : bid.suit === 'NT' ? 'is-nt' : '') + '">' + SUIT_SIGN[bid.suit] + '</i>' +
+        (bid.kaput ? 'Kaput' : bid.value) + (mods && mods.sur ? ' <small>×4</small>' : mods && mods.contra ? ' <small>×2</small>' : '');
+    el.hidden = false;
   }
+  function clearChips() { R.SEATS.forEach(function (s) { setChip(s, null); }); }
+  function setContract(c) {
+    clearChips();
+    if (c) setChip(c.seat, c, c);
+  }
+
 
   // Your turn to bid. Resolves with {type: 'pass' | 'bid' | 'contra' | 'sur', bid}.
   function humanBid(st) {
@@ -190,7 +199,7 @@
       if (act.type === 'bid' && R.bidBeats(act.bid, st.current) && !st.contra) {
         st.current = { seat: seat, value: act.bid.value, suit: act.bid.suit, kaput: act.bid.kaput };
         passes = 0;
-        view.say(seat, bidText(act.bid), 'bid');
+        setChip(seat, act.bid);
       } else if (act.type === 'contra' && st.current && team(st.current.seat) !== team(seat) && !st.contra) {
         st.contra = true; passes = 0;
         view.say(seat, 'Contra!', 'bid');
@@ -201,14 +210,14 @@
           var ans = order[k] === 'bottom' && !window.BlotGame.autoplay ? await humanBid(st) : (await view.wait(.9), aiBid(order[k], hands[order[k]], st));
           if (!alive()) return null;
           if (ans.type === 'sur') { st.sur = true; view.say(order[k], 'Sur!', 'bid'); }
-          else view.say(order[k], 'Pass');
+          else setChip(order[k], 'pass');
         }
         break;
       } else {
         passes++;
-        view.say(seat, 'Pass');
+        setChip(seat, 'pass');
       }
-      setContract(st.current && { seat: st.current.seat, value: st.current.value, suit: st.current.suit, kaput: st.current.kaput, contra: st.contra, sur: st.sur });
+      if (st.current) setChip(st.current.seat, st.current, st);
       seat = R.next(seat);
     }
     view.turn(null);
@@ -228,6 +237,7 @@
     R.SEATS.forEach(function (s) { if (s !== 'bottom') view.layoutPile(s, ids(hands[s])); });
     hands.bottom = sortHand(hands.bottom);
     await view.layoutHand(ids(hands.bottom)); if (!alive()) return;
+    view.showHud();
 
     // ---- bidding
     var contract = await bidding(hands, dealer); if (!alive()) return;

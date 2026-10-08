@@ -33,9 +33,11 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
      play are darkened, tap a card to play it. The last trick shows top left;
    - the round is scored by the rules and a summary shows the points; the score top right
      adds up until a team reaches 301 ("Play again" starts a new game).
-   The HUD follows Figma (Mansion Table Example, nodes `1886:2519` before the first trick and
-   `1886:1866` after); the contract chip under the score, the bidding and result panels and
-   the bubbles are in the same style. Chat sends a quick phrase, reactions an emoji. The
+   The HUD follows Figma (Mansion Table Example, node `1886:1866`): nicknames with rank badge
+   and level next to the bots (there from the start), a bid chip next to each bidder (only
+   the contract stays after the bidding), last trick top left, score top right, and along the
+   bottom settings and info on the left, chat and reactions on the right. Everything except
+   the nicknames comes in once the first hand has been dealt. Chat sends a quick phrase, reactions an emoji. The
    settings gear goes back to the stage select (prototype shortcut); info does nothing yet.
    Fireplace crackle and card flicks are synthesised with Web Audio; the room music carries on.
    For testing, `BlotGame.autoplay = true` lets the bots play your seat too.
@@ -100,5 +102,5 @@ as dark bands above and below the cards.
 The PLAY NOW button's decorative layer (`play-effects.webp`) is a Figma export of
 its "effects" group, because the generated code placed those layers incorrectly.
 
-`gear-web.svg`, `chat-web.svg`, `thumbs-web.svg` and `info-web.svg` are the Figma icons with their filters removed (the clipped drop shadow and
+`gear-web.svg`, `chat-web.svg` and `info-web.svg` are the Figma icons with their filters removed (the clipped drop shadow and
 inner shadow rendered as a light square in browsers); the shadow is done in CSS instead.
