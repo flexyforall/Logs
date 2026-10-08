@@ -23,8 +23,9 @@
    so they sit 20px left / 18px up of the panel box */
 .tb-panel_bg { position: absolute; left: -20px; top: -18px; pointer-events: none; }
 
-/* ---- last trick, top left at 20,25 (no panel) */
-.tb-trick { position: absolute; left: 20px; top: 25px; height: 40px; }
+/* ---- last trick, top left (no panel) */
+/* the HUD keeps the same 24px from every edge of the screen */
+.tb-trick { position: absolute; left: 24px; top: 24px; height: 40px; }
 .tb-trick_cards[hidden], .tb-trick_empty[hidden] { display: none; }
 .tb-trick_cards { display: flex; gap: 3.529px; }
 .tb-trick_cards img, .tb-mini { width: 27.882px; height: 38.824px; border-radius: 1.765px; box-shadow: 0 2.353px 11.765px rgba(0, 0, 0, .8); }
@@ -47,8 +48,8 @@
   color: rgba(255, 255, 255, .3);
 }
 
-/* score: 145x50 at 687,20 */
-.tb-score { position: absolute; left: 687px; top: 20px; width: 145px; height: 50px; display: flex; align-items: center; padding: 6px 8px; box-sizing: border-box; }
+/* score: 145x50, top right */
+.tb-score { position: absolute; right: 24px; top: 24px; width: 145px; height: 50px; display: flex; align-items: center; padding: 6px 8px; box-sizing: border-box; }
 .tb-score .tb-panel_bg { width: 185px; height: 90px; }
 .tb-score_cell { position: relative; width: 64px; height: 100%; display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center; white-space: nowrap; text-align: center; }
 .tb-score_label { font-weight: 600; font-size: 10px; line-height: 10px; color: #fff; opacity: .45; }
@@ -69,12 +70,14 @@
 }
 .tb-score_divider { position: relative; width: 1px; height: 30px; background: rgba(255, 255, 255, .2); }
 
-/* ---- bottom bar (812x40 at 20,333): settings, info on the left; chat, reactions on the right */
-.tb-bottom { position: absolute; left: 20px; top: 333px; width: 812px; height: 40px; display: flex; gap: 12px; }
+/* ---- bottom bar: settings, info on the left; chat, reactions on the right */
+.tb-bottom { position: absolute; left: 24px; right: 24px; bottom: 24px; height: 48px; display: flex; gap: 8px; }
 /* the bar spans the full width over your cards: only its buttons and popovers take taps */
 .tb-ui > .tb-bottom { pointer-events: none; }
 .tb-bottom > * { pointer-events: auto; }
-.table .tb-btn { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; flex: none; background: rgba(0, 0, 0, .5); }
+.table .tb-btn { width: 48px; height: 48px; border-radius: 10px; overflow: hidden; flex: none; background: rgba(0, 0, 0, .5); }
+/* the Figma 40x40 content, scaled up to the 48px button */
+.tb-btn_in { position: absolute; left: 4px; top: 4px; width: 40px; height: 40px; transform: scale(1.2); }
 .tb-btn--chat { margin-left: auto; }
 .tb-btn_icon { position: absolute; filter: brightness(1.15) drop-shadow(0 0 2px #000) drop-shadow(0 2px 6px rgba(0, 0, 0, .5)); }
 .table .tb-btn:active { transform: scale(.94); }
@@ -85,7 +88,7 @@
 
 .tb-pop {
   position: absolute;
-  right: 52px;
+  right: 56px;
   bottom: calc(100% + 8px);
   display: flex;
   gap: 4px;
@@ -266,7 +269,9 @@
 }
 
 /* ---- entrance: the HUD comes in once the room has faded up */
-/* hidden until the first hand is dealt (the nameplates are there from the start) */
+/* hidden until the first hand is dealt (a nameplate shows when its player sits down) */
+.tb-plate { opacity: 0; transition: opacity .5s ease; }
+.tb-plate.is-on { opacity: 1; }
 .tb-trick, .tb-score, .tb-bottom { opacity: 0; }
 .table:not(.tb-enter) .tb-bottom > * { pointer-events: none; }
 .tb-enter .tb-trick, .tb-enter .tb-score { animation: tb-drop .45s cubic-bezier(.34, 1.4, .64, 1) forwards; }
@@ -277,4 +282,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tb-trick, .tb-score, .tb-bottom { opacity: 1; animation: none !important; }
+  .tb-plate { transition: none; }
 }

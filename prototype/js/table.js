@@ -327,6 +327,8 @@
   function join(id, my) {
     var s = SEATS[id];
     chime();
+    var plate = screen.querySelector('[data-plate="' + id + '"]');
+    if (plate) plate.classList.add('is-on');
     s.ring = 0; tween(s, { ring: 1 }, .9, { ease: ease.lin });
     tween(s, { light: 1 }, .55);
     sparkle(s.face[0], s.face[1]);
@@ -686,6 +688,7 @@
     } else if (active) {
       active = false; run++;
       screen.classList.remove('tb-enter'); closePops(null);
+      screen.querySelectorAll('[data-plate]').forEach(function (el) { el.classList.remove('is-on'); });
       Object.keys(bubbles).forEach(function (k) { bubbles[k].textContent = ''; });
       if (window.BlotGame) window.BlotGame.stop();
       cancelAnimationFrame(raf);

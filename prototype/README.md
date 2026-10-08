@@ -34,9 +34,10 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    - the round is scored by the rules and a summary shows the points; the score top right
      adds up until a team reaches 301 ("Play again" starts a new game).
    The HUD follows Figma (Mansion Table Example, node `1886:1866`): nicknames with rank badge
-   and level next to the bots (there from the start), a bid chip next to each bidder (only
+   and level next to the bots (each shows as that player sits down), a bid chip next to each bidder (only
    the contract stays after the bidding), last trick top left, score top right, and along the
-   bottom settings and info on the left, chat and reactions on the right. Everything except
+   bottom 48px buttons: settings and info on the left, chat and reactions on the right; all
+   24px from the screen edges. Everything except
    the nicknames comes in once the first hand has been dealt. Chat sends a quick phrase, reactions an emoji. The
    settings gear goes back to the stage select (prototype shortcut); info does nothing yet.
    Fireplace crackle and card flicks are synthesised with Web Audio; the room music carries on.
