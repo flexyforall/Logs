@@ -34,12 +34,13 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    - the round is scored by the rules and a summary shows the points; the score top right
      adds up until a team reaches 301 ("Play again" starts a new game).
    The HUD follows Figma (Mansion Table Example, node `1886:1866`): nicknames with rank badge
-   and level next to the bots (each shows as that player sits down), a bid chip next to each bidder (only
-   the contract stays after the bidding), last trick top left, score top right, and along the
-   bottom 48px buttons: settings and info on the left, chat and reactions on the right; all
-   24px from the screen edges. Everything except
-   the nicknames comes in once the first hand has been dealt. Chat sends a quick phrase, reactions an emoji. The
-   settings gear goes back to the stage select (prototype shortcut); info does nothing yet.
+   and level in bold on plates with thin white top/bottom lines (each shows as that player sits
+   down), a bid chip next to each bidder (only the contract stays after the bidding), last trick
+   top left, score top right, and 40px buttons along the bottom: chat and reactions on the left,
+   info on the right; all 24px from the screen edges. Everything except the nicknames comes in
+   once the first hand has been dealt. Chat sends a quick phrase, reactions an emoji. The
+   design has no settings button any more; Escape goes back to the stage select (prototype
+   shortcut). Info does nothing yet.
    Fireplace crackle and card flicks are synthesised with Web Audio; the room music carries on.
    For testing, `BlotGame.autoplay = true` lets the bots play your seat too.
 
@@ -103,5 +104,5 @@ as dark bands above and below the cards.
 The PLAY NOW button's decorative layer (`play-effects.webp`) is a Figma export of
 its "effects" group, because the generated code placed those layers incorrectly.
 
-`gear-web.svg`, `chat-web.svg` and `info-web.svg` are the Figma icons with their filters removed (the clipped drop shadow and
+`chat-web.svg` and `info-web.svg` are the Figma icons with their filters removed (the clipped drop shadow and
 inner shadow rendered as a light square in browsers); the shadow is done in CSS instead.

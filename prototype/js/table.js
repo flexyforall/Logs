@@ -695,8 +695,8 @@
   });
 
   // ---------- HUD ----------
-  // Prototype shortcut: the settings gear goes back to the stage select.
-  screen.querySelector('[data-table-settings]').addEventListener('click', function () { window.BlotNav.show('play'); });
+  // The settings gear is gone from the design; Escape still goes back to the stage select (prototype shortcut).
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && active) window.BlotNav.show('play'); });
 
   // Score and last trick. A new game starts at 0 : 0 with the "?" slot; the game logic
   // (js/blot-rules.js) will call these as tricks are taken.
