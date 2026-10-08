@@ -3,6 +3,7 @@
 (function () {
   var BASE = 'assets/sounds/';
   var MUSIC_VOLUME = 0.32;
+  var TABLE_VOLUME = 0.14;   // the room music stays on under the fireplace at the table
 
   var muted = false;
   try { muted = localStorage.getItem('blot-muted') === '1'; } catch (e) {}
@@ -53,7 +54,7 @@
     if (muted || !key) return;
     var a = players[key];
     if (prev !== key && key !== 'lobby') a.currentTime = 0;
-    a.play().then(function () { fade(a, MUSIC_VOLUME, 1200); }).catch(function () {
+    a.play().then(function () { fade(a, musicVolume(), 1200); }).catch(function () {
       // Blocked until the first tap: try again then.
       document.addEventListener('pointerdown', function retry() {
         document.removeEventListener('pointerdown', retry);
@@ -83,6 +84,10 @@
   }
   function stopEntrance() { timers.forEach(clearTimeout); timers = []; }
 
+  function musicVolume() {
+    return document.querySelector('[data-screen-id="table"].is-active') ? TABLE_VOLUME : MUSIC_VOLUME;
+  }
+
   function roomTrack() {
     var id = window.BlotStage && window.BlotStage.current();
     return TRACKS[id] ? id : 'lobby';
@@ -102,6 +107,7 @@
       [200, 260, 320, 380, 440].forEach(function (t) { timers.push(setTimeout(function () { sfx('pop', 0.22); }, t)); });
       timers.push(setTimeout(function () { sfx('pop', 0.5); }, 480));
     }
+    else if (e.detail === 'table') { stopEntrance(); if (current && players[current]) fade(players[current], musicVolume(), 1500); }
     else { stopMusic(); stopEntrance(); }
   });
 
@@ -112,7 +118,7 @@
     var a = current && players[current];
     if (!a) return;
     fade(a, 0.06, 250, function () {
-      setTimeout(function () { if (players[current] === a) fade(a, MUSIC_VOLUME, 1500); }, 3200);
+      setTimeout(function () { if (players[current] === a) fade(a, musicVolume(), 1500); }, 3200);
     });
   }
 
@@ -139,7 +145,8 @@
     try { localStorage.setItem('blot-muted', muted ? '1' : '0'); } catch (e) {}
     if (muted) { Object.keys(players).forEach(function (k) { fade(players[k], 0, 250, function () { players[k].pause(); }); }); }
     else if (current) { playTrack(current); }
-    document.querySelectorAll('video').forEach(function (v) { v.muted = muted; });
+    document.querySelectorAll('[data-splash-video]').forEach(function (v) { v.muted = muted; });
+    document.dispatchEvent(new CustomEvent('sound:mute', { detail: muted }));
     render();
   });
   render();

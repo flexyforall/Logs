@@ -14,11 +14,18 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    The round button outside the phone frame turns sound on and off.
 3. PLAY NOW opens the stage select (Figma node `1856:1589`): tap Courtyard or Café to
    bring it to the centre (the cost updates); Mansion and Arena are locked. The arrow
-   goes back to the lobby. The big play button and the tabs are not wired up yet.
+   goes back to the lobby. The tabs are not wired up yet.
    Each open room has its own music (Backroom tense, Café cozy, Courtyard simple),
    crossfading as you switch rooms; the lobby track returns when you go back.
    The big play button plays an "into battle" sting (sword, taiko, choir, brass) with
    the room music ducked under it.
+4. Then the game table opens: the fireside salon from the "Prototype" scene with every bit
+   of UI removed (no name plates, speech bubbles, score or buttons). The room fades in, the
+   four players take their seats one by one, Don Marco shuffles and deals 3-2-3
+   counter-clockwise, and your eight cards fan out face up. Afterwards the players keep
+   making small moves (short AI video loops). Fireplace crackle and card flicks are
+   synthesised with Web Audio; the room music carries on quietly underneath.
+   Double-tap the table to go back to the stage select (prototype shortcut).
 
 Sounds are synthesised (no samples): `tools/make_sounds.py` makes the lobby music and UI
 sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to regenerate
@@ -27,18 +34,22 @@ sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to r
 ## Layout
 
 ```
-index.html                 screens: splash, lobby
+index.html                 screens: splash, lobby, stage select, table
 css/app.css                device frame, screen switching, splash
 css/lobby.css              lobby, positions and sizes taken from Figma
 css/stage.css              stage select, positions and sizes taken from Figma
+css/table.css              game table (a single canvas)
 js/app.js                  frame scaling, splash playback, screen switching
 js/sounds.js               lobby music, entrance and tap sounds, mute toggle
 js/stage.js                stage select carousel and navigation
+js/table.js                game table: seating, shuffle, deal, idle moves, table sounds
 assets/splash/             splash video (MP4 + WebM fallback) and logo
 assets/lobby/figma/        lobby assets exported from Figma (WebP sized @3x)
 assets/lobby/              the original uploaded lobby assets
 assets/play/figma/         stage select assets (stage art from the uploads, WebP @3x)
 assets/play/               the original uploaded stage select assets
+assets/table/              salon art (2000x923: room with empty chairs, full scene), card
+                           atlas, seat video loops (WebM + MP4, 960x540) and their masks
 assets/fonts/              Poppins 600 and 800 italic
 assets/sounds/             lobby music loop and UI sounds (MP3)
 tools/make_sounds.py       synthesises the lobby music and UI sounds

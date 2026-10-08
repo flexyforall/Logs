@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/lobby.css">
 <link rel="stylesheet" href="css/stage.css">
+<link rel="stylesheet" href="css/table.css">
 </head>
 <body>
 <div class="stage">
@@ -179,6 +180,11 @@
         </div>
       </section>
 
+      <!-- Game table: the fireside salon, players take their seats and the cards are dealt. No UI. -->
+      <section class="screen screen--table table" data-screen-id="table">
+        <canvas class="tb-canvas" aria-label="Игровой стол: игроки садятся, сдаются карты"></canvas>
+      </section>
+
     </div>
     <div class="device_island" aria-hidden="true"></div>
   </div>
@@ -190,5 +196,6 @@
 <script src="js/app.js"></script>
 <script src="js/sounds.js"></script>
 <script src="js/stage.js"></script>
+<script src="js/table.js"></script>
 </body>
 </html>
