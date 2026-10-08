@@ -15,10 +15,18 @@
   window.addEventListener('resize', fit);
   fit();
 
+  var lobby = document.querySelector('[data-screen-id="lobby"]');
+
   function show(id) {
     document.querySelectorAll('[data-screen-id]').forEach(function (el) {
       el.classList.toggle('is-active', el.getAttribute('data-screen-id') === id);
     });
+    // Restart the lobby's entrance animation every time it opens.
+    if (id === 'lobby') {
+      lobby.classList.remove('lb-enter');
+      void lobby.offsetWidth;
+      lobby.classList.add('lb-enter');
+    }
   }
 
   // The splash starts on load. Browsers block autoplay with sound until the first tap,

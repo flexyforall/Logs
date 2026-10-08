@@ -336,3 +336,79 @@
 .lobby .lb-pill:active, .lobby .lb-icon:active, .lobby .lb-play:active { transform: scale(.96); }
 .lobby .lb-mode:active { transform: scale(.98); }
 .lobby .lb-play:active { filter: brightness(1.15); }
+
+/* ---- entrance animation (class "lb-enter" is added each time the lobby opens).
+   fill-mode "backwards": elements wait hidden for their delay, then end on their normal
+   styles, so press feedback and layout transforms keep working afterwards. */
+.lb-enter .lb-avatar        { animation: lb-pop .55s cubic-bezier(.34, 1.56, .64, 1) .10s backwards; }
+.lb-enter .lb-name          { animation: lb-rise .45s ease-out .22s backwards; }
+.lb-enter .lb-rank          { animation: lb-badge .6s cubic-bezier(.34, 1.56, .64, 1) .40s backwards; }
+.lb-enter .lb-progress      { animation: lb-fade .3s ease-out .30s backwards; }
+.lb-enter .lb-progress_fill > div,
+.lb-enter .lb-progress_haze,
+.lb-enter .lb-progress_glow,
+.lb-enter .lb-progress_head { animation: lb-fill 1.3s cubic-bezier(.22, .9, .3, 1) .55s backwards; }
+
+.lb-enter .lb-pill          { animation: lb-drop .45s cubic-bezier(.34, 1.4, .64, 1) backwards; }
+.lb-enter .lb-pill:nth-child(1) { animation-delay: .25s; }
+.lb-enter .lb-pill:nth-child(2) { animation-delay: .33s; }
+.lb-enter .lb-pill:nth-child(3) { animation-delay: .41s; }
+.lb-enter .lb-pill_crown img,
+.lb-enter .lb-pill_gem > span,
+.lb-enter .lb-pill_chip     { animation: lb-icon-pop .5s cubic-bezier(.34, 1.8, .64, 1) backwards; }
+.lb-enter .lb-pill:nth-child(1) .lb-pill_crown img { animation-delay: .45s; }
+.lb-enter .lb-pill:nth-child(2) .lb-pill_gem > span { animation-delay: .53s; }
+.lb-enter .lb-pill:nth-child(3) .lb-pill_chip { animation-delay: .61s; }
+
+.lb-enter .lb-top           { animation: lb-zoom .6s cubic-bezier(.22, 1.2, .36, 1) .15s backwards; }
+.lb-enter .lb-mode--training { animation: lb-from-left .6s cubic-bezier(.22, 1, .36, 1) .32s backwards; }
+.lb-enter .lb-mode--friends  { animation: lb-from-right .6s cubic-bezier(.22, 1, .36, 1) .32s backwards; }
+.lb-enter .lb-top_copy      { animation: lb-rise .5s ease-out .55s backwards; }
+.lb-enter .lb-mode_copy     { animation: lb-rise .5s ease-out .65s backwards; }
+.lb-enter .lb-play          { animation: lb-pop .55s cubic-bezier(.34, 1.56, .64, 1) .70s backwards; }
+
+.lb-enter .lb-icon          { animation: lb-rise .4s cubic-bezier(.34, 1.4, .64, 1) backwards; }
+.lb-enter .lb-bottom_group .lb-icon:nth-child(1) { animation-delay: .50s; }
+.lb-enter .lb-bottom_group .lb-icon:nth-child(2) { animation-delay: .56s; }
+.lb-enter .lb-bottom_group .lb-icon:nth-child(3) { animation-delay: .62s; }
+.lb-enter .lb-bottom_group .lb-icon:nth-child(4) { animation-delay: .68s; }
+.lb-enter .lb-bottom > .lb-icon { animation-delay: .74s; }
+
+@keyframes lb-fade      { from { opacity: 0; } }
+@keyframes lb-rise      { from { opacity: 0; transform: translateY(10px); } }
+@keyframes lb-drop      { from { opacity: 0; transform: translateY(-14px); } }
+@keyframes lb-pop       { from { opacity: 0; transform: scale(.5); } }
+@keyframes lb-badge     { from { opacity: 0; transform: scale(.2) rotate(-90deg); } }
+@keyframes lb-icon-pop  { from { opacity: 0; transform: scale(.3) rotate(-20deg); } }
+@keyframes lb-zoom      { from { opacity: 0; transform: scale(.9); } }
+@keyframes lb-from-left { from { opacity: 0; transform: translateX(-48px); } }
+@keyframes lb-from-right { from { opacity: 0; transform: translateX(48px); } }
+@keyframes lb-fill      { from { transform: translateX(-36px); opacity: 0; } 15% { opacity: 1; } }
+
+/* ---- PLAY NOW invites: a light sweep and a soft breathing glow, looping */
+.lobby .lb-play { animation: lb-breathe 2.4s ease-in-out 1.4s infinite; }
+.lb-enter .lb-play { animation: lb-pop .55s cubic-bezier(.34, 1.56, .64, 1) .70s backwards, lb-breathe 2.4s ease-in-out 1.4s infinite; }
+.lb-play::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  left: 0;
+  width: 46px;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 0%, rgba(190, 230, 255, .55) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: translateX(-80px) skewX(-18deg);
+  animation: lb-sweep 2.4s ease-in-out 1.4s infinite;
+  pointer-events: none;
+}
+@keyframes lb-sweep {
+  0%   { transform: translateX(-80px) skewX(-18deg); }
+  45%, 100% { transform: translateX(200px) skewX(-18deg); }
+}
+@keyframes lb-breathe {
+  0%, 100% { box-shadow: 0 0 0 rgba(92, 160, 255, 0); filter: brightness(1); }
+  50%      { box-shadow: 0 0 16px rgba(92, 160, 255, .65); filter: brightness(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby *, .lobby *::after { animation: none !important; }
+}
