@@ -22,17 +22,27 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    the room music ducked under it.
 4. Then the game table opens: the fireside salon from the "Prototype" scene. The room fades
    in, the four players take their seats one by one, Don Marco shuffles and deals 3-2-3
-   counter-clockwise, and your eight cards fan out face up (all of it at double speed).
+   clockwise, and your eight cards fan out face up (all of it at double speed).
    Afterwards the players keep making small moves (short AI video loops). Fireplace crackle
    and card flicks are synthesised with Web Audio; the room music carries on underneath.
    The HUD follows Figma (Mansion Table Example, node `1873:2080`): settings, last trick and
-   score along the top. Bottom left is a chat / reactions pill: chat sends a quick phrase,
+   score along the top. A new game starts at 0 : 0 with "No tricks yet" in the last-trick panel. Bottom left is a chat / reactions pill: chat sends a quick phrase,
    reactions an emoji, shown above your seat. The settings gear goes back to the stage
    select (prototype shortcut).
 
 Sounds are synthesised (no samples): `tools/make_sounds.py` makes the lobby music and UI
 sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to regenerate
 `assets/sounds/`, or drop in real files with the same names.
+
+## Game rules
+
+`js/blot-rules.js` is the Blot rules engine from `Blot_Rules_EN.pdf`, as plain functions on
+`window.BlotRules` (no UI yet): deck and 3-2-3 deal clockwise from the dealer, card strength
+(trumps J 9 A 10 K Q 8 7, plain A 10 K Q J 9 8 7), legal moves (follow suit, trump in unless
+the partner is winning, beat a led trump), trick winner, card points (152 per deal, +10 for
+the last trick, 250 for kaput), combinations (terz, 50, 100, four of a kind, blot-rebot) and
+which team's combinations count, bidding, contra / sur and the round score.
+`node tools/test_rules.js` checks it against the examples in the rules.
 
 ## Layout
 
@@ -45,6 +55,7 @@ css/table.css              game table (a single canvas)
 js/app.js                  frame scaling, splash playback, screen switching
 js/sounds.js               lobby music, entrance and tap sounds, mute toggle
 js/stage.js                stage select carousel and navigation
+js/blot-rules.js           Blot rules engine (no DOM)
 js/table.js                game table: seating, shuffle, deal, idle moves, table sounds
 assets/splash/             splash video (MP4 + WebM fallback) and logo
 assets/lobby/figma/        lobby assets exported from Figma (WebP sized @3x)
@@ -59,6 +70,7 @@ assets/fonts/              Poppins 600 and 800 italic
 assets/sounds/             lobby music loop and UI sounds (MP3)
 tools/make_sounds.py       synthesises the lobby music and UI sounds
 tools/make_room_music.py   synthesises one music loop per room
+tools/test_rules.js        checks the rules engine (node)
 ```
 
 `users-web.svg` and `clipboard-web.svg` are copies of the Figma exports with the

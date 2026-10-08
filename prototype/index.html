@@ -201,24 +201,24 @@
 
           <div class="tb-trick" aria-label="Последняя взятка">
             <img class="tb-panel_bg" src="assets/table/ui/trick-bg.webp" alt="">
-            <div class="tb-trick_cards">
-              <img src="assets/table/ui/card-7d.webp" alt="7♦">
-              <img src="assets/table/ui/card-8d.webp" alt="8♦">
-              <img src="assets/table/ui/card-9d.webp" alt="9♦">
-              <img src="assets/table/ui/card-10d.webp" alt="10♦">
+            <!-- nothing played yet; js will fill data-trick-cards once tricks are taken -->
+            <div class="tb-trick_empty" data-trick-empty>
+              <span class="tb-trick_slot" aria-hidden="true"></span>
+              <span class="tb-trick_text">No tricks yet</span>
             </div>
+            <div class="tb-trick_cards" data-trick-cards hidden></div>
           </div>
 
           <div class="tb-score" aria-label="Счёт">
             <img class="tb-panel_bg" src="assets/table/ui/score-bg.webp" alt="">
             <div class="tb-score_cell">
               <p class="tb-score_label">US</p>
-              <p class="tb-score_value"><span><b>32</b><small>/151</small></span><span aria-hidden="true"><b>32</b><small>/151</small></span></p>
+              <p class="tb-score_value" data-score="us"><span><b>0</b><small>/151</small></span><span aria-hidden="true"><b>0</b><small>/151</small></span></p>
             </div>
             <span class="tb-score_divider"></span>
             <div class="tb-score_cell">
               <p class="tb-score_label">THEM</p>
-              <p class="tb-score_value"><span><b>0</b><small>/151</small></span><span aria-hidden="true"><b>0</b><small>/151</small></span></p>
+              <p class="tb-score_value" data-score="them"><span><b>0</b><small>/151</small></span><span aria-hidden="true"><b>0</b><small>/151</small></span></p>
             </div>
           </div>
 
@@ -270,6 +270,7 @@
 <script src="js/app.js"></script>
 <script src="js/sounds.js"></script>
 <script src="js/stage.js"></script>
+<script src="js/blot-rules.js"></script>
 <script src="js/table.js"></script>
 </body>
 </html>

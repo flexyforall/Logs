@@ -1,5 +1,5 @@
 // Game table: the fireside salon from the "Prototype" scene with every bit of UI taken out.
-// The four players take their seats one by one, Don Marco shuffles and deals 3-2-3,
+// The four players take their seats one by one, Don Marco shuffles and deals 3-2-3 clockwise,
 // and your own eight cards fan out at the bottom. Opened by the Play button on the stage select.
 // Everything is drawn on one canvas in scene coordinates of the 2000x923 art.
 (function () {
@@ -12,7 +12,7 @@
   cv.width = 1704; cv.height = 786;
 
   // ---------- Seats (scene coordinates) ----------
-  // Teams: bottom + top vs left + right. Dealer: top. Deal goes counter-clockwise from the dealer.
+  // Teams: bottom + top vs left + right. Dealer: top. Deal goes clockwise from the dealer.
   // parts: body pieces cut from the art that move on their own (rect + pivot), used until the seat's video loads.
   var SEATS = {
     bottom: { crop: [770, 725, 460, 198], pivot: [1000, 923], face: [1000, 860, 70],
@@ -38,8 +38,9 @@
   };
   var IDS = Object.keys(SEATS);
   var JOIN_ORDER = ['bottom', 'left', 'top', 'right'];
-  var DEAL_ORDER = ['left', 'bottom', 'right', 'top'];   // counter-clockwise, starting to the dealer's right
-  var PACKETS = [3, 2, 3];
+  // clockwise from the player after the dealer, as in the rules (js/blot-rules.js)
+  var DEAL_ORDER = window.BlotRules.orderAfter('top');
+  var PACKETS = window.BlotRules.PACKETS;
   var CIGAR_TIP = [957, 180], MOUTH = [990, 147], CYBER_EYE = [1010, 100];
 
   // Seat videos (short AI loops), drawn through a soft silhouette mask so they blend into the empty room.
@@ -389,7 +390,7 @@
       await wait(.15); if (!ok()) return;
     }
 
-    // deal 3-2-3 counter-clockwise
+    // deal 3-2-3 clockwise
     var hands = { left: [], bottom: [], right: [], top: [] }, deck = cards.slice(), zTop = 100;
     for (var pi = 0; pi < PACKETS.length; pi++) {
       for (var d = 0; d < DEAL_ORDER.length; d++) {
