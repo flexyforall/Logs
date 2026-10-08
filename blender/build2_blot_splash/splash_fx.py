@@ -1,0 +1,172 @@
+"""
+Blot Bazar splash: whirlpool-dissolve of the video into black + animated logo
+with a light sweep, colour shimmer and sparkles.
+
+    python3 splash_fx.py <video.mp4> <logo.png> <out.mp4>
+
+The logo is expected on a black background (black becomes transparent).
+Audio is copied from the input video and faded out at the end.
+"""
+
+import math
+import subprocess
+import sys
+
+import cv2
+import numpy as np
+
+SRC, LOGO, OUT = sys.argv[1:4]
+W, H, FPS = 1920, 1080, 24
+
+# Timeline (seconds)
+SWIRL_START = 3.0     # video starts twisting
+FADE_START = 3.45     # video starts going dark
+VIDEO_END = 3.92      # video fully gone (just before Medusa)
+LOGO_START = 3.45     # logo starts appearing during the fade
+POP = 0.5             # easeOutBack pop duration
+SHRINK = 0.10         # logo shrinks by 10% towards the end
+LOGO_H = 880          # logo height in pixels at scale 1.0
+SWEEPS = (0.7, 1.9, 3.0)   # light sweeps, seconds after LOGO_START
+SWEEP_LEN = 0.55
+
+rng = np.random.default_rng(3)
+
+
+def smoothstep(a, b, x):
+    t = min(1.0, max(0.0, (x - a) / (b - a)))
+    return t * t * (3 - 2 * t)
+
+
+def ease_out_back(p):
+    c = 1.70158
+    return 1 + (c + 1) * (p - 1) ** 3 + c * (p - 1) ** 2
+
+
+# ---------------------------------------------------------------- input video
+probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                        "-of", "csv=p=0", SRC], capture_output=True, text=True)
+DURATION = float(probe.stdout.strip())
+N = int(round(DURATION * FPS))
+dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", SRC, "-vf", f"fps={FPS},scale={W}:{H}",
+                        "-f", "rawvideo", "-pix_fmt", "bgr24", "-"], stdout=subprocess.PIPE)
+
+# ---------------------------------------------------------------- logo prep
+logo = cv2.imread(LOGO, cv2.IMREAD_COLOR).astype(np.float32) / 255.0
+lum = logo.max(axis=2)
+alpha = np.clip((lum - 0.04) / 0.12, 0, 1)
+PAD = 140
+logo = cv2.copyMakeBorder(logo, PAD, PAD, PAD, PAD, cv2.BORDER_CONSTANT, value=0)
+alpha = cv2.copyMakeBorder(alpha, PAD, PAD, PAD, PAD, cv2.BORDER_CONSTANT, value=0)
+lh, lw = alpha.shape
+glow = cv2.GaussianBlur(logo * alpha[..., None], (0, 0), 34) * 1.6
+glow_a = np.clip(cv2.GaussianBlur(alpha, (0, 0), 34) * 0.85, 0, 1)
+yy, xx = np.mgrid[0:lh, 0:lw].astype(np.float32)
+diag = (xx * 0.8 + yy * 0.6)                       # coordinate along the sweep direction
+inside = np.argwhere(alpha > 0.95)
+sparkles = [(inside[i][1], inside[i][0], rng.uniform(0.5, 3.5), rng.uniform(14, 26))
+            for i in rng.choice(len(inside), 14, replace=False)]
+
+
+def logo_frame(T):
+    """Return (rgb, alpha) of the styled logo at time T after LOGO_START."""
+    rgb = logo.copy()
+    # colour shimmer: slow travelling warm/bright wave across the letters
+    wave = 0.5 + 0.5 * np.sin(diag / 90.0 - T * 3.2)
+    rgb = rgb * (0.92 + 0.16 * wave[..., None])
+    rgb[..., 2] += 0.05 * wave            # a touch more red/orange in the wave (BGR)
+    # light sweep
+    for s in SWEEPS:
+        p = (T - s) / SWEEP_LEN
+        if 0 <= p <= 1:
+            pos = -200 + p * (lw * 0.8 + lh * 0.6 + 400)
+            band = np.exp(-((diag - pos) / 55.0) ** 2) * math.sin(math.pi * p)
+            rgb += band[..., None] * np.array([0.55, 0.85, 1.0], np.float32) * 0.9
+    # sparkles: little four-point stars twinkling on the letters
+    for (sx, sy, t0, size) in sparkles:
+        ph = ((T - t0) % 1.6) / 0.35
+        if 0 <= ph <= 1 and T > t0:
+            k = math.sin(math.pi * ph)
+            dx, dy = np.abs(xx - sx), np.abs(yy - sy)
+            star = (np.exp(-(dx / size) ** 2 - (dy / 2.2) ** 2) +
+                    np.exp(-(dy / size) ** 2 - (dx / 2.2) ** 2) +
+                    np.exp(-((dx ** 2 + dy ** 2) / 30.0)))
+            rgb += (star * k)[..., None] * np.array([0.8, 0.95, 1.0], np.float32)
+    rgb = np.clip(rgb, 0, 1.6)
+    out_rgb = glow + (rgb - glow) * alpha[..., None]
+    out_a = np.maximum(alpha, glow_a)
+    return out_rgb, out_a
+
+
+def logo_scale(T):
+    if T < POP:
+        return max(0.01, ease_out_back(T / POP))
+    rest = DURATION - LOGO_START - POP
+    return (1 - SHRINK * (T - POP) / rest) * (1 + 0.012 * math.sin(2 * math.pi * 0.7 * (T - POP)))
+
+
+# ---------------------------------------------------------------- swirl
+cy, cx = H / 2, W / 2
+gy, gx = np.mgrid[0:H, 0:W].astype(np.float32)
+dx0, dy0 = gx - cx, gy - cy
+r0 = np.sqrt(dx0 ** 2 + dy0 ** 2)
+th0 = np.arctan2(dy0, dx0)
+R = 0.55 * math.hypot(cx, cy)
+
+
+def swirl(img, k):
+    """Twist the image around the centre; k = 0..1. Stronger in the middle."""
+    falloff = np.exp(-(r0 / R) ** 2)
+    ang = th0 + k * 7.0 * falloff                    # up to ~7 rad twist at the centre
+    rr = r0 * (1 + 0.6 * k * falloff)                # pull the texture inwards
+    mx = (cx + rr * np.cos(ang)).astype(np.float32)
+    my = (cy + rr * np.sin(ang)).astype(np.float32)
+    return cv2.remap(img, mx, my, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+
+
+# ---------------------------------------------------------------- render
+enc = subprocess.Popen(["ffmpeg", "-y", "-v", "error",
+                        "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
+                        "-i", SRC, "-map", "0:v", "-map", "1:a?",
+                        "-af", f"afade=t=out:st={DURATION - 0.45:.2f}:d=0.45",
+                        "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p",
+                        "-c:a", "aac", "-b:a", "192k", "-shortest", OUT], stdin=subprocess.PIPE)
+
+frame_bytes = W * H * 3
+for i in range(N):
+    t = i / FPS
+    raw = dec.stdout.read(frame_bytes)
+    if len(raw) < frame_bytes:
+        break
+    if t >= VIDEO_END:
+        base = np.zeros((H, W, 3), np.float32)
+    else:
+        img = np.frombuffer(raw, np.uint8).reshape(H, W, 3)
+        k = smoothstep(SWIRL_START, VIDEO_END, t) ** 1.6
+        if k > 0:
+            img = swirl(img, k)
+        base = img.astype(np.float32) / 255.0
+        base *= 1 - smoothstep(FADE_START, VIDEO_END, t)
+    if t >= LOGO_START:
+        T = t - LOGO_START
+        rgb, a = logo_frame(T)
+        a = a * smoothstep(0, 0.3, T)
+        s = logo_scale(T)
+        th = max(2, int(LOGO_H * s * lh / (lh - 2 * PAD)))
+        tw = max(2, int(th * lw / lh))
+        rgb = cv2.resize(rgb, (tw, th), interpolation=cv2.INTER_AREA if s < 1 else cv2.INTER_LINEAR)
+        a = cv2.resize(a, (tw, th), interpolation=cv2.INTER_LINEAR)
+        x0, y0 = (W - tw) // 2, (H - th) // 2
+        # clip to frame
+        sx0, sy0 = max(0, -x0), max(0, -y0)
+        dx1, dy1 = min(W, x0 + tw), min(H, y0 + th)
+        region = base[max(0, y0):dy1, max(0, x0):dx1]
+        la = a[sy0:sy0 + region.shape[0], sx0:sx0 + region.shape[1], None]
+        lr = rgb[sy0:sy0 + region.shape[0], sx0:sx0 + region.shape[1]]
+        region[:] = region * (1 - la) + lr * la
+    enc.stdin.write((np.clip(base, 0, 1) * 255).astype(np.uint8).tobytes())
+
+enc.stdin.close()
+enc.wait()
+dec.stdout.close()
+dec.wait()
+print("done:", OUT)
