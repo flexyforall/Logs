@@ -19,10 +19,10 @@ SRC, LOGO, OUT = sys.argv[1:4]
 W, H, FPS = 1920, 1080, 24
 
 # Timeline (seconds)
-SWIRL_START = 3.0     # video starts twisting
-FADE_START = 3.45     # video starts going dark
+SWIRL_START = 3.25    # video starts twisting
+FADE_START = 3.6      # video starts going dark
 VIDEO_END = 3.92      # video fully gone (just before Medusa)
-LOGO_START = 3.45     # logo starts appearing during the fade
+LOGO_START = 3.75     # logo starts as the card comes down, during the fade
 POP = 0.5             # easeOutBack pop duration
 SHRINK = 0.10         # logo shrinks by 10% towards the end
 LOGO_H = 880          # logo height in pixels at scale 1.0
@@ -58,8 +58,8 @@ PAD = 140
 logo = cv2.copyMakeBorder(logo, PAD, PAD, PAD, PAD, cv2.BORDER_CONSTANT, value=0)
 alpha = cv2.copyMakeBorder(alpha, PAD, PAD, PAD, PAD, cv2.BORDER_CONSTANT, value=0)
 lh, lw = alpha.shape
-glow = cv2.GaussianBlur(logo * alpha[..., None], (0, 0), 34) * 1.6
-glow_a = np.clip(cv2.GaussianBlur(alpha, (0, 0), 34) * 0.85, 0, 1)
+# soft inner light only: blurred colour, masked back to the letters (no halo outside)
+inner = cv2.GaussianBlur(logo * alpha[..., None], (0, 0), 14) * alpha[..., None]
 yy, xx = np.mgrid[0:lh, 0:lw].astype(np.float32)
 diag = (xx * 0.8 + yy * 0.6)                       # coordinate along the sweep direction
 inside = np.argwhere(alpha > 0.95)
@@ -91,10 +91,8 @@ def logo_frame(T):
                     np.exp(-(dy / size) ** 2 - (dx / 2.2) ** 2) +
                     np.exp(-((dx ** 2 + dy ** 2) / 30.0)))
             rgb += (star * k)[..., None] * np.array([0.8, 0.95, 1.0], np.float32)
-    rgb = np.clip(rgb, 0, 1.6)
-    out_rgb = glow + (rgb - glow) * alpha[..., None]
-    out_a = np.maximum(alpha, glow_a)
-    return out_rgb, out_a
+    rgb = np.clip(rgb + inner * 0.22, 0, 1.6)
+    return rgb, alpha
 
 
 def logo_scale(T):
