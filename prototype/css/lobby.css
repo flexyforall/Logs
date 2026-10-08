@@ -60,19 +60,9 @@
 .lb-glass--96 { background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 96 38' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23g)' opacity='0.2'/><defs><radialGradient id='g' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(9.1111 8.9063 -1.9753 3.6065 48 19)'><stop stop-color='rgb(119,138,177)' offset='0'/><stop stop-color='rgb(89,103,133)' offset='0.25'/><stop stop-color='rgb(60,69,88)' offset='0.5'/><stop stop-color='rgb(45,52,66)' offset='0.625'/><stop stop-color='rgb(30,34,44)' offset='0.75'/><stop stop-color='rgb(15,17,22)' offset='0.875'/><stop stop-color='rgb(7,9,11)' offset='0.9375'/><stop stop-color='rgb(0,0,0)' offset='1'/></radialGradient></defs></svg>"); }
 .lb-glass--40 { background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23g)' opacity='0.2'/><defs><radialGradient id='g' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(3.7963 9.375 -0.82305 3.7963 20 20)'><stop stop-color='rgb(119,138,177)' offset='0'/><stop stop-color='rgb(89,103,133)' offset='0.25'/><stop stop-color='rgb(60,69,88)' offset='0.5'/><stop stop-color='rgb(45,52,66)' offset='0.625'/><stop stop-color='rgb(30,34,44)' offset='0.75'/><stop stop-color='rgb(15,17,22)' offset='0.875'/><stop stop-color='rgb(7,9,11)' offset='0.9375'/><stop stop-color='rgb(0,0,0)' offset='1'/></radialGradient></defs></svg>"); }
 
-/* ---- background */
-.lb-bg { position: absolute; inset: 0; }
-.lb-bg_img { position: absolute; left: 0; top: 0; width: 847px; height: 391px; object-fit: cover; }
-.lb-bg_glow {
-  position: absolute;
-  left: calc(50% + 11.5px);
-  top: calc(50% + 49.5px);
-  width: 387px;
-  height: 58px;
-  transform: translate(-50%, -50%);
-}
-.lb-bg_glow img { position: absolute; top: -172.41%; bottom: -172.41%; left: -25.84%; right: -25.84%; width: auto; height: auto; }
-.lb-bg_tint { position: absolute; left: -1px; top: -1px; width: 853px; height: 394px; background: #87b5f5; mix-blend-mode: color; }
+/* ---- background: Figma's image + glow + "color"-blended tint, pre-composited at 3x.
+   A live mix-blend-mode here made Safari draw dark boxes behind animated rows. */
+.lb-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* ---- header */
 .lb-header {
@@ -128,17 +118,15 @@
 .lb-progress_haze {
   left: -4.93px; top: -8.85px; width: 53.208px; height: 27.253px;
   filter: blur(.908px);
-  mix-blend-mode: screen;
   background: radial-gradient(50% 50% at 50% 50%, rgba(239, 182, 72, .43) 0%, rgba(237, 172, 50, .32) 25%, rgba(221, 160, 44, .16) 50%, rgba(216, 153, 44, .038) 75%, rgba(216, 153, 44, 0) 100%);
 }
 .lb-progress_glow { top: -24.95px; width: 64.888px; height: 44.643px; }
-.lb-progress_glow--wake { left: -14.99px; mix-blend-mode: screen; }
-.lb-progress_glow--envelope { left: -14.99px; mix-blend-mode: plus-lighter; }
-.lb-progress_glow--rim { left: -15.38px; mix-blend-mode: plus-lighter; }
+.lb-progress_glow--wake { left: -14.99px; }
+.lb-progress_glow--envelope { left: -14.99px; }
+.lb-progress_glow--rim { left: -15.38px; }
 .lb-progress_head {
   left: 18.95px; top: -4.31px; width: 21.348px; height: 17.909px;
   filter: blur(.779px);
-  mix-blend-mode: plus-lighter;
   opacity: .8;
   background: radial-gradient(50% 50% at 50% 50%, rgb(255, 229, 144) 0%, rgba(255, 219, 110, .93) 10%, rgba(255, 208, 76, .86) 20%, rgba(255, 184, 44, .44) 42%, rgba(242, 167, 42, .12) 66%, rgba(229, 161, 43, .012) 86%, rgba(223, 158, 51, 0) 100%);
 }
