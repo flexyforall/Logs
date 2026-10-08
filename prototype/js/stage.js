@@ -16,6 +16,8 @@
   var screen = document.querySelector('[data-screen-id="play"]');
   var track = screen.querySelector('[data-stages]');
   var costEl = screen.querySelector('[data-stage-cost]');
+  var playBtn = screen.querySelector('[data-stage-play]');
+  var costLine = screen.querySelector('.st-cost');
 
   function fmt(n) { return n.toLocaleString('en-US'); }
 
@@ -47,7 +49,10 @@
       c.style.left = (x[k] - w / 2) + 'px';
       c.style.top = (CY - h / 2) + 'px';
     });
-    costEl.textContent = fmt(STAGES[selected].cost);
+    // the new price shows once the cost line has faded out
+    clearTimeout(layout.t);
+    if (costLine.classList.contains('is-swapping')) layout.t = setTimeout(function () { costEl.textContent = fmt(STAGES[selected].cost); }, 220);
+    else costEl.textContent = fmt(STAGES[selected].cost);
   }
 
   function choose(i) {
@@ -60,6 +65,8 @@
       return;
     }
     selected = i;
+    // the play button and the cost hide while the cards move, then come back
+    [playBtn, costLine].forEach(function (el) { el.classList.remove('is-swapping'); void el.offsetWidth; el.classList.add('is-swapping'); });
     layout();
     document.dispatchEvent(new CustomEvent('stage:select', { detail: STAGES[i].id }));
     c.classList.remove('is-arriving');
