@@ -28,9 +28,9 @@ assert W % 2 == 0 and H % 2 == 0, "H.264 4:2:0 needs even width and height"
 SWIRL_START = 3.7     # video starts twisting as the card comes down
 FADE_START = 3.85     # video starts going dark
 FREEZE_AT = 3.9       # hold this frame (the source cuts to Medusa at 3.95)
-VIDEO_END = 4.35      # video fully gone
+VIDEO_END = 4.7       # video fully gone: the whirlpool has closed
 LOGO_START = 4.0      # logo appears out of the whirlpool
-SETTLE = 0.06         # logo appears at full size and shrinks by 6% as the swirl closes
+START_SCALE = 1.35    # logo appears this much bigger and shrinks to 1.0 exactly as the swirl closes
 SHRINK = 0.04         # then drifts down another 4% towards the end
 LOGO_H = int(0.62 * H)  # height of the letters at scale 1.0
 SWEEPS = (0.7, 1.9, 3.0)   # light sweeps, seconds after LOGO_START
@@ -107,14 +107,15 @@ def swirl_k(t):
 
 
 def logo_scale(T):
-    """Full size when it appears, shrinking in step with the swirl until the swirl closes."""
+    """Big when it appears, shrinking in step with the swirl; lands at 1.0 as the swirl closes."""
     k0 = swirl_k(LOGO_START)
     close = VIDEO_END - LOGO_START
     if T < close:
-        return 1 - SETTLE * (swirl_k(LOGO_START + T) - k0) / (1 - k0)
+        p = (swirl_k(LOGO_START + T) - k0) / (1 - k0)
+        return START_SCALE - (START_SCALE - 1) * p
     rest = DURATION - VIDEO_END
     d = T - close
-    return (1 - SETTLE - SHRINK * d / rest) * (1 + 0.012 * math.sin(2 * math.pi * 0.7 * d))
+    return (1 - SHRINK * d / rest) * (1 + 0.012 * math.sin(2 * math.pi * 0.7 * d))
 
 
 # ---------------------------------------------------------------- swirl
