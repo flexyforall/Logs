@@ -96,6 +96,18 @@
     return minBy(legal, function (c) { return pts(c) + (isTrump(c) ? 15 : 0); });
   }
 
+  // Why only some cards are playable, shown when you tap one that is not.
+  function moveHint(hand, plays, trump, legal) {
+    if (legal.length === hand.length || !plays.length) return 'Play a highlighted card';
+    var led = plays[0].card.suit, sign = SUIT_SIGN[led];
+    var isTrump = function (c) { return trump !== R.NO_TRUMP && c.suit === trump; };
+    if (legal.every(function (c) { return c.suit === led; })) {
+      return led === trump ? 'Trump was led: play a higher trump if you can' : 'Follow suit: play a ' + sign;
+    }
+    if (legal.every(isTrump)) return 'No ' + sign + ': you must trump in';
+    return 'Play a highlighted card';
+  }
+
   // ---------- DOM: bidding panel, contract chip, result panel ----------
   var bidEl = screen.querySelector('[data-bid]');
   var contractEl = screen.querySelector('[data-contract]');
@@ -257,7 +269,7 @@
         var hand = hands[seat], legal = R.legalMoves(hand, plays, trump, seat), card;
         view.turn(seat);
         if (seat === 'bottom' && !window.BlotGame.autoplay) {
-          var id = await view.waitHuman(ids(hand), ids(legal)); if (!alive()) return;
+          var id = await view.waitHuman(ids(hand), ids(legal), moveHint(hand, plays, trump, legal)); if (!alive()) return;
           card = hand.find(function (c) { return c.id === id; });
         } else {
           await view.wait(.7); if (!alive()) return;

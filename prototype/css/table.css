@@ -71,6 +71,9 @@
 
 /* ---- bottom bar (812x40 at 20,333): settings, chat, reactions on the left, info on the right */
 .tb-bottom { position: absolute; left: 20px; top: 333px; width: 812px; height: 40px; display: flex; gap: 12px; }
+/* the bar spans the full width over your cards: only its buttons and popovers take taps */
+.tb-ui > .tb-bottom { pointer-events: none; }
+.tb-bottom > * { pointer-events: auto; }
 .table .tb-btn { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; flex: none; }
 .tb-btn--info { margin-left: auto; }
 .tb-btn_bg { position: absolute; inset: 0; width: 40px; height: 40px; }
@@ -119,6 +122,7 @@
 }
 .tb-say_line--bid { background: #0b2552; color: #fff; border: 1px solid #5ca0ff; font-weight: 700; font-size: 14px; }
 .tb-say_line--combo { background: #ffd66b; color: #3a2400; font-weight: 700; }
+.tb-say_line--hint { background: #1d1206; color: #ffd66b; border: 1px solid #ffd66b; font-size: 12px; }
 .tb-say_emoji { font-size: 44px; line-height: 1; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .6)); animation: tb-emoji 2s ease forwards; }
 
 /* ---- contract chip under the score */

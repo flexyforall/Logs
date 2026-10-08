@@ -440,13 +440,13 @@
       ids.forEach(function (id, i) { var t = pileAt(seat, i, ids.length); tween(byId[id], { x: t.x, y: t.y, rot: t.rot }, .25); });
     },
     // wait for you to tap one of the legal cards; the others are darkened
-    waitHuman: function (hand, legal) {
+    waitHuman: function (hand, legal, hint) {
       hand.forEach(function (id) {
         var c = byId[id], ok = legal.indexOf(id) >= 0;
-        c.base = ok ? 10 : 0;
+        c.base = ok ? 18 : 0;
         tween(c, { dim: ok ? 0 : 1, lift: c.base }, .2);
       });
-      return new Promise(function (res) { humanWait = { legal: legal, res: res, hand: hand }; });
+      return new Promise(function (res) { humanWait = { legal: legal, res: res, hand: hand, hint: hint }; });
     },
     playCard: function (seat, id) {
       var c = byId[id], t = TRICK_SPOT[seat], j = (Math.random() - .5) * .16;
@@ -479,6 +479,13 @@
   cv.addEventListener('click', function (e) {
     if (!humanWait) return;
     pick(e);
+    if (hover && humanWait.legal.indexOf(hover.id) < 0) {
+      // not playable now: shake it and say why
+      var c = hover, x0 = c.x;
+      anim(.3, function (p) { c.x = x0 + Math.sin(p * Math.PI * 6) * 10 * (1 - p); });
+      bubble('bottom', humanWait.hint || 'Play a highlighted card', 'hint');
+      return;
+    }
     if (hover && humanWait.legal.indexOf(hover.id) >= 0) {
       var w = humanWait, id = hover.id;
       humanWait = null;
