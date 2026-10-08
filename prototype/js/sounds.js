@@ -27,7 +27,7 @@
     a.volume = volume == null ? 0.8 : volume;
     a.play().catch(function () {});
   }
-  ['whoosh', 'pop', 'coin', 'riser', 'click', 'play', 'shimmer'].forEach(function (n) {
+  ['whoosh', 'pop', 'coin', 'riser', 'click', 'play', 'shimmer', 'battle'].forEach(function (n) {
     cache[n] = new Audio(BASE + n + '.mp3');
     cache[n].preload = 'auto';
   });
@@ -105,11 +105,23 @@
     else { stopMusic(); stopEntrance(); }
   });
 
+  // "into battle": the room music ducks under it, then comes back
+  function battle() {
+    if (muted) return;
+    sfx('battle', 1);
+    var a = current && players[current];
+    if (!a) return;
+    fade(a, 0.06, 250, function () {
+      setTimeout(function () { if (players[current] === a) fade(a, MUSIC_VOLUME, 1500); }, 3200);
+    });
+  }
+
   // ---- tap sounds
   document.addEventListener('click', function (e) {
     var el = e.target.closest('button');
     if (!el || !el.closest('.lobby, .stsel')) return;
-    if (el.matches('[data-play], [data-stage-play]')) sfx('play', 0.9);
+    if (el.matches('[data-stage-play]')) { battle(); return; }
+    if (el.matches('[data-play]')) sfx('play', 0.9);
     else if (el.matches('.st-card:not(.is-locked):not(.is-selected)')) sfx('whoosh', 0.4);
     else if (el.matches('.st-card.is-selected')) return;
     else sfx('click', 0.5);

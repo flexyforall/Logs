@@ -280,3 +280,99 @@ save("riser", riser(), -8)
 save("click", click(), -8)
 save("play", play_now(), -2)
 save("shimmer", chime(), -14)
+
+
+# ---------------------------------------------------------------- "into battle" (stage Play button)
+def reverb(x, seconds=2.2, mix=0.35):
+    """Convolution with decaying noise: a big hall."""
+    n_ir = int(seconds * SR)
+    t = np.arange(n_ir) / SR
+    ir = rng.standard_normal(n_ir) * np.exp(-t * 6.9 / seconds)
+    ir = lowpass(ir, 5000)
+    ir[: int(0.02 * SR)] *= np.linspace(0, 1, int(0.02 * SR))
+    ir /= np.sqrt(np.sum(ir ** 2))
+    size = 1 << int(np.ceil(np.log2(len(x) + n_ir)))
+    wet = np.fft.irfft(np.fft.rfft(x, size) * np.fft.rfft(ir, size), size)[: len(x) + n_ir]
+    dry = np.pad(x, (0, n_ir))
+    return dry * (1 - mix) + wet * mix * 3.0
+
+
+def battle(dur=3.6):
+    n = int(dur * SR)
+    out = np.zeros(n)
+    HIT = 1.55                                  # the big impact
+
+    def put(sig, at, g=1.0):
+        i = int(at * SR)
+        j = min(n, i + len(sig))
+        out[i:j] += sig[: j - i] * g
+
+    # sword drawn: bright metallic partials sliding up, with a scrape
+    t = t_of(1.1)
+    shing = np.zeros_like(t)
+    for f, d in ((2900, 2.4), (4100, 3.0), (5600, 3.8), (7300, 5.0)):
+        shing += np.sin(2 * np.pi * np.cumsum(f * (1 + 0.05 * np.clip(t * 5, 0, 1))) / SR) * np.exp(-t * d)
+    scrape = highpass(rng.standard_normal(len(t)), 4000) * np.exp(-((t - 0.09) / 0.08) ** 2)
+    put((shing * 0.35 + scrape) * (1 - np.exp(-t * 300)), 0.0, 0.6)
+
+    # taiko ensemble: several detuned drums per hit, accelerating into the impact
+    def taiko(g, pitch=1.0):
+        tt = t_of(1.2)
+        x = np.zeros_like(tt)
+        for k in range(3):
+            f0 = (42 + 6 * k) * pitch
+            x += np.sin(2 * np.pi * np.cumsum(f0 + 90 * np.exp(-tt * 16)) / SR) * np.exp(-tt * (3.2 + k))
+        skin = lowpass(rng.standard_normal(len(tt)), 1100) * np.exp(-tt * 26) * 0.9
+        return (x / 3 + skin) * g
+    for at, g, p in ((0.32, 0.55, 1.0), (0.70, 0.6, 1.05), (0.98, 0.65, 1.0), (1.17, 0.7, 1.1),
+                     (1.31, 0.75, 1.05), (1.41, 0.8, 1.15), (1.49, 0.85, 1.2)):
+        put(taiko(g, p), at)
+    put(taiko(1.3, 0.85), HIT)
+
+    # sub boom on the impact
+    tt = t_of(2.0)
+    sub = np.sin(2 * np.pi * np.cumsum(30 + 40 * np.exp(-tt * 6)) / SR) * np.exp(-tt * 1.6) * (1 - np.exp(-tt * 200))
+    put(sub, HIT, 0.9)
+
+    # choir "aah": detuned saws through vowel formants, swelling into the hit and holding
+    tt = t_of(2.4)
+    notes = [midi(50), midi(57), midi(62), midi(65), midi(69)]   # D minor, wide
+    voices = np.zeros_like(tt)
+    for f in notes:
+        for dt in (-0.006, 0.0, 0.006):
+            vib = 1 + 0.004 * np.sin(2 * np.pi * (5 + 3 * dt * 100) * tt)
+            ph = np.cumsum(f * (1 + dt) * vib) / SR
+            voices += 2 * (ph % 1.0) - 1
+    def band(x, lo, hi):
+        return lowpass(highpass(x, lo), hi)
+    aah = band(voices, 600, 1000) * 1.0 + band(voices, 1000, 1500) * 0.6 + band(voices, 2400, 3000) * 0.25
+    swell = np.clip(tt / 1.2, 0, 1) ** 2 * np.exp(-np.clip(tt - 1.6, 0, None) * 1.4)
+    put(aah * swell / (len(notes) * 3), HIT - 1.2, 1.6)
+
+    # brass fanfare: D - A - D' rising, the last note landing on the impact
+    def brass(freq, d, g):
+        tt = t_of(d)
+        x = sum(np.sign(np.sin(2 * np.pi * freq * m_ * (1 + dt) * tt)) * 0.45 + np.sin(2 * np.pi * freq * m_ * (1 + dt) * tt)
+                for m_ in (1, 2) for dt in (-0.003, 0.003))
+        x = lowpass(x, 3200)
+        return x * np.clip(tt / 0.04, 0, 1) * np.exp(-np.clip(tt - d * 0.6, 0, None) * 4) * g
+    put(brass(midi(50), 0.22, 0.18), HIT - 0.42)
+    put(brass(midi(57), 0.22, 0.2), HIT - 0.21)
+    put(brass(midi(62), 1.4, 0.3), HIT)
+    put(brass(midi(57), 1.4, 0.18), HIT)
+
+    # cymbal crash + rising whoosh into the impact
+    tt = t_of(2.0)
+    crash = highpass(rng.standard_normal(len(tt)), 5000) * np.exp(-tt * 1.8) * (1 - np.exp(-tt * 400))
+    put(crash, HIT, 0.35)
+    tt = t_of(1.25)
+    rise = highpass(lowpass(rng.standard_normal(len(tt)), 3000), 300) * (tt / tt[-1]) ** 2.5
+    put(rise, HIT - 1.25, 0.4)
+
+    wet = reverb(out, 2.4, 0.38)
+    fade = np.ones(len(wet))
+    fade[-int(0.4 * SR):] = np.linspace(1, 0, int(0.4 * SR))
+    return np.tanh(wet / np.max(np.abs(wet)) * 1.6) * fade
+
+
+save("battle", battle(), -0.5)

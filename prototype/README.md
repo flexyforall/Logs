@@ -17,6 +17,8 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    goes back to the lobby. The big play button and the tabs are not wired up yet.
    Each open room has its own music (Backroom tense, Café cozy, Courtyard simple),
    crossfading as you switch rooms; the lobby track returns when you go back.
+   The big play button plays an "into battle" sting (sword, taiko, choir, brass) with
+   the room music ducked under it.
 
 Sounds are synthesised (no samples): `tools/make_sounds.py` makes the lobby music and UI
 sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to regenerate
