@@ -125,7 +125,7 @@
   // ---- tap sounds
   document.addEventListener('click', function (e) {
     var el = e.target.closest('button');
-    if (!el || !el.closest('.lobby, .stsel')) return;
+    if (!el || !el.closest('.lobby, .stsel, .table')) return;
     if (el.matches('[data-stage-play]')) { battle(); return; }
     if (el.matches('[data-play]')) sfx('play', 0.9);
     else if (el.matches('.st-card:not(.is-locked):not(.is-selected)')) sfx('whoosh', 0.4);

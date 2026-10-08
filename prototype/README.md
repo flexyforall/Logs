@@ -20,13 +20,15 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    crossfading as you switch rooms; the lobby track returns when you go back.
    The big play button plays an "into battle" sting (sword, taiko, choir, brass) with
    the room music ducked under it.
-4. Then the game table opens: the fireside salon from the "Prototype" scene with every bit
-   of UI removed (no name plates, speech bubbles, score or buttons). The room fades in, the
-   four players take their seats one by one, Don Marco shuffles and deals 3-2-3
-   counter-clockwise, and your eight cards fan out face up. Afterwards the players keep
-   making small moves (short AI video loops). Fireplace crackle and card flicks are
-   synthesised with Web Audio; the room music carries on quietly underneath.
-   Double-tap the table to go back to the stage select (prototype shortcut).
+4. Then the game table opens: the fireside salon from the "Prototype" scene. The room fades
+   in, the four players take their seats one by one, Don Marco shuffles and deals 3-2-3
+   counter-clockwise, and your eight cards fan out face up (all of it at double speed).
+   Afterwards the players keep making small moves (short AI video loops). Fireplace crackle
+   and card flicks are synthesised with Web Audio; the room music carries on underneath.
+   The HUD follows Figma (Mansion Table Example, node `1873:2080`): settings, last trick and
+   score along the top. Bottom left is a chat / reactions pill: chat sends a quick phrase,
+   reactions an emoji, shown above your seat. The settings gear goes back to the stage
+   select (prototype shortcut).
 
 Sounds are synthesised (no samples): `tools/make_sounds.py` makes the lobby music and UI
 sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to regenerate
@@ -49,6 +51,8 @@ assets/lobby/figma/        lobby assets exported from Figma (WebP sized @3x)
 assets/lobby/              the original uploaded lobby assets
 assets/play/figma/         stage select assets (stage art from the uploads, WebP @3x)
 assets/play/               the original uploaded stage select assets
+assets/table/ui/           table HUD: panel backgrounds (rendered from the uploaded SVGs,
+                           which stay as the originals), last-trick cards, gear
 assets/table/              salon art (2000x923: room with empty chairs, full scene), card
                            atlas, seat video loops (WebM + MP4, 960x540) and their masks
 assets/fonts/              Poppins 600 and 800 italic
@@ -65,3 +69,6 @@ with light dithering. The Figma SVG glow clipped its blur at the file edge, whic
 as dark bands above and below the cards.
 The PLAY NOW button's decorative layer (`play-effects.webp`) is a Figma export of
 its "effects" group, because the generated code placed those layers incorrectly.
+
+`gear-web.svg` is the Figma gear with its filters removed (the clipped drop shadow and
+inner shadow rendered as a light square in browsers); its shadow is done in CSS instead.

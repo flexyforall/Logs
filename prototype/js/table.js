@@ -139,6 +139,8 @@
   };
 
   // ---------- Tweens ----------
+  // Everything scripted (seating, shuffle, deal) runs at double speed.
+  var SPEED = 2;
   var run = 0, tweens = [];
   var ease = {
     out: function (p) { return 1 - Math.pow(1 - p, 3); },
@@ -155,7 +157,7 @@
   function anim(dur, fn) { return tween({}, {}, dur, { ease: ease.lin, fn: fn }); }
   function stepTweens(dt) {
     for (var i = tweens.length - 1; i >= 0; i--) {
-      var tw = tweens[i]; tw.t += dt;
+      var tw = tweens[i]; tw.t += dt * SPEED;
       if (tw.t < tw.delay) continue;
       if (!tw.from) { tw.from = {}; for (var k in tw.to) tw.from[k] = tw.o[k]; }
       var p = Math.min(1, (tw.t - tw.delay) / (tw.dur || 1)), e = tw.e(p);
@@ -348,7 +350,8 @@
     function ok() { return my === run && active; }
 
     tween(S, { black: 0 }, 1.2);
-    await wait(.8); if (!ok()) return;
+    await wait(.6); if (!ok()) return;
+    screen.classList.remove('tb-enter'); void screen.offsetWidth; screen.classList.add('tb-enter');
 
     for (var j = 0; j < JOIN_ORDER.length; j++) {
       join(JOIN_ORDER[j], my);
@@ -581,12 +584,43 @@
       booting.then(function () { if (active) play(); });
     } else if (active) {
       active = false; run++;
+      screen.classList.remove('tb-enter'); closePops(null); say.textContent = '';
       cancelAnimationFrame(raf);
       IDS.forEach(function (id) { try { SEATS[id].vid.pause(); } catch (err) {} });
       stopFire();
     }
   });
 
-  // Prototype shortcut: a double tap anywhere on the table goes back to the stage select.
-  cv.addEventListener('dblclick', function () { window.BlotNav.show('play'); });
+  // ---------- HUD ----------
+  // Prototype shortcut: the settings gear goes back to the stage select.
+  screen.querySelector('[data-table-settings]').addEventListener('click', function () { window.BlotNav.show('play'); });
+
+  // Chat and reactions: each button opens its popover; a pick pops up above your seat.
+  var say = screen.querySelector('[data-say]');
+  var social = screen.querySelectorAll('[data-social]');
+  function closePops(except) {
+    social.forEach(function (b) {
+      var k = b.getAttribute('data-social'), open = k === except;
+      b.setAttribute('aria-expanded', String(open));
+      screen.querySelector('[data-pop="' + k + '"]').hidden = !open;
+    });
+  }
+  social.forEach(function (b) {
+    b.addEventListener('click', function (e) {
+      e.stopPropagation();
+      closePops(b.getAttribute('aria-expanded') === 'true' ? null : b.getAttribute('data-social'));
+    });
+  });
+  function pop(cls, text) {
+    var el = document.createElement('div');
+    el.className = cls; el.textContent = text;
+    say.textContent = ''; say.appendChild(el);
+  }
+  screen.querySelectorAll('[data-pop="chat"] button').forEach(function (b) {
+    b.addEventListener('click', function () { closePops(null); pop('tb-say_line', b.textContent); });
+  });
+  screen.querySelectorAll('[data-pop="react"] button').forEach(function (b) {
+    b.addEventListener('click', function () { closePops(null); pop('tb-say_emoji', b.textContent); });
+  });
+  screen.addEventListener('click', function (e) { if (!e.target.closest('.tb-social')) closePops(null); });
 })();
