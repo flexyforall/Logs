@@ -368,7 +368,8 @@
   // Everything is in scene coordinates. Each call returns when its animation is done.
   var SUIT_OF = { S: SUITS[0], H: SUITS[1], C: SUITS[2], D: SUITS[3] };
   var DECK_FROM = { top: [1005, 290, Math.PI], bottom: [1000, 760, 0], left: [470, 512, Math.PI / 2], right: [1530, 512, -Math.PI / 2] };
-  var TRICK_SPOT = { bottom: [1000, 590, 0], top: [1000, 448, Math.PI], left: [885, 518, Math.PI / 2], right: [1115, 518, -Math.PI / 2] };
+  // the trick is laid in the middle of the table, each card nudged towards whoever played it
+  var TRICK_SPOT = { bottom: [1000, 548, -.04], top: [1000, 478, .04], left: [948, 513, -.12], right: [1052, 513, .12] };
   var byId = {}, humanWait = null, trickZ = 500;
 
   function pileAt(id, i, n) {
@@ -449,13 +450,13 @@
       return new Promise(function (res) { humanWait = { legal: legal, res: res, hand: hand, hint: hint }; });
     },
     playCard: function (seat, id) {
-      var c = byId[id], t = TRICK_SPOT[seat], j = (Math.random() - .5) * .16;
+      var c = byId[id], t = TRICK_SPOT[seat];
       c.mine = false; c.base = 0; c.z = trickZ++;
       if (c === hover) hover = null;
       flick(.25);
       tween(c, { dim: 0, lift: 0 }, .15);
       tween(c, { flip: 1 }, .3, { ease: ease.inOut });
-      return tween(c, { x: t[0] + (Math.random() - .5) * 14, y: t[1] + (Math.random() - .5) * 10, rot: t[2] + j, sc: 1.15 }, .4, { ease: ease.out });
+      return tween(c, { x: t[0], y: t[1], rot: t[2], sc: 1.15 }, .4, { ease: ease.out });
     },
     // the trick slides to the winner and is gone
     collect: async function (seat, ids) {
