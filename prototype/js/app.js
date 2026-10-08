@@ -58,6 +58,8 @@
     show('lobby');
   }
 
+  window.BlotNav = { show: show };
+
   skip.addEventListener('click', toLobby);
   video.addEventListener('ended', toLobby);
   // Prototype shortcut: the settings gear replays the splash.

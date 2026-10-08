@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/lobby.css">
+<link rel="stylesheet" href="css/stage.css">
 </head>
 <body>
 <div class="stage">
@@ -145,6 +146,39 @@
         </div>
       </section>
 
+      <!-- Stage select (Figma: Blot / Play Online - Affordable game, node 1856:1589), 852x393 -->
+      <section class="screen screen--play stsel" data-screen-id="play">
+        <img class="st-bg" src="assets/play/figma/play-bg.webp" alt="">
+
+        <header class="st-header">
+          <button class="st-back" type="button" data-back aria-label="Назад">
+            <img src="assets/play/figma/arrow-left.svg" alt="">
+          </button>
+          <nav class="st-tabs" role="tablist">
+            <button class="st-tab is-active" type="button" role="tab" aria-selected="true">Quick Game</button>
+            <button class="st-tab" type="button" role="tab" aria-selected="false">Tournaments</button>
+            <button class="st-tab" type="button" role="tab" aria-selected="false">Bond</button>
+          </nav>
+          <div class="st-balance">
+            <img class="st-balance_spacer" src="assets/play/figma/flag.svg" alt="">
+            <span class="st-balance_bg"></span>
+            <span class="st-balance_text" data-text="3,500">3,500</span>
+            <img class="st-balance_chip" src="assets/lobby/figma/chip.webp" alt="">
+          </div>
+        </header>
+
+        <div class="st-track" data-stages></div>
+
+        <button class="st-play" type="button" data-stage-play aria-label="Играть">
+          <span><img src="assets/play/figma/play-button.webp" alt=""></span>
+        </button>
+
+        <div class="st-cost">
+          <p>This game will cost you</p>
+          <span class="st-amount"><img src="assets/lobby/figma/chip.webp" alt=""><b data-stage-cost>20,000</b></span>
+        </div>
+      </section>
+
     </div>
     <div class="device_island" aria-hidden="true"></div>
   </div>
@@ -155,5 +189,6 @@
 </div>
 <script src="js/app.js"></script>
 <script src="js/sounds.js"></script>
+<script src="js/stage.js"></script>
 </body>
 </html>

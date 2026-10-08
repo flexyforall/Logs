@@ -75,14 +75,23 @@
 
   document.addEventListener('screen:show', function (e) {
     if (e.detail === 'lobby') { startMusic(); playEntrance(); }
+    else if (e.detail === 'play') {
+      stopEntrance();
+      startMusic();
+      sfx('whoosh', 0.5);
+      [200, 260, 320, 380, 440].forEach(function (t) { timers.push(setTimeout(function () { sfx('pop', 0.22); }, t)); });
+      timers.push(setTimeout(function () { sfx('pop', 0.5); }, 480));
+    }
     else { stopMusic(); stopEntrance(); }
   });
 
   // ---- tap sounds
   document.addEventListener('click', function (e) {
     var el = e.target.closest('button');
-    if (!el || !el.closest('.lobby')) return;
-    if (el.matches('[data-play]')) sfx('play', 0.9);
+    if (!el || !el.closest('.lobby, .stsel')) return;
+    if (el.matches('[data-play], [data-stage-play]')) sfx('play', 0.9);
+    else if (el.matches('.st-card:not(.is-locked):not(.is-selected)')) sfx('whoosh', 0.4);
+    else if (el.matches('.st-card.is-selected')) return;
     else sfx('click', 0.5);
   });
 

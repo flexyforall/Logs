@@ -12,6 +12,9 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
 2. Lobby (Figma: Blot / Lobby, node `1784:85`) with an entrance animation, background
    music, sounds timed to the animation and tap sounds. The settings gear replays the splash.
    The round button outside the phone frame turns sound on and off.
+3. PLAY NOW opens the stage select (Figma node `1856:1589`): tap Courtyard or Café to
+   bring it to the centre (the cost updates); Mansion and Arena are locked. The arrow
+   goes back to the lobby. The big play button and the tabs are not wired up yet.
 
 Sounds are synthesised by `tools/make_sounds.py` (no samples): run it to regenerate
 `assets/sounds/`, or drop in real files with the same names.
@@ -22,11 +25,15 @@ Sounds are synthesised by `tools/make_sounds.py` (no samples): run it to regener
 index.html                 screens: splash, lobby
 css/app.css                device frame, screen switching, splash
 css/lobby.css              lobby, positions and sizes taken from Figma
+css/stage.css              stage select, positions and sizes taken from Figma
 js/app.js                  frame scaling, splash playback, screen switching
 js/sounds.js               lobby music, entrance and tap sounds, mute toggle
+js/stage.js                stage select carousel and navigation
 assets/splash/             splash video (MP4 + WebM fallback) and logo
 assets/lobby/figma/        lobby assets exported from Figma (WebP sized @3x)
 assets/lobby/              the original uploaded lobby assets
+assets/play/figma/         stage select assets (stage art from the uploads, WebP @3x)
+assets/play/               the original uploaded stage select assets
 assets/fonts/              Poppins 600 and 800 italic
 assets/sounds/             lobby music loop and UI sounds (MP3)
 tools/make_sounds.py       synthesises assets/sounds/
