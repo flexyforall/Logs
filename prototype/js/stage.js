@@ -1,4 +1,4 @@
-// Stage select: carousel of rooms. Tapping an open room brings it to the centre and
+// Stage select: an endless carousel of rooms. Tapping an open room brings it to the centre and
 // updates the cost; dimmed rooms are locked. PLAY NOW in the lobby opens this screen.
 (function () {
   var A = 'assets/play/figma/';
@@ -37,17 +37,32 @@
     return b;
   });
 
-  function layout() {
-    // centre of each card relative to the selected one
-    var x = [];
-    x[selected] = CX;
-    for (var i = selected - 1; i >= 0; i--) x[i] = x[i + 1] - ((i + 1 === selected ? SW : W) / 2 + GAP + W / 2);
-    for (var j = selected + 1; j < cards.length; j++) x[j] = x[j - 1] + ((j - 1 === selected ? SW : W) / 2 + GAP + W / 2);
+  // Endless carousel: every room sits at a circular offset d from the selected one
+  // (-2..2 for five rooms), so there are always rooms on both sides.
+  var N = STAGES.length, HALF = Math.floor(N / 2);
+  function offset(k) { return ((k - selected + N + HALF) % N) - HALF; }
+  function centerX(d) {
+    if (!d) return CX;
+    return CX + Math.sign(d) * (SW / 2 + GAP + W / 2 + (Math.abs(d) - 1) * (W + GAP));
+  }
+  function place(c, d, sel) {
+    var w = sel ? SW : W, h = sel ? SH : H;
+    c.style.left = (centerX(d) - w / 2) + 'px';
+    c.style.top = (CY - h / 2) + 'px';
+  }
+  function layout(shift) {
     cards.forEach(function (c, k) {
-      var sel = k === selected, w = sel ? SW : W, h = sel ? SH : H;
+      var d = offset(k), sel = d === 0;
       c.classList.toggle('is-selected', sel);
-      c.style.left = (x[k] - w / 2) + 'px';
-      c.style.top = (CY - h / 2) + 'px';
+      // a room that wraps around to the other end comes in from beyond the edge
+      // instead of sliding across the whole screen
+      if (shift && Math.abs(d + shift) > HALF) {
+        c.style.transition = 'none';
+        place(c, d + shift, false);
+        void c.offsetWidth;
+        c.style.transition = '';
+      }
+      place(c, d, sel);
     });
     // the new price shows once the cost line has faded out
     clearTimeout(layout.t);
@@ -64,10 +79,11 @@
       c.classList.add('is-shaking');
       return;
     }
+    var shift = offset(i);   // how many places the carousel moves
     selected = i;
     // the play button and the cost hide while the cards move, then come back
     [playBtn, costLine].forEach(function (el) { el.classList.remove('is-swapping'); void el.offsetWidth; el.classList.add('is-swapping'); });
-    layout();
+    layout(shift);
     document.dispatchEvent(new CustomEvent('stage:select', { detail: STAGES[i].id }));
     c.classList.remove('is-arriving');
     void c.offsetWidth;

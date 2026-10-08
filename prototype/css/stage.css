@@ -126,7 +126,7 @@
 }
 .st-balance_text {
   position: relative;
-  font-weight: 800;
+  font-weight: 600;   /* chip amounts use the weight of the player name in the lobby */
   font-size: 14px;
   line-height: normal;
   white-space: nowrap;
@@ -207,7 +207,7 @@
 .st-price .st-amount { left: .38px; top: .15px; }
 .st-price .st-amount img { width: 22px; height: 22px; object-fit: cover; }
 .st-amount b {
-  font-weight: 800;
+  font-weight: 600;
   font-size: 16px;
   line-height: normal;
   color: #fff;

@@ -141,7 +141,7 @@
 .lb-progress_taper img { top: -4.65%; right: -3.12%; bottom: -9.19%; left: -3.12%; }
 .lb-progress_filament img { top: 0; right: 0; bottom: 0; left: -2.02%; }
 
-/* currency / no-ads pills (Figma widths as the minimum; they grow with the bold text) */
+/* currency / no-ads pills (Figma widths as the minimum; they grow with the text) */
 .lobby .lb-pill:nth-child(1) { min-width: 110px; }
 .lobby .lb-pill:nth-child(2) { min-width: 80px; }
 .lobby .lb-pill:nth-child(3) { min-width: 98px; }
@@ -172,7 +172,7 @@
 .lb-glass--96.lb-pill_bg { width: 100%; }
 .lb-pill_text {
   position: relative;
-  font-weight: 800;   /* bold like the chip balance on the stage select */
+  font-weight: 600;   /* same weight as the player name */
   font-size: 16px;
   line-height: normal;
   white-space: nowrap;
