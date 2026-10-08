@@ -30,8 +30,8 @@ FADE_START = 3.85     # video starts going dark
 FREEZE_AT = 3.9       # hold this frame (the source cuts to Medusa at 3.95)
 VIDEO_END = 4.35      # video fully gone
 LOGO_START = 4.0      # logo appears out of the whirlpool
-POP = 0.5             # easeOutBack pop duration
-SHRINK = 0.10         # logo shrinks by 10% towards the end
+SETTLE = 0.06         # logo appears at full size and shrinks by 6% as the swirl closes
+SHRINK = 0.04         # then drifts down another 4% towards the end
 LOGO_H = int(0.62 * H)  # height of the letters at scale 1.0
 SWEEPS = (0.7, 1.9, 3.0)   # light sweeps, seconds after LOGO_START
 SWEEP_LEN = 0.55
@@ -42,11 +42,6 @@ rng = np.random.default_rng(3)
 def smoothstep(a, b, x):
     t = min(1.0, max(0.0, (x - a) / (b - a)))
     return t * t * (3 - 2 * t)
-
-
-def ease_out_back(p):
-    c = 1.70158
-    return 1 + (c + 1) * (p - 1) ** 3 + c * (p - 1) ** 2
 
 
 # ---------------------------------------------------------------- input video
@@ -107,11 +102,19 @@ def logo_frame(T):
     return rgb, alpha
 
 
+def swirl_k(t):
+    return smoothstep(SWIRL_START, VIDEO_END, t) ** 1.6
+
+
 def logo_scale(T):
-    if T < POP:
-        return max(0.01, ease_out_back(T / POP))
-    rest = DURATION - LOGO_START - POP
-    return (1 - SHRINK * (T - POP) / rest) * (1 + 0.012 * math.sin(2 * math.pi * 0.7 * (T - POP)))
+    """Full size when it appears, shrinking in step with the swirl until the swirl closes."""
+    k0 = swirl_k(LOGO_START)
+    close = VIDEO_END - LOGO_START
+    if T < close:
+        return 1 - SETTLE * (swirl_k(LOGO_START + T) - k0) / (1 - k0)
+    rest = DURATION - VIDEO_END
+    d = T - close
+    return (1 - SETTLE - SHRINK * d / rest) * (1 + 0.012 * math.sin(2 * math.pi * 0.7 * d))
 
 
 # ---------------------------------------------------------------- swirl
@@ -156,7 +159,7 @@ for i in range(N):
         base = np.zeros((H, W, 3), np.float32)
     else:
         img = np.frombuffer(raw, np.uint8).reshape(H, W, 3)
-        k = smoothstep(SWIRL_START, VIDEO_END, t) ** 1.6
+        k = swirl_k(t)
         if k > 0:
             img = swirl(img, k)
         base = img.astype(np.float32) / 255.0

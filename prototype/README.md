@@ -7,8 +7,9 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
 
 ## Flow
 
-1. The splash plays straight away. Browsers block sound until the first tap, so it
-   starts muted when needed and the sound comes on at the first tap. "Skip" jumps ahead.
+1. A "Tap to play prototype" screen comes first: the tap lets the browser play sound,
+   then the splash plays with it. "Skip" jumps ahead. In the splash the logo appears at
+   full size as the whirlpool closes and shrinks slightly in step with it.
 2. Lobby (Figma: Blot / Lobby, node `1784:85`) with an entrance animation, background
    music, sounds timed to the animation and tap sounds. The settings gear replays the splash.
    The round button outside the phone frame turns sound on and off.
@@ -34,7 +35,7 @@ sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to r
 ## Layout
 
 ```
-index.html                 screens: splash, lobby, stage select, table
+index.html                 screens: start, splash, lobby, stage select, table
 css/app.css                device frame, screen switching, splash
 css/lobby.css              lobby, positions and sizes taken from Figma
 css/stage.css              stage select, positions and sizes taken from Figma

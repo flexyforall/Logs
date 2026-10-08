@@ -30,8 +30,8 @@
     }
   }
 
-  // The splash starts on load. Browsers block autoplay with sound until the first tap,
-  // so if unmuted playback is refused it plays muted and the sound comes on at the first tap.
+  // The splash starts from the "Tap to play" screen, so sound is allowed. If unmuted
+  // playback is still refused it plays muted and the sound comes on at the next tap.
   function playSplash() {
     show('splash');
     video.currentTime = 0;
@@ -60,10 +60,13 @@
 
   window.BlotNav = { show: show };
 
+  // Start screen: the tap is the user gesture that lets the splash play with sound.
+  document.querySelector('[data-start]').addEventListener('click', playSplash);
+
   skip.addEventListener('click', toLobby);
   video.addEventListener('ended', toLobby);
   // Prototype shortcut: the settings gear replays the splash.
   document.querySelector('[data-settings]').addEventListener('click', playSplash);
 
-  playSplash();
+  show('start');
 })();
