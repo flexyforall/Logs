@@ -15,8 +15,11 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
 3. PLAY NOW opens the stage select (Figma node `1856:1589`): tap Courtyard or Café to
    bring it to the centre (the cost updates); Mansion and Arena are locked. The arrow
    goes back to the lobby. The big play button and the tabs are not wired up yet.
+   Each open room has its own music (Backroom tense, Café cozy, Courtyard simple),
+   crossfading as you switch rooms; the lobby track returns when you go back.
 
-Sounds are synthesised by `tools/make_sounds.py` (no samples): run it to regenerate
+Sounds are synthesised (no samples): `tools/make_sounds.py` makes the lobby music and UI
+sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to regenerate
 `assets/sounds/`, or drop in real files with the same names.
 
 ## Layout
@@ -36,7 +39,8 @@ assets/play/figma/         stage select assets (stage art from the uploads, WebP
 assets/play/               the original uploaded stage select assets
 assets/fonts/              Poppins 600 and 800 italic
 assets/sounds/             lobby music loop and UI sounds (MP3)
-tools/make_sounds.py       synthesises assets/sounds/
+tools/make_sounds.py       synthesises the lobby music and UI sounds
+tools/make_room_music.py   synthesises one music loop per room
 ```
 
 `users-web.svg` and `clipboard-web.svg` are copies of the Figma exports with the

@@ -61,6 +61,7 @@
     }
     selected = i;
     layout();
+    document.dispatchEvent(new CustomEvent('stage:select', { detail: STAGES[i].id }));
     c.classList.remove('is-arriving');
     void c.offsetWidth;
     c.classList.add('is-arriving');
@@ -87,6 +88,8 @@
     screen.classList.add('st-enter');
     cards.forEach(function (c, k) { c.style.animationDelay = (0.12 + k * 0.06) + 's'; });
   });
+
+  window.BlotStage = { current: function () { return STAGES[selected].id; } };
 
   layout();
 })();

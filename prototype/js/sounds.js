@@ -7,10 +7,17 @@
   var muted = false;
   try { muted = localStorage.getItem('blot-muted') === '1'; } catch (e) {}
 
-  var music = new Audio(BASE + 'lobby-music.mp3');
-  music.loop = true;
-  music.volume = 0;
-  music.preload = 'auto';
+  // One looping track per place; switching crossfades between them.
+  var TRACKS = { lobby: 'lobby-music', backroom: 'room-backroom', cafe: 'room-cafe', courtyard: 'room-courtyard' };
+  var players = {};
+  Object.keys(TRACKS).forEach(function (k) {
+    var a = new Audio(BASE + TRACKS[k] + '.mp3');
+    a.loop = true;
+    a.volume = 0;
+    a.preload = k === 'lobby' ? 'auto' : 'metadata';
+    players[k] = a;
+  });
+  var current = null;     // key of the track that should be playing
 
   var cache = {};
   function sfx(name, volume) {
@@ -25,33 +32,36 @@
     cache[n].preload = 'auto';
   });
 
-  // ---- music with fades
-  var fadeTimer;
-  function fadeMusic(to, ms, then) {
-    clearInterval(fadeTimer);
-    var from = music.volume, steps = Math.max(1, Math.round(ms / 30)), i = 0;
-    fadeTimer = setInterval(function () {
+  // ---- music with crossfades
+  var fades = {};
+  function fade(a, to, ms, then) {
+    var key = a.src;
+    clearInterval(fades[key]);
+    var from = a.volume, steps = Math.max(1, Math.round(ms / 30)), i = 0;
+    fades[key] = setInterval(function () {
       i++;
-      music.volume = Math.max(0, Math.min(1, from + (to - from) * i / steps));
-      if (i >= steps) { clearInterval(fadeTimer); if (then) then(); }
+      a.volume = Math.max(0, Math.min(1, from + (to - from) * i / steps));
+      if (i >= steps) { clearInterval(fades[key]); if (then) then(); }
     }, 30);
   }
-  var wantMusic = false;
-  function startMusic() {
-    wantMusic = true;
-    if (muted) return;
-    music.play().then(function () { fadeMusic(MUSIC_VOLUME, 1200); }).catch(function () {
+  function playTrack(key) {
+    var prev = current;
+    current = key;
+    Object.keys(players).forEach(function (k) {
+      if (k !== key && !players[k].paused) fade(players[k], 0, 900, function () { if (current !== k) players[k].pause(); });
+    });
+    if (muted || !key) return;
+    var a = players[key];
+    if (prev !== key && key !== 'lobby') a.currentTime = 0;
+    a.play().then(function () { fade(a, MUSIC_VOLUME, 1200); }).catch(function () {
       // Blocked until the first tap: try again then.
       document.addEventListener('pointerdown', function retry() {
         document.removeEventListener('pointerdown', retry);
-        if (wantMusic && !muted) startMusic();
+        if (current === key && !muted) playTrack(key);
       });
     });
   }
-  function stopMusic() {
-    wantMusic = false;
-    fadeMusic(0, 400, function () { music.pause(); });
-  }
+  function stopMusic() { playTrack(null); }
 
   // ---- entrance cues, matched to the CSS animation delays in lobby.css
   var timers = [];
@@ -73,11 +83,21 @@
   }
   function stopEntrance() { timers.forEach(clearTimeout); timers = []; }
 
+  function roomTrack() {
+    var id = window.BlotStage && window.BlotStage.current();
+    return TRACKS[id] ? id : 'lobby';
+  }
+
+  // the stage select plays the music of the selected room
+  document.addEventListener('stage:select', function (e) {
+    if (document.querySelector('[data-screen-id="play"].is-active')) playTrack(TRACKS[e.detail] ? e.detail : 'lobby');
+  });
+
   document.addEventListener('screen:show', function (e) {
-    if (e.detail === 'lobby') { startMusic(); playEntrance(); }
+    if (e.detail === 'lobby') { playTrack('lobby'); playEntrance(); }
     else if (e.detail === 'play') {
       stopEntrance();
-      startMusic();
+      playTrack(roomTrack());
       sfx('whoosh', 0.5);
       [200, 260, 320, 380, 440].forEach(function (t) { timers.push(setTimeout(function () { sfx('pop', 0.22); }, t)); });
       timers.push(setTimeout(function () { sfx('pop', 0.5); }, 480));
@@ -105,8 +125,8 @@
   btn.addEventListener('click', function () {
     muted = !muted;
     try { localStorage.setItem('blot-muted', muted ? '1' : '0'); } catch (e) {}
-    if (muted) { fadeMusic(0, 250, function () { music.pause(); }); }
-    else if (wantMusic) { startMusic(); }
+    if (muted) { Object.keys(players).forEach(function (k) { fade(players[k], 0, 250, function () { players[k].pause(); }); }); }
+    else if (current) { playTrack(current); }
     document.querySelectorAll('video').forEach(function (v) { v.muted = muted; });
     render();
   });
