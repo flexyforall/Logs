@@ -34,8 +34,9 @@ tools/make_sounds.py       synthesises assets/sounds/
 
 `users-web.svg` and `clipboard-web.svg` are copies of the Figma exports with the
 outermost filter removed: browsers draw that filter as a visible box, Figma does not.
-`bg-composite.webp` is Figma's background image, glow and colour-blended blue tint
-flattened into one image at 3x: a live `mix-blend-mode` made Safari draw dark boxes
-behind the animated rows.
+`bg-composite.webp` is the background flattened at 3x: the uploaded `bg.png`, Figma's
+blurred glow ellipse (sigma 50) and its colour-blended `#87B5F5` tint, computed in float
+with light dithering. The Figma SVG glow clipped its blur at the file edge, which showed
+as dark bands above and below the cards.
 The PLAY NOW button's decorative layer (`play-effects.webp`) is a Figma export of
 its "effects" group, because the generated code placed those layers incorrectly.
