@@ -19,10 +19,11 @@ SRC, LOGO, OUT = sys.argv[1:4]
 W, H, FPS = 1920, 1080, 24
 
 # Timeline (seconds)
-SWIRL_START = 3.25    # video starts twisting
-FADE_START = 3.6      # video starts going dark
-VIDEO_END = 3.92      # video fully gone (just before Medusa)
-LOGO_START = 3.75     # logo starts as the card comes down, during the fade
+SWIRL_START = 3.7     # video starts twisting as the card comes down
+FADE_START = 3.85     # video starts going dark
+FREEZE_AT = 3.9       # hold this frame (the source cuts to Medusa at 3.95)
+VIDEO_END = 4.35      # video fully gone
+LOGO_START = 4.0      # logo appears out of the whirlpool
 POP = 0.5             # easeOutBack pop duration
 SHRINK = 0.10         # logo shrinks by 10% towards the end
 LOGO_H = 880          # logo height in pixels at scale 1.0
@@ -48,7 +49,8 @@ probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=durat
 DURATION = float(probe.stdout.strip())
 N = int(round(DURATION * FPS))
 dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", SRC, "-vf", f"fps={FPS},scale={W}:{H}",
-                        "-f", "rawvideo", "-pix_fmt", "bgr24", "-"], stdout=subprocess.PIPE)
+                        "-f", "rawvideo", "-pix_fmt", "bgr24", "-"], stdout=subprocess.PIPE,
+                       stderr=subprocess.DEVNULL)
 
 # ---------------------------------------------------------------- logo prep
 logo = cv2.imread(LOGO, cv2.IMREAD_COLOR).astype(np.float32) / 255.0
@@ -130,11 +132,16 @@ enc = subprocess.Popen(["ffmpeg", "-y", "-v", "error",
                         "-c:a", "aac", "-b:a", "192k", "-shortest", OUT], stdin=subprocess.PIPE)
 
 frame_bytes = W * H * 3
+held = None
 for i in range(N):
     t = i / FPS
-    raw = dec.stdout.read(frame_bytes)
-    if len(raw) < frame_bytes:
-        break
+    if t < FREEZE_AT or held is None:
+        raw = dec.stdout.read(frame_bytes)
+        if len(raw) < frame_bytes:
+            break
+        if t < FREEZE_AT:
+            held = raw
+    raw = held if t >= FREEZE_AT else raw
     if t >= VIDEO_END:
         base = np.zeros((H, W, 3), np.float32)
     else:
@@ -165,6 +172,6 @@ for i in range(N):
 
 enc.stdin.close()
 enc.wait()
-dec.stdout.close()
+dec.kill()          # stop decoding; frames after FREEZE_AT are not needed
 dec.wait()
 print("done:", OUT)
