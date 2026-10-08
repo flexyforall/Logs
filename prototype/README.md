@@ -22,10 +22,10 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    the room music ducked under it.
 4. Then the game table opens: the fireside salon from the "Prototype" scene. The room fades
    in and the four players take their seats one by one (double speed). Then you play Blot to
-   301 as the bottom seat with Don Marco (top) as your partner; Laura (left) and Billy (right)
+   301 as the bottom seat with GarikAv (top, Don Marco) as your partner; HasmikG (left) and Vazgen1972 (right)
    are bots. Each round (js/game.js):
    - the dealer shuffles and deals 3-2-3 clockwise; the dealer moves on every round;
-   - bidding starts after the dealer: bots announce their bids in bubbles, on your turn a
+   - bidding starts after the dealer: bids show as chips next to the players, on your turn a
      panel lets you pick a value (8-25) and a suit or NT, Kaput, Pass, and Contra / Sur when
      they apply; four passes mean a redeal;
    - combinations are announced before the first trick (only the stronger side's count);
