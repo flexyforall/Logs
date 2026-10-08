@@ -144,7 +144,7 @@
 /* currency / no-ads pills (widths from Figma) */
 .lobby .lb-pill:nth-child(1) { width: 110px; }
 .lobby .lb-pill:nth-child(2) { width: 80px; }
-.lobby .lb-pill:nth-child(3) { width: 98px; }
+.lobby .lb-pill:nth-child(3) { width: auto; min-width: 98px; }   /* grows with the balance */
 .lb-tabs { display: flex; gap: 8px; align-items: center; }
 .lobby .lb-pill {
   display: flex;
@@ -169,7 +169,7 @@
 }
 .lb-glass--108.lb-pill_bg { width: 108px; }
 .lb-glass--78.lb-pill_bg { width: 78px; }
-.lb-glass--96.lb-pill_bg { width: 96px; }
+.lb-glass--96.lb-pill_bg { width: 100%; }
 .lb-pill_text {
   position: relative;
   font-size: 16px;

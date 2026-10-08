@@ -79,7 +79,7 @@
 /* balance pill (same build as the lobby pills, 100x32) */
 .st-balance {
   position: relative;
-  width: 100px;
+  min-width: 100px;   /* grows with the balance */
   height: 32px;
   display: flex;
   gap: 10px;
@@ -116,7 +116,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 98px;
+  width: 100%;
   height: 30px;
   border-radius: 7px;
   background-size: 100% 100%;
