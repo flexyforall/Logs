@@ -215,23 +215,26 @@
 }
 @keyframes tb-lvl-glow { from { text-shadow: 0 0 3px var(--lvl-glow), 0 8px 4px rgba(0, 0, 0, .6); } }
 
-/* whose turn it is: the dark plate behind the name lights up in gold and glows */
-.tb-plate { isolation: isolate; transition: background .25s ease; }
-.tb-plate.is-turn {
-  background: linear-gradient(90deg, rgba(150, 90, 15, 0) 0%, rgba(150, 90, 15, .75) 22%, rgba(205, 135, 35, .95) 50%, rgba(150, 90, 15, .75) 78%, rgba(150, 90, 15, 0) 100%);
-}
-.tb-plate::before {
+/* whose turn it is: thin blue lines light up along the top and bottom edge of the nameplate,
+   fading out at the ends like the plate itself */
+.tb-plate::before,
+.tb-plate::after {
   content: "";
   position: absolute;
-  inset: -8px -4px;
-  border-radius: 12px;
-  background: radial-gradient(50% 50% at 50% 50%, rgba(255, 200, 100, .6), rgba(255, 170, 60, .25) 55%, rgba(255, 160, 60, 0) 100%);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(92, 160, 255, 0) 0%, #5ca0ff 22%, #e2f1ff 50%, #5ca0ff 78%, rgba(92, 160, 255, 0) 100%);
+  box-shadow: 0 0 6px #5ca0ff, 0 0 16px rgba(92, 160, 255, .7);
   opacity: 0;
   transition: opacity .25s ease;
-  z-index: -1;
+  pointer-events: none;
 }
-.tb-plate.is-turn::before { opacity: 1; animation: tb-turn 1s ease-in-out infinite alternate; }
-@keyframes tb-turn { from { opacity: .45; transform: scale(.96); } to { opacity: 1; transform: scale(1.04); } }
+.tb-plate::before { top: 0; }
+.tb-plate::after { bottom: 0; }
+.tb-plate.is-turn::before,
+.tb-plate.is-turn::after { opacity: 1; animation: tb-turn 1s ease-in-out infinite alternate; }
+@keyframes tb-turn { from { opacity: .65; } to { opacity: 1; } }
 
 /* ---- bid chips: blurred dark pill, suit in a cream circle, value */
 .tb-chip {
