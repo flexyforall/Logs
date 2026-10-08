@@ -192,20 +192,11 @@
       <section class="screen screen--table table" data-screen-id="table">
         <canvas class="tb-canvas" aria-label="Игровой стол: игроки садятся, сдаются карты"></canvas>
 
-        <!-- UI (Figma: Mansion Table Example, node 1873:2080) -->
+        <!-- UI (Figma: Mansion Table Example, nodes 1886:2519 before the first trick, 1886:1866 after) -->
         <div class="tb-ui">
-          <button class="tb-gear" type="button" data-table-settings aria-label="Настройки">
-            <img class="tb-gear_bg" src="assets/table/ui/btn-bg.webp" alt="">
-            <img class="tb-gear_icon" src="assets/table/ui/gear-web.svg" alt="">
-          </button>
-
+          <!-- last trick: a "?" slot until a trick has been taken, then its four cards -->
           <div class="tb-trick" aria-label="Последняя взятка">
-            <img class="tb-panel_bg" src="assets/table/ui/trick-bg.webp" alt="">
-            <!-- nothing played yet; js will fill data-trick-cards once tricks are taken -->
-            <div class="tb-trick_empty" data-trick-empty>
-              <span class="tb-trick_slot" aria-hidden="true"></span>
-              <span class="tb-trick_text">No tricks yet</span>
-            </div>
+            <div class="tb-trick_empty" data-trick-empty><span>?</span></div>
             <div class="tb-trick_cards" data-trick-cards hidden></div>
           </div>
 
@@ -213,37 +204,32 @@
             <img class="tb-panel_bg" src="assets/table/ui/score-bg.webp" alt="">
             <div class="tb-score_cell">
               <p class="tb-score_label">US</p>
-              <p class="tb-score_value" data-score="us"><span><b>0</b><small>/151</small></span><span aria-hidden="true"><b>0</b><small>/151</small></span></p>
+              <p class="tb-score_value" data-score="us"><span><b>0</b><small>/301</small></span><span aria-hidden="true"><b>0</b><small>/301</small></span></p>
             </div>
             <span class="tb-score_divider"></span>
             <div class="tb-score_cell">
               <p class="tb-score_label">THEM</p>
-              <p class="tb-score_value" data-score="them"><span><b>0</b><small>/151</small></span><span aria-hidden="true"><b>0</b><small>/151</small></span></p>
+              <p class="tb-score_value" data-score="them"><span><b>0</b><small>/301</small></span><span aria-hidden="true"><b>0</b><small>/301</small></span></p>
             </div>
           </div>
 
-          <!-- chat and reactions -->
-          <div class="tb-social">
-            <button class="tb-social_btn" type="button" data-social="chat" aria-label="Чат" aria-expanded="false">
-              <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
-                <defs>
-                  <linearGradient id="tbChat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f6fa"/><stop offset=".55" stop-color="#c9ced8"/><stop offset="1" stop-color="#9097a5"/></linearGradient>
-                </defs>
-                <path d="M8 9h24a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H18l-7 6v-6H8a5 5 0 0 1-5-5V14a5 5 0 0 1 5-5z" fill="url(#tbChat)" stroke="#6b7280" stroke-width=".8"/>
-                <path d="M8 10.5h24a3.6 3.6 0 0 1 3.6 3.6v2.2C27 14.5 13 14.5 4.4 16.3v-2.2A3.6 3.6 0 0 1 8 10.5z" fill="#fff" opacity=".55"/>
-                <circle cx="13" cy="19.5" r="2.2" fill="#5b6270"/><circle cx="20" cy="19.5" r="2.2" fill="#5b6270"/><circle cx="27" cy="19.5" r="2.2" fill="#5b6270"/>
-              </svg>
+          <!-- bottom bar: settings, chat, reactions | info -->
+          <div class="tb-bottom">
+            <button class="tb-btn" type="button" data-table-settings aria-label="Настройки">
+              <img class="tb-btn_bg" src="assets/table/ui/btn-bg.webp" alt="">
+              <img class="tb-btn_icon" src="assets/table/ui/gear-web.svg" alt="" style="left:-1px;top:1px;width:41.99px;height:41.99px">
             </button>
-            <button class="tb-social_btn" type="button" data-social="react" aria-label="Реакции" aria-expanded="false">
-              <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
-                <defs>
-                  <radialGradient id="tbFace" cx=".4" cy=".32" r=".75"><stop offset="0" stop-color="#ffe680"/><stop offset=".55" stop-color="#f5b324"/><stop offset="1" stop-color="#c26a08"/></radialGradient>
-                </defs>
-                <circle cx="20" cy="20" r="16" fill="url(#tbFace)" stroke="#8a4a05" stroke-width=".8"/>
-                <ellipse cx="15.5" cy="11.5" rx="7" ry="3.6" fill="#fff" opacity=".45"/>
-                <ellipse cx="14.5" cy="18" rx="2" ry="3" fill="#5a2e02"/><ellipse cx="25.5" cy="18" rx="2" ry="3" fill="#5a2e02"/>
-                <path d="M11.5 23.5c2.2 5 14.8 5 17 0" fill="none" stroke="#5a2e02" stroke-width="2.4" stroke-linecap="round"/>
-              </svg>
+            <button class="tb-btn" type="button" data-social="chat" aria-label="Чат" aria-expanded="false">
+              <img class="tb-btn_bg" src="assets/table/ui/btn-bg.webp" alt="">
+              <img class="tb-btn_icon" src="assets/table/ui/chat-web.svg" alt="" style="left:-.94px;top:1.07px;width:41.88px;height:41.87px">
+            </button>
+            <button class="tb-btn" type="button" data-social="react" aria-label="Реакции" aria-expanded="false">
+              <img class="tb-btn_bg" src="assets/table/ui/btn-bg.webp" alt="">
+              <img class="tb-btn_icon" src="assets/table/ui/thumbs-web.svg" alt="" style="left:-1.63px;top:.38px;width:43.25px;height:41.19px">
+            </button>
+            <button class="tb-btn tb-btn--info" type="button" data-table-info aria-label="Информация">
+              <img class="tb-btn_bg" src="assets/table/ui/btn-bg.webp" alt="">
+              <img class="tb-btn_icon" src="assets/table/ui/info-web.svg" alt="" style="left:-.94px;top:1.06px;width:41.88px;height:41.88px">
             </button>
             <div class="tb-pop tb-pop--chat" data-pop="chat" hidden>
               <button type="button">Good luck!</button>

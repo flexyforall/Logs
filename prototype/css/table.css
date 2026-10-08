@@ -1,6 +1,6 @@
 /* Game table: one canvas with the 2000x923 salon scene stretched over the 852x393 screen
    (the same 19.5:9 shape), drawn by js/table.js, with the HUD from Figma
-   ("Mansion Table Example", node 1873:2080) on top. Positions and sizes are Figma values. */
+   ("Mansion Table Example", nodes 1886:2519 / 1886:1866) on top. Positions and sizes are Figma values. */
 
 @font-face {
   font-family: "Poppins";
@@ -19,26 +19,27 @@
 .tb-ui { position: absolute; inset: 0; pointer-events: none; }
 .tb-ui > * { pointer-events: auto; }
 
-/* ---- settings button (40x40 at 20,20) */
-.tb-gear { position: absolute; left: 20px; top: 20px; width: 40px; height: 40px; border-radius: 8px; overflow: hidden; }
-.tb-gear_bg { position: absolute; inset: 0; width: 40px; height: 40px; }
-.tb-gear_icon { position: absolute; left: 1px; top: 1px; width: 42px; height: 42px; filter: drop-shadow(0 0 2px #000) drop-shadow(0 2px 6px rgba(0, 0, 0, .5)); }
-.table .tb-gear:active { transform: scale(.94); }
-
 /* ---- panels: the backgrounds are the full Figma exports incl. their drop shadow,
    so they sit 20px left / 18px up of the panel box */
 .tb-panel_bg { position: absolute; left: -20px; top: -18px; pointer-events: none; }
 
-/* last trick: 120x50 at 72,20 */
-.tb-trick { position: absolute; left: 72px; top: 20px; width: 120px; height: 50px; }
-.tb-trick .tb-panel_bg { width: 160px; height: 90px; }
-.tb-trick_cards { position: absolute; left: 8px; top: 8px; display: flex; gap: 3px; }
+/* ---- last trick, top left at 20,25 (no panel) */
+.tb-trick { position: absolute; left: 20px; top: 25px; height: 40px; }
 .tb-trick_cards[hidden], .tb-trick_empty[hidden] { display: none; }
-/* before the first trick: an empty card outline and a note */
-.tb-trick_empty { position: absolute; inset: 0; display: flex; align-items: center; gap: 8px; padding: 0 10px; }
-.tb-trick_slot { flex: none; width: 23.7px; height: 33px; border: 1px dashed rgba(255, 255, 255, .35); border-radius: 2px; background: rgba(255, 255, 255, .04); }
-.tb-trick_text { font-weight: 600; font-size: 10px; line-height: 12px; color: #fff; opacity: .45; white-space: normal; }
-.tb-trick_cards img { width: 23.7px; height: 33px; border-radius: 1.5px; box-shadow: 0 2px 12px rgba(0, 0, 0, .5); }
+.tb-trick_cards { display: flex; gap: 3.529px; }
+.tb-trick_cards img { width: 27.882px; height: 38.824px; border-radius: 1.765px; box-shadow: 0 2.353px 11.765px rgba(0, 0, 0, .8); }
+/* before the first trick: a dark slot with a "?" */
+.tb-trick_empty { position: relative; width: 27.882px; height: 38.824px; border-radius: 1.765px; background: rgba(0, 0, 0, .5); }
+.tb-trick_empty span {
+  position: absolute;
+  left: calc(50% - .44px);
+  top: calc(50% - 10.41px);
+  transform: translateX(-50%);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 20px;
+  color: rgba(255, 255, 255, .3);
+}
 
 /* score: 145x50 at 687,20 */
 .tb-score { position: absolute; left: 687px; top: 20px; width: 145px; height: 50px; display: flex; align-items: center; padding: 6px 8px; box-sizing: border-box; }
@@ -62,27 +63,18 @@
 }
 .tb-score_divider { position: relative; width: 1px; height: 30px; background: rgba(255, 255, 255, .2); }
 
-/* ---- chat + reactions: a dark pill with glossy round icons */
-.tb-social {
-  position: absolute;
-  left: 20px;
-  bottom: 18px;
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: rgba(10, 8, 6, .62);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 2px 10px rgba(0, 0, 0, .5);
-}
-.tb-social_btn { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; transition: transform .15s ease; }
-.tb-social_btn svg { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .55)); }
-.table .tb-social_btn:active { transform: scale(.9); }
-.tb-social_btn[aria-expanded="true"] { background: rgba(255, 255, 255, .1); }
+/* ---- bottom bar (812x40 at 20,333): settings, chat, reactions on the left, info on the right */
+.tb-bottom { position: absolute; left: 20px; top: 333px; width: 812px; height: 40px; display: flex; gap: 12px; }
+.table .tb-btn { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; flex: none; }
+.tb-btn--info { margin-left: auto; }
+.tb-btn_bg { position: absolute; inset: 0; width: 40px; height: 40px; }
+.tb-btn_icon { position: absolute; filter: brightness(1.15) drop-shadow(0 0 2px #000) drop-shadow(0 2px 6px rgba(0, 0, 0, .5)); }
+.table .tb-btn:active { transform: scale(.94); }
+.tb-btn[aria-expanded="true"] .tb-btn_bg { filter: brightness(1.6); }
 
 .tb-pop {
   position: absolute;
-  left: 0;
+  left: 52px;
   bottom: calc(100% + 8px);
   display: flex;
   gap: 4px;
@@ -95,6 +87,7 @@
 }
 .tb-pop[hidden] { display: none; }
 .tb-pop--chat { flex-direction: column; min-width: 128px; }
+.tb-pop--react { left: 104px; }
 .table .tb-pop--chat button { padding: 7px 10px; border-radius: 8px; font-weight: 600; font-size: 12px; text-align: left; color: #fff; white-space: nowrap; }
 .table .tb-pop--chat button:hover, .table .tb-pop--chat button:active { background: rgba(255, 255, 255, .1); }
 .table .tb-pop--react button { width: 36px; height: 36px; border-radius: 50%; font-size: 22px; line-height: 36px; }
@@ -132,10 +125,9 @@
 
 /* ---- entrance: the HUD comes in once the room has faded up */
 .tb-ui > * { opacity: 0; }
-.tb-enter .tb-gear, .tb-enter .tb-trick, .tb-enter .tb-score { animation: tb-drop .45s cubic-bezier(.34, 1.4, .64, 1) forwards; }
-.tb-enter .tb-trick { animation-delay: .07s; }
-.tb-enter .tb-score { animation-delay: .14s; }
-.tb-enter .tb-social { animation: tb-rise .45s cubic-bezier(.34, 1.4, .64, 1) .2s forwards; }
+.tb-enter .tb-trick, .tb-enter .tb-score { animation: tb-drop .45s cubic-bezier(.34, 1.4, .64, 1) forwards; }
+.tb-enter .tb-score { animation-delay: .08s; }
+.tb-enter .tb-bottom { animation: tb-rise .45s cubic-bezier(.34, 1.4, .64, 1) .16s forwards; }
 @keyframes tb-drop { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
 @keyframes tb-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 

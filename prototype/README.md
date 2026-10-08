@@ -25,10 +25,12 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    clockwise, and your eight cards fan out face up (all of it at double speed).
    Afterwards the players keep making small moves (short AI video loops). Fireplace crackle
    and card flicks are synthesised with Web Audio; the room music carries on underneath.
-   The HUD follows Figma (Mansion Table Example, node `1873:2080`): settings, last trick and
-   score along the top. A new game starts at 0 : 0 with "No tricks yet" in the last-trick panel. Bottom left is a chat / reactions pill: chat sends a quick phrase,
-   reactions an emoji, shown above your seat. The settings gear goes back to the stage
-   select (prototype shortcut).
+   The HUD follows Figma (Mansion Table Example, nodes `1886:2519` before the first trick and
+   `1886:1866` after): last trick top left (a "?" slot until a trick is taken), score top
+   right (0 : 0 out of 301 at the start), and along the bottom settings, chat, reactions and
+   info. Chat sends a quick phrase, reactions an emoji, shown above your seat. The settings
+   gear goes back to the stage select (prototype shortcut); info does nothing yet.
+   `window.BlotTable.setScore(us, them)` and `setLastTrick(cards)` update the HUD.
 
 Sounds are synthesised (no samples): `tools/make_sounds.py` makes the lobby music and UI
 sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to regenerate
@@ -43,6 +45,14 @@ the partner is winning, beat a led trump), trick winner, card points (152 per de
 the last trick, 250 for kaput), combinations (terz, 50, 100, four of a kind, blot-rebot) and
 which team's combinations count, bidding, contra / sur and the round score.
 `node tools/test_rules.js` checks it against the examples in the rules.
+
+Decisions where the rules are open:
+- the game is played to 301;
+- the bidding team made its bid when it took at least what it declared (the PDF's "x > y"
+  reads as a typo);
+- card points are converted to game points by dividing by 10 and rounding normally (85 -> 9);
+- a new bid must be higher than the current one; after a kaput bid only kaput bids may follow;
+  kaput can be declared only with a bid above 25 and is made only by taking every card.
 
 ## Layout
 
@@ -82,5 +92,5 @@ as dark bands above and below the cards.
 The PLAY NOW button's decorative layer (`play-effects.webp`) is a Figma export of
 its "effects" group, because the generated code placed those layers incorrectly.
 
-`gear-web.svg` is the Figma gear with its filters removed (the clipped drop shadow and
-inner shadow rendered as a light square in browsers); its shadow is done in CSS instead.
+`gear-web.svg`, `chat-web.svg`, `thumbs-web.svg` and `info-web.svg` are the Figma icons with their filters removed (the clipped drop shadow and
+inner shadow rendered as a light square in browsers); the shadow is done in CSS instead.

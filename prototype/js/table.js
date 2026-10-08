@@ -596,6 +596,27 @@
   // Prototype shortcut: the settings gear goes back to the stage select.
   screen.querySelector('[data-table-settings]').addEventListener('click', function () { window.BlotNav.show('play'); });
 
+  // Score and last trick. A new game starts at 0 : 0 with the "?" slot; the game logic
+  // (js/blot-rules.js) will call these as tricks are taken.
+  function setScore(us, them) {
+    [['us', us], ['them', them]].forEach(function (t) {
+      screen.querySelectorAll('[data-score="' + t[0] + '"] > span').forEach(function (el) {
+        el.innerHTML = '<b>' + t[1] + '</b><small>/' + window.BlotRules.GAME_TARGET + '</small>';
+      });
+    });
+  }
+  // cards: [{rank, suit}] or [] for none yet. Only the diamond 7-10 art is exported so far.
+  function setLastTrick(cards) {
+    var box = screen.querySelector('[data-trick-cards]');
+    box.innerHTML = (cards || []).map(function (c) {
+      return '<img src="assets/table/ui/card-' + c.rank.toLowerCase() + c.suit.toLowerCase() + '.webp" alt="' + c.rank + c.suit + '">';
+    }).join('');
+    box.hidden = !(cards && cards.length);
+    screen.querySelector('[data-trick-empty]').hidden = !box.hidden;
+  }
+  setScore(0, 0); setLastTrick([]);
+  window.BlotTable = { setScore: setScore, setLastTrick: setLastTrick };
+
   // Chat and reactions: each button opens its popover; a pick pops up above your seat.
   var say = screen.querySelector('[data-say]');
   var social = screen.querySelectorAll('[data-social]');
@@ -623,5 +644,5 @@
   screen.querySelectorAll('[data-pop="react"] button').forEach(function (b) {
     b.addEventListener('click', function () { closePops(null); pop('tb-say_emoji', b.textContent); });
   });
-  screen.addEventListener('click', function (e) { if (!e.target.closest('.tb-social')) closePops(null); });
+  screen.addEventListener('click', function (e) { if (!e.target.closest('.tb-bottom')) closePops(null); });
 })();
