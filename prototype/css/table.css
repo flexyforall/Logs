@@ -51,6 +51,47 @@
 /* score: 145x50, top right */
 .tb-score { position: absolute; right: 24px; top: 24px; width: 145px; height: 50px; display: flex; align-items: center; padding: 6px 8px; box-sizing: border-box; }
 .tb-score .tb-panel_bg { width: 185px; height: 90px; }
+/* the score panel lives a little: its colour drifts and a light runs along it now and then */
+.tb-score .tb-panel_bg { animation: tb-score-hue 9s ease-in-out infinite alternate; }
+@keyframes tb-score-hue {
+  0% { filter: hue-rotate(-12deg) brightness(.95); }
+  50% { filter: hue-rotate(8deg) brightness(1.08) saturate(1.15); }
+  100% { filter: hue-rotate(22deg) brightness(1); }
+}
+.tb-score_shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* a sweep across the panel ... */
+.tb-score_shine::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  left: -60px;
+  width: 40px;
+  background: linear-gradient(90deg, rgba(160, 210, 255, 0), rgba(190, 225, 255, .35), rgba(160, 210, 255, 0));
+  transform: skewX(-20deg);
+  animation: tb-sweep 6s ease-in-out 2s infinite;
+}
+/* ... and along the stroke */
+.tb-score_shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  padding: 1.5px;
+  background: linear-gradient(110deg, rgba(120, 220, 255, 0) 35%, #bff0ff 50%, rgba(120, 220, 255, 0) 65%) -150% 0 / 300% 100% no-repeat;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: tb-stroke 6s ease-in-out 2s infinite;
+}
+@keyframes tb-sweep { 0% { left: -60px; } 30%, 100% { left: 170px; } }
+@keyframes tb-stroke { 0% { background-position: 150% 0; } 30%, 100% { background-position: -150% 0; } }
 .tb-score_cell { position: relative; width: 64px; height: 100%; display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center; white-space: nowrap; text-align: center; }
 .tb-score_label { font-weight: 600; font-size: 10px; line-height: 10px; color: #fff; opacity: .45; }
 .tb-score_value { position: relative; font-weight: 700; line-height: 20px; }
@@ -149,15 +190,48 @@
 .tb-plate img { width: 24px; height: 24px; margin: -2px; flex: none; }   /* 20px slot, art at 120% */
 .tb-plate p { display: flex; flex-direction: column; white-space: nowrap; }
 .tb-plate b { font-weight: 600; font-size: 12px; line-height: 16px; color: #fff; text-shadow: 0 1px 4px #000; }
-.tb-plate span {
+/* level: white-to-orange gradient (blue for the right player, as in Figma) with a soft glow.
+   The glow is a text-shadow on a transparent base, the gradient a copy on top (Safari drops
+   shadows under background-clip:text). */
+.tb-plate { --lvl: #e07c46; --lvl-glow: rgba(255, 140, 70, .75); }
+.tb-plate--blue { --lvl: #89caff; --lvl-glow: rgba(110, 190, 255, .8); }
+.tb-lvl {
+  position: relative;
   font-weight: 600;
   font-size: 10px;
   line-height: 12px;
-  background: linear-gradient(180deg, #fff, #e07c46);
+  color: transparent;
+  text-shadow: 0 0 6px var(--lvl-glow), 0 8px 4px rgba(0, 0, 0, .6);
+  animation: tb-lvl-glow 3s ease-in-out infinite alternate;
+}
+.tb-lvl::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  text-shadow: none;
+  background: linear-gradient(180deg, #fff, var(--lvl));
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
 }
+@keyframes tb-lvl-glow { from { text-shadow: 0 0 3px var(--lvl-glow), 0 8px 4px rgba(0, 0, 0, .6); } }
+
+/* whose turn it is: the dark plate behind the name lights up in gold and glows */
+.tb-plate { isolation: isolate; transition: background .25s ease; }
+.tb-plate.is-turn {
+  background: linear-gradient(90deg, rgba(150, 90, 15, 0) 0%, rgba(150, 90, 15, .75) 22%, rgba(205, 135, 35, .95) 50%, rgba(150, 90, 15, .75) 78%, rgba(150, 90, 15, 0) 100%);
+}
+.tb-plate::before {
+  content: "";
+  position: absolute;
+  inset: -8px -4px;
+  border-radius: 12px;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(255, 200, 100, .6), rgba(255, 170, 60, .25) 55%, rgba(255, 160, 60, 0) 100%);
+  opacity: 0;
+  transition: opacity .25s ease;
+  z-index: -1;
+}
+.tb-plate.is-turn::before { opacity: 1; animation: tb-turn 1s ease-in-out infinite alternate; }
+@keyframes tb-turn { from { opacity: .45; transform: scale(.96); } to { opacity: 1; transform: scale(1.04); } }
 
 /* ---- bid chips: blurred dark pill, suit in a cream circle, value */
 .tb-chip {
@@ -281,6 +355,7 @@
 @keyframes tb-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
+  .tb-score .tb-panel_bg, .tb-score_shine::before, .tb-score_shine::after, .tb-lvl { animation: none; }
   .tb-trick, .tb-score, .tb-bottom { opacity: 1; animation: none !important; }
   .tb-plate { transition: none; }
 }

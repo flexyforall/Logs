@@ -202,6 +202,7 @@
 
           <div class="tb-score" aria-label="Счёт">
             <img class="tb-panel_bg" src="assets/table/ui/score-bg.webp" alt="">
+            <span class="tb-score_shine" aria-hidden="true"></span>
             <div class="tb-score_cell">
               <p class="tb-score_label">US</p>
               <p class="tb-score_value" data-score="us"><span><b>0</b><small>/301</small></span><span aria-hidden="true"><b>0</b><small>/301</small></span></p>
@@ -214,9 +215,9 @@
           </div>
 
           <!-- players: rank badge, nickname, level (Figma 1888:3552, 1888:3560, 1889:3568) -->
-          <div class="tb-plate tb-plate--left" data-plate="left"><img src="assets/table/ui/rank-purple.webp" alt=""><p><b>HasmikG</b><span>Lvl. 14</span></p></div>
-          <div class="tb-plate tb-plate--top" data-plate="top"><img src="assets/table/ui/rank-purple.webp" alt=""><p><b>GarikAv</b><span>Lvl. 16</span></p></div>
-          <div class="tb-plate tb-plate--right" data-plate="right"><img src="assets/table/ui/rank-blue.webp" alt=""><p><b>Vazgen1972</b><span>Lvl. 54</span></p></div>
+          <div class="tb-plate tb-plate--left" data-plate="left"><img src="assets/table/ui/rank-purple.webp" alt=""><p><b>HasmikG</b><span class="tb-lvl" data-text="Lvl. 14">Lvl. 14</span></p></div>
+          <div class="tb-plate tb-plate--top" data-plate="top"><img src="assets/table/ui/rank-purple.webp" alt=""><p><b>GarikAv</b><span class="tb-lvl" data-text="Lvl. 16">Lvl. 16</span></p></div>
+          <div class="tb-plate tb-plate--right tb-plate--blue" data-plate="right"><img src="assets/table/ui/rank-blue.webp" alt=""><p><b>Vazgen1972</b><span class="tb-lvl" data-text="Lvl. 54">Lvl. 54</span></p></div>
 
           <!-- each player's bid next to them; after the bidding only the contract stays (Figma 1889:3622) -->
           <div class="tb-chip tb-chip--left" data-chip="left" hidden></div>

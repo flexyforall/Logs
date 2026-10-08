@@ -268,7 +268,7 @@
     });
     S.black = 1; S.amb = .55; S.lamps = 0; S.table = .35;
     cards = []; particles = []; hover = null; humanWait = null;
-    IDS.forEach(function (id) { SEATS[id].turn = false; });
+    screen.querySelectorAll('[data-plate]').forEach(function (el) { el.classList.remove('is-turn'); });
   }
   function sparkle(x, y, n) {
     n = reduced ? 8 : (n || 26);
@@ -489,8 +489,10 @@
       await Promise.all(cards.map(function (c) { return tween(c, { alpha: 0, sc: c.sc * .8 }, .3); }));
       cards = []; byId = {}; hover = null;
     },
-    // pulsing ring around whoever has to act; null for nobody
-    turn: function (seat) { IDS.forEach(function (id) { SEATS[id].turn = id === seat; }); },
+    // whoever has to act gets their nameplate lit; null for nobody
+    turn: function (seat) {
+      screen.querySelectorAll('[data-plate]').forEach(function (el) { el.classList.toggle('is-turn', el.getAttribute('data-plate') === seat); });
+    },
     say: function (seat, text, kind) { bubble(seat, text, kind); },
     chime: function () { chime(); },
     // the HUD (last trick, score, buttons) comes in once the first hand has been dealt
@@ -611,11 +613,6 @@
     IDS.forEach(function (id) {
       var s = SEATS[id];
       if (s.light > 0) glow(s.crop[0] + s.crop[2] / 2, s.crop[1] + s.crop[3] / 2, s.crop[3] * .7, 'rgba(255,190,110,' + .07 * s.light * (1 - S.lamps * .6) + ')');
-      if (s.turn) {
-        var pulse = .5 + .5 * Math.sin(clock * 5), fr = s.face[2];
-        ctx.strokeStyle = 'rgba(255,214,130,' + (.35 + .4 * pulse) + ')'; ctx.lineWidth = 5 + 3 * pulse;
-        ctx.beginPath(); ctx.ellipse(s.face[0], s.face[1], fr * 1.9, fr * 1.6, 0, 0, Math.PI * 2); ctx.stroke();
-      }
       if (s.ring > 0 && s.ring < 1) {
         ctx.strokeStyle = 'rgba(241,212,154,' + .6 * (1 - s.ring) + ')'; ctx.lineWidth = 6 * (1 - s.ring);
         ctx.beginPath(); ctx.ellipse(s.face[0], s.face[1], 40 + 200 * s.ring, 30 + 150 * s.ring, 0, 0, Math.PI * 2); ctx.stroke();

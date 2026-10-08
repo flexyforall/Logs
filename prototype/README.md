@@ -29,7 +29,7 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
      panel lets you pick a value (8-25) and a suit or NT, Kaput, Pass, and Contra / Sur when
      they apply; four passes mean a redeal;
    - combinations are announced before the first trick (only the stronger side's count);
-   - eight tricks: the player to act has a pulsing ring; on your turn the cards you may not
+   - eight tricks: the nameplate of the player to act lights up; on your turn the cards you may not
      play are darkened, tap a card to play it. The last trick shows top left;
    - the round is scored by the rules and a summary shows the points; the score top right
      adds up until a team reaches 301 ("Play again" starts a new game).
