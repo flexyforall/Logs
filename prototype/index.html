@@ -213,6 +213,39 @@
             </div>
           </div>
 
+          <!-- current contract, under the score -->
+          <div class="tb-contract" data-contract hidden></div>
+
+          <!-- your bid -->
+          <div class="tb-panel tb-bid" data-bid hidden>
+            <p class="tb-panel_title">Your bid</p>
+            <p class="tb-bid_current" data-bid-current>No bids yet</p>
+            <div class="tb-bid_row">
+              <button class="tb-bid_step" type="button" data-bid-minus aria-label="Less">−</button>
+              <span class="tb-bid_value" data-bid-value>8</span>
+              <button class="tb-bid_step" type="button" data-bid-plus aria-label="More">+</button>
+              <button class="tb-bid_kaput" type="button" data-bid-kaput aria-pressed="false">Kaput</button>
+            </div>
+            <div class="tb-bid_suits">
+              <button type="button" data-bid-suit="C" aria-label="Clubs">♣</button>
+              <button type="button" data-bid-suit="D" aria-label="Diamonds" class="is-red">♦</button>
+              <button type="button" data-bid-suit="H" aria-label="Hearts" class="is-red">♥</button>
+              <button type="button" data-bid-suit="S" aria-label="Spades">♠</button>
+              <button type="button" data-bid-suit="NT" aria-label="No trump">NT</button>
+            </div>
+            <div class="tb-bid_actions">
+              <button class="tb-bid_pass" type="button" data-bid-pass>Pass</button>
+              <button class="tb-bid_contra" type="button" data-bid-contra hidden>Contra</button>
+              <button class="tb-bid_contra" type="button" data-bid-sur hidden>Sur</button>
+            </div>
+          </div>
+
+          <!-- end of a round / of the game -->
+          <div class="tb-panel tb-result" data-result hidden>
+            <div data-result-body></div>
+            <button class="tb-result_next" type="button" data-result-next>Next round</button>
+          </div>
+
           <!-- bottom bar: settings, chat, reactions | info -->
           <div class="tb-bottom">
             <button class="tb-btn" type="button" data-table-settings aria-label="Настройки">
@@ -258,5 +291,6 @@
 <script src="js/stage.js"></script>
 <script src="js/blot-rules.js"></script>
 <script src="js/table.js"></script>
+<script src="js/game.js"></script>
 </body>
 </html>

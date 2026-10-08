@@ -21,20 +21,24 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
    The big play button plays an "into battle" sting (sword, taiko, choir, brass) with
    the room music ducked under it.
 4. Then the game table opens: the fireside salon from the "Prototype" scene. The room fades
-   in, the four players take their seats one by one, Don Marco shuffles and deals 3-2-3
-   clockwise, and your eight cards fan out face up (all of it at double speed).
-   Afterwards the players keep making small moves (short AI video loops). Fireplace crackle
-   and card flicks are synthesised with Web Audio; the room music carries on underneath.
+   in and the four players take their seats one by one (double speed). Then you play Blot to
+   301 as the bottom seat with Don Marco (top) as your partner; Laura (left) and Billy (right)
+   are bots. Each round (js/game.js):
+   - the dealer shuffles and deals 3-2-3 clockwise; the dealer moves on every round;
+   - bidding starts after the dealer: bots announce their bids in bubbles, on your turn a
+     panel lets you pick a value (8-25) and a suit or NT, Kaput, Pass, and Contra / Sur when
+     they apply; four passes mean a redeal;
+   - combinations are announced before the first trick (only the stronger side's count);
+   - eight tricks: the player to act has a pulsing ring; on your turn the cards you may not
+     play are darkened, tap a card to play it. The last trick shows top left;
+   - the round is scored by the rules and a summary shows the points; the score top right
+     adds up until a team reaches 301 ("Play again" starts a new game).
    The HUD follows Figma (Mansion Table Example, nodes `1886:2519` before the first trick and
-   `1886:1866` after): last trick top left (a "?" slot until a trick is taken), score top
-   right (0 : 0 out of 301 at the start), and along the bottom settings, chat, reactions and
-   info. Chat sends a quick phrase, reactions an emoji, shown above your seat. The settings
-   gear goes back to the stage select (prototype shortcut); info does nothing yet.
-   `window.BlotTable.setScore(us, them)` and `setLastTrick(cards)` update the HUD.
-
-Sounds are synthesised (no samples): `tools/make_sounds.py` makes the lobby music and UI
-sounds, `tools/make_room_music.py` the room tracks (`room-*.mp3`). Run them to regenerate
-`assets/sounds/`, or drop in real files with the same names.
+   `1886:1866` after); the contract chip under the score, the bidding and result panels and
+   the bubbles are in the same style. Chat sends a quick phrase, reactions an emoji. The
+   settings gear goes back to the stage select (prototype shortcut); info does nothing yet.
+   Fireplace crackle and card flicks are synthesised with Web Audio; the room music carries on.
+   For testing, `BlotGame.autoplay = true` lets the bots play your seat too.
 
 ## Game rules
 
@@ -51,8 +55,11 @@ Decisions where the rules are open:
 - the bidding team made its bid when it took at least what it declared (the PDF's "x > y"
   reads as a typo);
 - card points are converted to game points by dividing by 10 and rounding normally (85 -> 9);
-- a new bid must be higher than the current one; after a kaput bid only kaput bids may follow;
+- the lowest bid is 8, a new bid must be higher than the current one; after a kaput bid only
+  kaput bids may follow;
   kaput can be declared only with a bid above 25 and is made only by taking every card.
+- after a contra the bidding ends, except that the bidding side gets one answer (sur or pass);
+- blot-rebot is counted for the team holding trump K and Q from the deal.
 
 ## Layout
 
@@ -66,6 +73,7 @@ js/app.js                  frame scaling, splash playback, screen switching
 js/sounds.js               lobby music, entrance and tap sounds, mute toggle
 js/stage.js                stage select carousel and navigation
 js/blot-rules.js           Blot rules engine (no DOM)
+js/game.js                 the game: rounds, bidding, tricks, bots, scoring
 js/table.js                game table: seating, shuffle, deal, idle moves, table sounds
 assets/splash/             splash video (MP4 + WebM fallback) and logo
 assets/lobby/figma/        lobby assets exported from Figma (WebP sized @3x)

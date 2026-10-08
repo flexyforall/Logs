@@ -70,6 +70,8 @@ assert.ok(R.bidBeats({ value: 9 }, { value: 8 }));
 assert.ok(!R.bidBeats({ value: 8 }, { value: 8 }));
 assert.ok(!R.bidBeats({ value: 30, suit: 'H' }, { value: 26, suit: 'S', kaput: true }));
 assert.ok(R.canDeclareKaput(26) && !R.canDeclareKaput(25));
+assert.ok(!R.bidBeats({ value: 7 }, null) && R.bidBeats({ value: 8 }, null));
+assert.ok(R.bidBeats({ value: 26, kaput: true }, { value: 20 }));
 
 // round scoring: "hearts 12" with 2 extra units needs 100 card points
 const deck = R.makeDeck();

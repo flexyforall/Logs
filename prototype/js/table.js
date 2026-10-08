@@ -1,6 +1,6 @@
-// Game table: the fireside salon from the "Prototype" scene with every bit of UI taken out.
-// The four players take their seats one by one, Don Marco shuffles and deals 3-2-3 clockwise,
-// and your own eight cards fan out at the bottom. Opened by the Play button on the stage select.
+// Game table: the fireside salon from the "Prototype" scene. The four players take their seats
+// one by one, then js/game.js runs the game through the `view` API below (deal, play a card,
+// take a trick...). Opened by the Play button on the stage select.
 // Everything is drawn on one canvas in scene coordinates of the 2000x923 art.
 (function () {
   var A = 'assets/table/';
@@ -12,7 +12,7 @@
   cv.width = 1704; cv.height = 786;
 
   // ---------- Seats (scene coordinates) ----------
-  // Teams: bottom + top vs left + right. Dealer: top. Deal goes clockwise from the dealer.
+  // Teams: bottom + top vs left + right.
   // parts: body pieces cut from the art that move on their own (rect + pivot), used until the seat's video loads.
   var SEATS = {
     bottom: { crop: [770, 725, 460, 198], pivot: [1000, 923], face: [1000, 860, 70],
@@ -21,26 +21,23 @@
               acts: ['lookAround', 'drum', 'stretch'],
               video: { src: ['knight.webm', 'knight.mp4'], rect: [680, 563, 640, 360] } },
     left:   { crop: [130, 355, 380, 360], pivot: [330, 640], face: [300, 445, 66],
-              pile: [592, 525], pileRot: Math.PI / 2, greet: 'lean',
+              pile: [572, 525], pileRot: Math.PI / 2, greet: 'lean',
               parts: { head: { r: [200, 362, 195, 165], p: [355, 525] }, hands: { r: [410, 488, 80, 100], p: [400, 540] } },
               acts: ['tilt', 'tap', 'glance'],
               video: { src: ['laura.webm', 'laura.mp4'], rect: [0, 345, 676, 380] } },
     top:    { crop: [790, 15, 410, 290], pivot: [995, 300], face: [965, 100, 56],
-              pile: [1000, 383], pileRot: Math.PI, greet: 'nod',
+              pile: [1000, 350], pileRot: Math.PI, greet: 'nod',
               parts: { head: { r: [935, 8, 130, 155], p: [995, 165] }, cigar: { r: [875, 120, 125, 100], p: [890, 215] }, claw: { r: [980, 250, 100, 58], p: [1030, 300] } },
               acts: ['puff', 'puff', 'claw'],
               video: { src: ['marco.webm', 'marco.mp4'], rect: [675, 0, 640, 360] } },
     right:  { crop: [1525, 325, 420, 410], pivot: [1720, 650], face: [1790, 452, 85],
-              pile: [1408, 525], pileRot: -Math.PI / 2, greet: 'tip',
+              pile: [1428, 525], pileRot: -Math.PI / 2, greet: 'tip',
               parts: { hat: { r: [1690, 335, 205, 160], p: [1795, 445] }, hands: { r: [1540, 520, 100, 105], p: [1600, 600] } },
               acts: ['scratch', 'hat', 'scratch', 'lean'],
               video: { src: ['billy.webm', 'billy.mp4'], rect: [1289, 330, 711, 400] } }
   };
   var IDS = Object.keys(SEATS);
   var JOIN_ORDER = ['bottom', 'left', 'top', 'right'];
-  // clockwise from the player after the dealer, as in the rules (js/blot-rules.js)
-  var DEAL_ORDER = window.BlotRules.orderAfter('top');
-  var PACKETS = window.BlotRules.PACKETS;
   var CIGAR_TIP = [957, 180], MOUTH = [990, 147], CYBER_EYE = [1010, 100];
 
   // Seat videos (short AI loops), drawn through a soft silhouette mask so they blend into the empty room.
@@ -128,6 +125,7 @@
   function Card(rank, suit) {
     this.rank = rank; this.suit = suit;
     this.x = 0; this.y = 0; this.rot = 0; this.sc = .7; this.flip = 0; this.alpha = 0; this.z = 0; this.lift = 0;
+    this.dim = 0; this.base = 0;   // dim: darkened (not playable now); base: resting lift
   }
   Card.prototype.draw = function () {
     var im = this.flip > .5 ? cardFaces[this.rank + this.suit.s] : cardBack;
@@ -136,6 +134,7 @@
     ctx.translate(this.x, this.y); ctx.rotate(this.rot); ctx.translate(0, -this.lift);
     ctx.scale(this.sc * sx, this.sc);
     ctx.drawImage(im, -(CW / 2 + PAD), -(CH / 2 + PAD), CW + PAD * 2, CH + PAD * 2);
+    if (this.dim > 0) { rr(ctx, -CW / 2, -CH / 2, CW, CH, 5); ctx.fillStyle = 'rgba(0,0,0,' + .5 * this.dim + ')'; ctx.fill(); }
     ctx.restore();
   };
 
@@ -267,7 +266,8 @@
       resetPose(s);
     });
     S.black = 1; S.amb = .55; S.lamps = 0; S.table = .35;
-    cards = []; particles = []; hover = null;
+    cards = []; particles = []; hover = null; humanWait = null;
+    IDS.forEach(function (id) { SEATS[id].turn = false; });
   }
   function sparkle(x, y, n) {
     n = reduced ? 8 : (n || 26);
@@ -340,11 +340,6 @@
       .then(function () { if (my === run) { resetPose(s); s.idle = true; } });
   }
 
-  function pileSlot(id, i) {
-    var s = SEATS[id], o = (i - 3.5) * 15, horiz = id === 'top' || id === 'bottom';
-    return { x: s.pile[0] + (horiz ? o : 0), y: s.pile[1] + (horiz ? 0 : o), rot: s.pileRot + (i - 3.5) * .03 };
-  }
-
   async function play() {
     var my = ++run;
     tweens.length = 0; resetState();
@@ -365,62 +360,132 @@
     tween(S, { amb: .14, lamps: 1 }, 1.4);
     await wait(.9); if (!ok()) return;
 
-    // Don Marco brings the deck to the middle of the table
-    SUITS.forEach(function (su) { RANKS.forEach(function (r) { cards.push(new Card(r, su)); }); });
-    cards.sort(function () { return Math.random() - .5; });
-    cards.forEach(function (c, i) { c.x = 1005; c.y = 290; c.rot = Math.PI + .2; c.z = i; c.alpha = 0; c.sc = .75; });
-    await Promise.all(cards.map(function (c, i) {
-      return tween(c, { x: 1000, y: 512 - i * .35, rot: Math.PI, alpha: 1, sc: 1 }, .6, { delay: .2, ease: ease.inOut });
-    })); if (!ok()) return;
-    flick(.3);
-
-    // shuffle twice: split, riffle back together
-    for (var rep = 0; rep < 2; rep++) {
-      var L = cards.slice(0, 16), R = cards.slice(16);
-      await Promise.all(cards.map(function (c, i) {
-        return tween(c, { x: 1000 + (i < 16 ? -62 : 62), rot: Math.PI + (i < 16 ? -.1 : .1) }, .28, { ease: ease.inOut });
-      })); if (!ok()) return;
-      var mixed = [];
-      for (var i = 0; i < 16; i++) { if (Math.random() < .5) mixed.push(L[i], R[i]); else mixed.push(R[i], L[i]); }
-      cards = mixed;
-      await Promise.all(cards.map(function (c, k) {
-        c.z = k;
-        return tween(c, { x: 1000, y: 512 - k * .35, rot: Math.PI }, .16, { delay: k * .018, fn: function (p) { if (p === 1 && k % 3 === 0) flick(.12); } });
-      })); if (!ok()) return;
-      await wait(.15); if (!ok()) return;
-    }
-
-    // deal 3-2-3 clockwise
-    var hands = { left: [], bottom: [], right: [], top: [] }, deck = cards.slice(), zTop = 100;
-    for (var pi = 0; pi < PACKETS.length; pi++) {
-      for (var d = 0; d < DEAL_ORDER.length; d++) {
-        var id = DEAL_ORDER[d];
-        for (var n = 0; n < PACKETS[pi]; n++) {
-          var c = deck.pop(), at = hands[id].length; hands[id].push(c);
-          c.z = zTop++;
-          var t = pileSlot(id, at);
-          flick();
-          tween(c, { x: t.x, y: t.y, rot: t.rot }, .34);
-          await wait(.075); if (!ok()) return;
-        }
-        await wait(.12); if (!ok()) return;
-      }
-      await wait(.25); if (!ok()) return;
-    }
-    await wait(.4); if (!ok()) return;
-
-    // your hand fans out and turns face up
-    var suitOrder = ['♠', '♥', '♣', '♦'], R0 = 1100;
-    var mine = hands.bottom.sort(function (a, b) {
-      return suitOrder.indexOf(a.suit.s) - suitOrder.indexOf(b.suit.s) || RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank);
-    });
-    mine.forEach(function (c, i) {
-      var a = (i - 3.5) * .058;
-      c.z = 300 + i; c.mine = true;
-      tween(c, { x: 1000 + Math.sin(a) * R0, y: 850 + R0 * (1 - Math.cos(a)), rot: a, sc: 1.7 }, .5, { delay: i * .04, ease: ease.inOut });
-      tween(c, { flip: 1 }, .35, { delay: .45 + i * .06, ease: ease.inOut, fn: function (p) { if (p === 1) flick(.1); } });
-    });
+    // from here the game controller (js/game.js) runs the deals, bidding and tricks
+    if (window.BlotGame) window.BlotGame.start(view);
   }
+
+  // ---------- View API for the game controller ----------
+  // Everything is in scene coordinates. Each call returns when its animation is done.
+  var SUIT_OF = { S: SUITS[0], H: SUITS[1], C: SUITS[2], D: SUITS[3] };
+  var DECK_FROM = { top: [1005, 290, Math.PI], bottom: [1000, 760, 0], left: [470, 512, Math.PI / 2], right: [1530, 512, -Math.PI / 2] };
+  var TRICK_SPOT = { bottom: [1000, 590, 0], top: [1000, 448, Math.PI], left: [885, 518, Math.PI / 2], right: [1115, 518, -Math.PI / 2] };
+  var byId = {}, humanWait = null, trickZ = 500;
+
+  function pileAt(id, i, n) {
+    var s = SEATS[id], o = (i - (n - 1) / 2) * 15, horiz = id === 'top' || id === 'bottom';
+    return { x: s.pile[0] + (horiz ? o : 0), y: s.pile[1] + (horiz ? 0 : o), rot: s.pileRot + (i - (n - 1) / 2) * .03 };
+  }
+  function fanAt(i, n) {
+    var a = (i - (n - 1) / 2) * .058, R0 = 1100;
+    return { x: 1000 + Math.sin(a) * R0, y: 850 + R0 * (1 - Math.cos(a)), rot: a };
+  }
+
+  var view = {
+    alive: function (tok) { return tok === run && active; },
+    token: function () { return run; },
+    wait: wait,
+
+    // deck: engine cards in deck order; sequence: [{seat, card}] from BlotRules.deal
+    deal: async function (tok, deck, sequence, dealer) {
+      cards = []; byId = {}; hover = null; trickZ = 500;
+      var from = DECK_FROM[dealer];
+      deck.forEach(function (ec, i) {
+        var c = new Card(ec.rank, SUIT_OF[ec.suit]);
+        c.id = ec.id; byId[ec.id] = c;
+        c.x = from[0]; c.y = from[1]; c.rot = from[2] + .2; c.z = i; c.sc = .75;
+        cards.push(c);
+      });
+      await Promise.all(cards.map(function (c, i) {
+        return tween(c, { x: 1000, y: 512 - i * .35, rot: from[2], alpha: 1, sc: 1 }, .6, { delay: .2, ease: ease.inOut });
+      })); if (!view.alive(tok)) return;
+      flick(.3);
+      var stack = cards.slice();
+      for (var rep = 0; rep < 2; rep++) {
+        var L = stack.slice(0, 16), R = stack.slice(16);
+        await Promise.all(stack.map(function (c, i) {
+          return tween(c, { x: 1000 + (i < 16 ? -62 : 62), rot: from[2] + (i < 16 ? -.1 : .1) }, .28, { ease: ease.inOut });
+        })); if (!view.alive(tok)) return;
+        var mixed = [];
+        for (var i = 0; i < 16; i++) { if (Math.random() < .5) mixed.push(L[i], R[i]); else mixed.push(R[i], L[i]); }
+        stack = mixed;
+        await Promise.all(stack.map(function (c, k) {
+          c.z = k;
+          return tween(c, { x: 1000, y: 512 - k * .35, rot: from[2] }, .16, { delay: k * .018, fn: function (p) { if (p === 1 && k % 3 === 0) flick(.12); } });
+        })); if (!view.alive(tok)) return;
+        await wait(.15); if (!view.alive(tok)) return;
+      }
+      var count = { bottom: 0, left: 0, top: 0, right: 0 }, zTop = 100;
+      for (var q = 0; q < sequence.length; q++) {
+        var st = sequence[q], c = byId[st.card.id], t = pileAt(st.seat, count[st.seat]++, 8);
+        c.z = zTop++;
+        flick();
+        tween(c, { x: t.x, y: t.y, rot: t.rot }, .34);
+        await wait(.075); if (!view.alive(tok)) return;
+        if (sequence[q + 1] && sequence[q + 1].seat !== st.seat) { await wait(.12); if (!view.alive(tok)) return; }
+      }
+      await wait(.4);
+    },
+    // your hand: fanned at the bottom, face up, in the given order
+    layoutHand: function (ids) {
+      ids.forEach(function (id, i) {
+        var c = byId[id], t = fanAt(i, ids.length), first = !c.mine;
+        c.z = 300 + i; c.mine = true;
+        tween(c, { x: t.x, y: t.y, rot: t.rot, sc: 1.7 }, first ? .5 : .3, { delay: first ? i * .04 : 0, ease: ease.inOut });
+        if (c.flip < 1) tween(c, { flip: 1 }, .35, { delay: .45 + i * .06, ease: ease.inOut, fn: function (p) { if (p === 1) flick(.1); } });
+      });
+      return wait(.9);
+    },
+    // an opponent's face-down cards, re-spaced after a card leaves
+    layoutPile: function (seat, ids) {
+      ids.forEach(function (id, i) { var t = pileAt(seat, i, ids.length); tween(byId[id], { x: t.x, y: t.y, rot: t.rot }, .25); });
+    },
+    // wait for you to tap one of the legal cards; the others are darkened
+    waitHuman: function (hand, legal) {
+      hand.forEach(function (id) {
+        var c = byId[id], ok = legal.indexOf(id) >= 0;
+        c.base = ok ? 10 : 0;
+        tween(c, { dim: ok ? 0 : 1, lift: c.base }, .2);
+      });
+      return new Promise(function (res) { humanWait = { legal: legal, res: res, hand: hand }; });
+    },
+    playCard: function (seat, id) {
+      var c = byId[id], t = TRICK_SPOT[seat], j = (Math.random() - .5) * .16;
+      c.mine = false; c.base = 0; c.z = trickZ++;
+      if (c === hover) hover = null;
+      flick(.25);
+      tween(c, { dim: 0, lift: 0 }, .15);
+      tween(c, { flip: 1 }, .3, { ease: ease.inOut });
+      return tween(c, { x: t[0] + (Math.random() - .5) * 14, y: t[1] + (Math.random() - .5) * 10, rot: t[2] + j, sc: 1.15 }, .4, { ease: ease.out });
+    },
+    // the trick slides to the winner and is gone
+    collect: async function (seat, ids) {
+      var f = SEATS[seat].face;
+      await Promise.all(ids.map(function (id, i) {
+        return tween(byId[id], { x: f[0], y: f[1], sc: .5, alpha: 0 }, .45, { delay: i * .03, ease: ease.inOut });
+      }));
+      cards = cards.filter(function (c) { return ids.indexOf(c.id) < 0; });
+    },
+    clear: async function () {
+      await Promise.all(cards.map(function (c) { return tween(c, { alpha: 0, sc: c.sc * .8 }, .3); }));
+      cards = []; byId = {}; hover = null;
+    },
+    // pulsing ring around whoever has to act; null for nobody
+    turn: function (seat) { IDS.forEach(function (id) { SEATS[id].turn = id === seat; }); },
+    say: function (seat, text, kind) { bubble(seat, text, kind); },
+    chime: function () { chime(); }
+  };
+
+  // tap on one of your legal cards plays it
+  cv.addEventListener('click', function (e) {
+    if (!humanWait) return;
+    pick(e);
+    if (hover && humanWait.legal.indexOf(hover.id) >= 0) {
+      var w = humanWait, id = hover.id;
+      humanWait = null;
+      w.hand.forEach(function (h) { var c = byId[h]; if (c) { c.base = 0; tween(c, { dim: 0 }, .2); } });
+      w.res(id);
+    }
+  });
 
   // ---------- Own cards lift under the finger / pointer ----------
   var hover = null;
@@ -435,7 +500,7 @@
       if (Math.abs(lx) < CW * c.sc / 2 && Math.abs(ly) < CH * c.sc / 2) { hit = c; break; }
     }
     if (hit !== hover) {
-      if (hover) tween(hover, { lift: 0 }, .15);
+      if (hover) tween(hover, { lift: hover.base || 0 }, .15);
       if (hit) { tween(hit, { lift: 26 }, .15); flick(.06); }
       hover = hit; cv.style.cursor = hit ? 'pointer' : 'default';
     }
@@ -514,6 +579,11 @@
     IDS.forEach(function (id) {
       var s = SEATS[id];
       if (s.light > 0) glow(s.crop[0] + s.crop[2] / 2, s.crop[1] + s.crop[3] / 2, s.crop[3] * .7, 'rgba(255,190,110,' + .07 * s.light * (1 - S.lamps * .6) + ')');
+      if (s.turn) {
+        var pulse = .5 + .5 * Math.sin(clock * 5), fr = s.face[2];
+        ctx.strokeStyle = 'rgba(255,214,130,' + (.35 + .4 * pulse) + ')'; ctx.lineWidth = 5 + 3 * pulse;
+        ctx.beginPath(); ctx.ellipse(s.face[0], s.face[1], fr * 1.9, fr * 1.6, 0, 0, Math.PI * 2); ctx.stroke();
+      }
       if (s.ring > 0 && s.ring < 1) {
         ctx.strokeStyle = 'rgba(241,212,154,' + .6 * (1 - s.ring) + ')'; ctx.lineWidth = 6 * (1 - s.ring);
         ctx.beginPath(); ctx.ellipse(s.face[0], s.face[1], 40 + 200 * s.ring, 30 + 150 * s.ring, 0, 0, Math.PI * 2); ctx.stroke();
@@ -585,7 +655,9 @@
       booting.then(function () { if (active) play(); });
     } else if (active) {
       active = false; run++;
-      screen.classList.remove('tb-enter'); closePops(null); say.textContent = '';
+      screen.classList.remove('tb-enter'); closePops(null);
+      Object.keys(bubbles).forEach(function (k) { bubbles[k].textContent = ''; });
+      if (window.BlotGame) window.BlotGame.stop();
       cancelAnimationFrame(raf);
       IDS.forEach(function (id) { try { SEATS[id].vid.pause(); } catch (err) {} });
       stopFire();
@@ -605,11 +677,13 @@
       });
     });
   }
-  // cards: [{rank, suit}] or [] for none yet. Only the diamond 7-10 art is exported so far.
+  // cards: [{rank, suit}] (engine cards) or [] for none yet. Drawn from the card atlas.
+  var ATLAS_ROW = { S: 0, H: 1, C: 2, D: 3 };
   function setLastTrick(cards) {
     var box = screen.querySelector('[data-trick-cards]');
     box.innerHTML = (cards || []).map(function (c) {
-      return '<img src="assets/table/ui/card-' + c.rank.toLowerCase() + c.suit.toLowerCase() + '.webp" alt="' + c.rank + c.suit + '">';
+      var col = RANKS.indexOf(c.rank), row = ATLAS_ROW[c.suit];
+      return '<span class="tb-mini" role="img" aria-label="' + c.rank + c.suit + '" style="background-position:' + (col / 8 * 100) + '% ' + (row / 3 * 100) + '%"></span>';
     }).join('');
     box.hidden = !(cards && cards.length);
     screen.querySelector('[data-trick-empty]').hidden = !box.hidden;
@@ -619,6 +693,18 @@
 
   // Chat and reactions: each button opens its popover; a pick pops up above your seat.
   var say = screen.querySelector('[data-say]');
+  var bubbles = {};
+  ['bottom', 'left', 'top', 'right'].forEach(function (id) {
+    var el = document.createElement('div');
+    el.className = 'tb-bubble tb-bubble--' + id;
+    say.appendChild(el); bubbles[id] = el;
+  });
+  function bubble(seat, text, kind) {
+    var el = document.createElement('div');
+    el.className = kind === 'emoji' ? 'tb-say_emoji' : 'tb-say_line' + (kind ? ' tb-say_line--' + kind : '');
+    el.textContent = text;
+    bubbles[seat].textContent = ''; bubbles[seat].appendChild(el);
+  }
   var social = screen.querySelectorAll('[data-social]');
   function closePops(except) {
     social.forEach(function (b) {
@@ -633,11 +719,7 @@
       closePops(b.getAttribute('aria-expanded') === 'true' ? null : b.getAttribute('data-social'));
     });
   });
-  function pop(cls, text) {
-    var el = document.createElement('div');
-    el.className = cls; el.textContent = text;
-    say.textContent = ''; say.appendChild(el);
-  }
+  function pop(cls, text) { bubble('bottom', text, cls === 'tb-say_emoji' ? 'emoji' : null); }
   screen.querySelectorAll('[data-pop="chat"] button').forEach(function (b) {
     b.addEventListener('click', function () { closePops(null); pop('tb-say_line', b.textContent); });
   });

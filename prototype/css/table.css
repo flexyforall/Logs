@@ -27,7 +27,13 @@
 .tb-trick { position: absolute; left: 20px; top: 25px; height: 40px; }
 .tb-trick_cards[hidden], .tb-trick_empty[hidden] { display: none; }
 .tb-trick_cards { display: flex; gap: 3.529px; }
-.tb-trick_cards img { width: 27.882px; height: 38.824px; border-radius: 1.765px; box-shadow: 0 2.353px 11.765px rgba(0, 0, 0, .8); }
+.tb-trick_cards img, .tb-mini { width: 27.882px; height: 38.824px; border-radius: 1.765px; box-shadow: 0 2.353px 11.765px rgba(0, 0, 0, .8); }
+/* a card from the 9x4 atlas (8 ranks + back, 4 suits) */
+.tb-mini { display: block; background: #fff url("../assets/table/cards.webp") no-repeat; background-size: 900% 400%; animation: tb-mini .3s ease backwards; }
+.tb-mini:nth-child(2) { animation-delay: .05s; }
+.tb-mini:nth-child(3) { animation-delay: .1s; }
+.tb-mini:nth-child(4) { animation-delay: .15s; }
+@keyframes tb-mini { from { opacity: 0; transform: translateY(-6px) scale(.8); } }
 /* before the first trick: a dark slot with a "?" */
 .tb-trick_empty { position: relative; width: 27.882px; height: 38.824px; border-radius: 1.765px; background: rgba(0, 0, 0, .5); }
 .tb-trick_empty span {
@@ -93,8 +99,13 @@
 .table .tb-pop--react button { width: 36px; height: 36px; border-radius: 50%; font-size: 22px; line-height: 36px; }
 .table .tb-pop--react button:active { transform: scale(.85); }
 
-/* what you said / sent, popping up above your seat */
-.tb-say { position: absolute; left: 50%; top: 262px; transform: translate(-50%, 0); pointer-events: none; }
+/* speech bubbles above the seats: bids, combinations, chat, reactions */
+.tb-say { position: absolute; inset: 0; pointer-events: none; }
+.tb-bubble { position: absolute; transform: translate(-50%, 0); display: flex; justify-content: center; }
+.tb-bubble--bottom { left: 426px; top: 262px; }
+.tb-bubble--left { left: 128px; top: 118px; }
+.tb-bubble--top { left: 548px; top: 30px; }
+.tb-bubble--right { left: 740px; top: 118px; }
 .tb-say_line {
   padding: 7px 12px;
   border-radius: 12px;
@@ -106,7 +117,95 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, .5);
   animation: tb-say 2.4s ease forwards;
 }
+.tb-say_line--bid { background: #0b2552; color: #fff; border: 1px solid #5ca0ff; font-weight: 700; font-size: 14px; }
+.tb-say_line--combo { background: #ffd66b; color: #3a2400; font-weight: 700; }
 .tb-say_emoji { font-size: 44px; line-height: 1; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .6)); animation: tb-emoji 2s ease forwards; }
+
+/* ---- contract chip under the score */
+.tb-contract {
+  position: absolute;
+  left: 687px;
+  top: 78px;
+  width: 145px;
+  box-sizing: border-box;
+  padding: 5px 8px;
+  border: 1px solid #5ca0ff;
+  border-radius: 4px;
+  background: rgba(1, 12, 36, .88);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .6);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 6px;
+  color: #fff;
+  font-size: 11px;
+  line-height: 14px;
+  animation: tb-drop .35s cubic-bezier(.34, 1.4, .64, 1);
+}
+.tb-contract[hidden] { display: none; }
+.tb-contract span { opacity: .6; font-weight: 600; }
+.tb-contract b { font-weight: 700; font-size: 13px; }
+.tb-contract i { font-style: normal; font-weight: 700; color: #ffd66b; }
+.tb-suit { color: #fff; }
+.tb-suit.is-red { color: #ff5a5a; }
+
+/* ---- panels: bidding and round result, centred over the table */
+.tb-panel {
+  position: absolute;
+  left: 50%;
+  top: 196px;
+  transform: translate(-50%, -50%);
+  min-width: 260px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #5ca0ff;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(3, 14, 38, .96), rgba(4, 30, 78, .96));
+  box-shadow: 0 6px 30px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .08);
+  color: #fff;
+  text-align: center;
+  animation: tb-panel .3s cubic-bezier(.34, 1.4, .64, 1);
+}
+.tb-panel[hidden] { display: none; }
+@keyframes tb-panel { from { opacity: 0; transform: translate(-50%, -50%) scale(.85); } }
+.tb-panel_title { font-weight: 700; font-size: 15px; line-height: 20px; }
+.tb-bid_current { margin-top: 2px; font-size: 11px; line-height: 14px; opacity: .65; font-weight: 600; }
+.table .tb-panel button {
+  border-radius: 6px;
+  border: 1px solid rgba(92, 160, 255, .55);
+  background: rgba(10, 40, 90, .9);
+  color: #fff;
+  font-weight: 700;
+  transition: background-color .15s ease, opacity .15s ease;
+}
+.table .tb-panel button:disabled { opacity: .35; cursor: default; }
+.table .tb-panel button:not(:disabled):active { transform: scale(.94); }
+.table .tb-panel button[hidden] { display: none; }
+.tb-bid_row { margin-top: 8px; display: flex; gap: 6px; align-items: center; justify-content: center; }
+.table .tb-bid_step { width: 30px; height: 30px; font-size: 18px; line-height: 28px; }
+.tb-bid_value { min-width: 54px; font-weight: 700; font-size: 20px; line-height: 30px; }
+.table .tb-bid_kaput { height: 30px; padding: 0 10px; font-size: 12px; margin-left: 6px; }
+.table .tb-bid_kaput[aria-pressed="true"] { background: #ffd66b; color: #3a2400; border-color: #ffd66b; }
+.tb-bid_suits { margin-top: 8px; display: flex; gap: 6px; justify-content: center; }
+.table .tb-bid_suits button { width: 40px; height: 36px; font-size: 20px; line-height: 34px; background: #fff; color: #111; border-color: #fff; }
+.table .tb-bid_suits button.is-red { color: #d61f2c; }
+.table .tb-bid_suits button[data-bid-suit="NT"] { font-size: 13px; }
+.tb-bid_actions { margin-top: 8px; display: flex; gap: 6px; justify-content: center; }
+.table .tb-bid_pass, .table .tb-bid_contra { height: 30px; padding: 0 18px; font-size: 12px; }
+.table .tb-bid_contra { background: #8c1b22; border-color: #ff7a7a; }
+
+.tb-result { min-width: 300px; }
+.tb-result_title { font-weight: 700; font-size: 17px; line-height: 22px; }
+.tb-result_line { margin-top: 4px; font-size: 12px; line-height: 16px; font-weight: 600; }
+.tb-result_line .is-made { color: #7dffa0; }
+.tb-result_line .is-down { color: #ff7a7a; }
+.tb-result_table { margin: 8px auto 0; border-collapse: collapse; font-size: 12px; line-height: 18px; }
+.tb-result_table th { font-size: 10px; font-weight: 600; opacity: .55; padding: 0 12px; }
+.tb-result_table td { padding: 0 12px; text-align: center; font-weight: 600; }
+.tb-result_table td:first-child { text-align: left; opacity: .65; padding-left: 0; }
+.tb-result_table .is-total td { font-weight: 700; font-size: 15px; padding-top: 3px; border-top: 1px solid rgba(255, 255, 255, .15); }
+.tb-result_note { margin-top: 6px; font-size: 10px; opacity: .65; }
+.table .tb-result_next { margin-top: 10px; height: 32px; padding: 0 22px; font-size: 13px; background: #2f7bff; border-color: #8ec0ff; }
 
 @keyframes tb-pop { from { opacity: 0; transform: scale(.6); } }
 @keyframes tb-say {
@@ -124,7 +223,7 @@
 }
 
 /* ---- entrance: the HUD comes in once the room has faded up */
-.tb-ui > * { opacity: 0; }
+.tb-trick, .tb-score, .tb-bottom { opacity: 0; }
 .tb-enter .tb-trick, .tb-enter .tb-score { animation: tb-drop .45s cubic-bezier(.34, 1.4, .64, 1) forwards; }
 .tb-enter .tb-score { animation-delay: .08s; }
 .tb-enter .tb-bottom { animation: tb-rise .45s cubic-bezier(.34, 1.4, .64, 1) .16s forwards; }
@@ -132,5 +231,5 @@
 @keyframes tb-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .tb-ui > * { opacity: 1; animation: none !important; }
+  .tb-trick, .tb-score, .tb-bottom { opacity: 1; animation: none !important; }
 }

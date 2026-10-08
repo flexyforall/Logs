@@ -11,6 +11,8 @@
   var NO_TRUMP = 'NT';                                       // "boy": the round is played without trump
   var RANKS = ['7', '8', '9', '10', 'J', 'Q', 'K', 'A'];     // natural order, used for sequences
   var GAME_TARGET = 301;                                     // first team to reach this wins
+  var MIN_BID = 8;                                           // lowest opening bid (not set by the rules)
+  var MAX_BID = 25;                                          // above this a bid is a kaput
   var PACKETS = [3, 2, 3];                                   // deal: 8 cards each in packets (from the scene)
 
   // ---------- Cards ----------
@@ -184,6 +186,7 @@
   // A bid: { seat, value, suit (C/D/H/S/NT), kaput }. "value" x means "we take at least 10x
   // points, counting our combinations". Pass = null.
   function bidBeats(bid, current) {
+    if (!bid.kaput && (bid.value < MIN_BID || bid.value > MAX_BID)) return false;
     if (!current) return true;
     if (current.kaput && !bid.kaput) return false;   // after a kaput bid only kaput bids may follow
     if (bid.kaput && !current.kaput) return true;
@@ -233,6 +236,7 @@
 
   root.BlotRules = {
     SEATS: SEATS, SUITS: SUITS, RANKS: RANKS, NO_TRUMP: NO_TRUMP, GAME_TARGET: GAME_TARGET, PACKETS: PACKETS,
+    MIN_BID: MIN_BID, MAX_BID: MAX_BID,
     card: card, makeDeck: makeDeck, shuffle: shuffle, deal: deal,
     next: next, partner: partner, teamOf: teamOf, orderAfter: orderAfter,
     power: power, trickWinner: trickWinner, legalMoves: legalMoves,
