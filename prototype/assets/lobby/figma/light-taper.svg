@@ -1,0 +1,24 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="37.6062" height="7.60868" viewBox="0 0 37.6062 7.60868" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Light / taper from initial point to luminous head" filter="url(#filter0_f_0_33)">
+<g clip-path="url(#clip0_0_33)">
+<path id="Vector" d="M1.1031 3.49061C12.9196 3.23106 22.6101 3.0364 29.1363 1.80352C32.1523 0.830195 34.6738 0.830195 35.9592 2.06307C37.2447 3.29595 36.5525 5.95637 34.476 6.41059C32.1028 6.8648 31.0151 5.56704 28.543 5.11282C19.9402 4.1395 11.3375 4.00972 1.1031 3.81506V3.49061Z" fill="url(#paint0_linear_0_33)"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_0_33" x="0" y="-0.792012" width="37.6062" height="8.88969" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="0.55155" result="effect1_foregroundBlur_0_33"/>
+</filter>
+<linearGradient id="paint0_linear_0_33" x1="1.1031" y1="1.1031" x2="36.6079" y2="1.1031" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFE7A0" stop-opacity="0.12"/>
+<stop offset="0.42" stop-color="#FFD573" stop-opacity="0.15"/>
+<stop offset="0.7" stop-color="#FFCC60" stop-opacity="0.75"/>
+<stop offset="0.9" stop-color="#FFF6D6"/>
+<stop offset="1" stop-color="#FFF8E3"/>
+</linearGradient>
+<clipPath id="clip0_0_33">
+<rect width="35.4" height="6.68349" fill="white" transform="translate(1.1031 0.311089)"/>
+</clipPath>
+</defs>
+</svg>

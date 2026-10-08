@@ -1,0 +1,19 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="36.1138" height="6.68349" viewBox="0 0 36.1138 6.68349" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Light / thin trailing filament and hot core" opacity="0.85" filter="url(#filter0_f_0_23)">
+<path id="Vector" d="M0.713771 3.24441C15.2495 2.98486 23.9018 3.43908 29.3403 2.40087C31.6641 1.94665 33.4934 1.88176 34.68 2.46575C35.8171 3.11464 35.5205 4.4124 34.235 4.80173C32.7023 5.32084 31.318 4.47729 29.2909 4.15285C22.2208 3.50397 13.2719 3.43908 0.713771 3.43908V3.24441Z" fill="url(#paint0_linear_0_23)"/>
+</g>
+<defs>
+<filter id="filter0_f_0_23" x="0" y="-0.713771" width="36.8275" height="8.11103" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="0.356885" result="effect1_foregroundBlur_0_23"/>
+</filter>
+<linearGradient id="paint0_linear_0_23" x1="0.713771" y1="2.04398" x2="35.3871" y2="2.04398" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFF0BF" stop-opacity="0"/>
+<stop offset="0.4" stop-color="#FFE08A" stop-opacity="0.15"/>
+<stop offset="0.78" stop-color="#FFF1C6" stop-opacity="0.8"/>
+<stop offset="0.94" stop-color="#FFFBED"/>
+<stop offset="1" stop-color="#FFF8E4"/>
+</linearGradient>
+</defs>
+</svg>

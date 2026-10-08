@@ -1,0 +1,18 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="64.8883" height="44.6431" viewBox="0 0 64.8883 44.6431" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Glow / layered golden envelope" style="mix-blend-mode:plus-lighter" opacity="0.82" filter="url(#filter0_f_0_21)">
+<path id="Vector" d="M5.19106 29.6539C21.478 29.1997 30.3677 27.3829 44.1889 26.9935C48.7311 25.566 51.9755 26.9286 52.5595 29.1348C53.6626 32.1846 50.8075 34.3908 46.2004 33.2228C33.0281 31.2113 18.8176 30.6922 5.19106 30.3677V29.6539Z" fill="url(#paint0_linear_0_21)"/>
+</g>
+<defs>
+<filter id="filter0_f_0_21" x="-2.98486" y="-2.98486" width="70.858" height="50.6128" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="1.49243" result="effect1_foregroundBlur_0_21"/>
+</filter>
+<linearGradient id="paint0_linear_0_21" x1="5.19106" y1="26.4078" x2="52.7964" y2="26.4078" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFE19B" stop-opacity="0"/>
+<stop offset="0.4" stop-color="#F5B538" stop-opacity="0.165"/>
+<stop offset="0.78" stop-color="#FFC527"/>
+<stop offset="1" stop-color="#FFD04A" stop-opacity="0.165"/>
+</linearGradient>
+</defs>
+</svg>

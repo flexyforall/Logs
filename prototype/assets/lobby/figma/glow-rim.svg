@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="64.8883" height="44.6431" viewBox="0 0 64.8883 44.6431" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Glow / bright curved leading rim" style="mix-blend-mode:plus-lighter" filter="url(#filter0_f_0_25)">
+<path id="Vector" d="M47.2387 26.6691C49.964 25.8904 51.9755 27.0584 52.4297 29.0699C53.0786 31.1464 51.7808 33.3526 49.1204 33.4823" stroke-width="0.973324" stroke-linecap="round" stroke="#FFD25A"/>
+</g>
+<defs>
+<filter id="filter0_f_0_25" x="-2.2062" y="-2.2062" width="69.3007" height="49.0555" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="1.1031" result="effect1_foregroundBlur_0_25"/>
+</filter>
+</defs>
+</svg>
