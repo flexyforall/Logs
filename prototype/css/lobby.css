@@ -188,6 +188,8 @@
 .lb-pill_gem > span { position: relative; width: 27.422px; height: 34.003px; overflow: hidden; transform: rotate(-7.16deg); }
 .lb-pill_gem img { position: absolute; left: -24%; top: -9.68%; width: 144%; height: 116.13%; }
 .lb-pill_chip { position: absolute; left: -3px; top: -3px; width: 38px; height: 38px; object-fit: cover; }
+/* the icons overhang the pill: keep them above its stroke ring (::after) and bottom edge (::before) */
+.lb-pill_crown, .lb-pill_gem, .lb-pill_chip { z-index: 2; }
 
 /* ---- game modes */
 .lb-modes {
