@@ -9,7 +9,7 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
 
 1. A "Tap to play prototype" screen comes first: the tap lets the browser play sound,
    then the splash plays with it. "Skip" jumps ahead. In the splash the logo appears at
-   135% size as the whirlpool starts closing and shrinks to its size in step with it.
+   full size as the whirlpool closes and shrinks slightly in step with it.
 2. Lobby (Figma: Blot / Lobby, node `1784:85`) with an entrance animation, background
    music, sounds timed to the animation and tap sounds. The settings gear replays the splash.
    The round button outside the phone frame turns sound on and off.
