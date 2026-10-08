@@ -92,11 +92,26 @@
   font-size: 18px;
   line-height: normal;
   white-space: nowrap;
+}
+/* Gradient text with a soft shadow. The shadow is a text-shadow on the element itself and
+   the gradient fill is a copy on top: Safari draws a filter shadow on background-clip:text
+   text as a blurred box instead of following the glyphs. */
+.lb-name, .lb-pill_text {
+  position: relative;
+  background: none;
+  color: transparent;
+}
+.lb-name { text-shadow: 0 2px 12px rgba(0, 0, 0, .5); }
+.lb-pill_text { text-shadow: 0 2px 12px rgba(0, 0, 0, .7); }
+.lb-name::after, .lb-pill_text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  text-shadow: none;
   background: linear-gradient(180deg, #fff, rgba(255, 255, 255, .8));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, .5));
 }
 .lb-rank { width: 28px; height: 28px; object-fit: cover; }
 
@@ -172,11 +187,6 @@
   font-size: 16px;
   line-height: normal;
   white-space: nowrap;
-  background: linear-gradient(180deg, #fff, rgba(255, 255, 255, .8));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, .7));
 }
 .lb-pill_crown {
   position: absolute; left: -10.76px; top: -9.76px; width: 50.189px; height: 50.189px;

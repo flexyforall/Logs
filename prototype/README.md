@@ -7,9 +7,9 @@ Plain HTML, CSS and JS, no build step. Open `index.html` in a browser.
 
 ## Flow
 
-1. Tap to start (browsers only allow sound after a tap).
-2. Splash video plays; "Пропустить" skips it.
-3. Lobby (Figma: Blot / Lobby, node `1784:85`). The settings gear replays the splash.
+1. The splash plays straight away. Browsers block sound until the first tap, so it
+   starts muted when needed and the sound comes on at the first tap. "Skip" jumps ahead.
+2. Lobby (Figma: Blot / Lobby, node `1784:85`). The settings gear replays the splash.
 
 ## Layout
 

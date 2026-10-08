@@ -16,15 +16,11 @@
 
       <!-- Splash: plays once, then hands over to the lobby -->
       <section class="screen screen--splash is-active" data-screen-id="splash">
-        <video class="splash_video" data-splash-video playsinline preload="auto">
+        <video class="splash_video" data-splash-video playsinline autoplay preload="auto">
           <source src="assets/splash/splash_iphone_2556x1180.mp4" type="video/mp4">
           <source src="assets/splash/splash_iphone_2556x1180.webm" type="video/webm">
         </video>
-        <button class="splash_start" data-splash-start type="button">
-          <img src="assets/splash/logo.png" alt="Blot Bazar">
-          <span>Нажмите, чтобы начать</span>
-        </button>
-        <button class="splash_skip" data-splash-skip type="button">Пропустить</button>
+        <button class="splash_skip" data-splash-skip type="button">Skip</button>
       </section>
 
       <!-- Lobby (Figma: Blot / Lobby, node 1784:85), 852x393 -->
@@ -40,7 +36,7 @@
             <img class="lb-avatar" src="assets/lobby/figma/avatar.webp" alt="">
             <div class="lb-profile_info">
               <div class="lb-profile_name">
-                <p class="lb-name">Artexcb</p>
+                <p class="lb-name" data-text="Artexcb">Artexcb</p>
                 <img class="lb-rank" src="assets/lobby/figma/rank.webp" alt="">
               </div>
               <div class="lb-progress" aria-label="Уровень: 30%">
@@ -63,19 +59,19 @@
             <button class="lb-pill" type="button">
               <img class="lb-pill_spacer" src="assets/lobby/figma/flag.svg" alt="">
               <span class="lb-pill_bg lb-glass--108"></span>
-              <span class="lb-pill_text">No ads</span>
+              <span class="lb-pill_text" data-text="No ads">No ads</span>
               <span class="lb-pill_crown"><img src="assets/lobby/figma/crown.webp" alt=""></span>
             </button>
             <button class="lb-pill" type="button">
               <img class="lb-pill_spacer" src="assets/lobby/figma/flag.svg" alt="">
               <span class="lb-pill_bg lb-glass--78"></span>
-              <span class="lb-pill_text">156</span>
+              <span class="lb-pill_text" data-text="156">156</span>
               <span class="lb-pill_gem"><span><img src="assets/lobby/figma/gem.webp" alt=""></span></span>
             </button>
             <button class="lb-pill" type="button">
               <img class="lb-pill_spacer" src="assets/lobby/figma/flag.svg" alt="">
               <span class="lb-pill_bg lb-glass--96"></span>
-              <span class="lb-pill_text">3,458</span>
+              <span class="lb-pill_text" data-text="3,458">3,458</span>
               <img class="lb-pill_chip" src="assets/lobby/figma/chip.webp" alt="">
             </button>
           </nav>

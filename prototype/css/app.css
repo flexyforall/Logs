@@ -109,27 +109,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background: #000;
 }
 
-.splash_start {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  background: #000;
-  transition: opacity .3s ease;
-}
-.splash_start img { height: 52%; }
-.splash_start span {
-  font-size: 14px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, .7);
-  animation: pulse 1.6s ease-in-out infinite;
-}
-.splash_start.is-hidden { opacity: 0; pointer-events: none; }
-
 .splash_skip {
   position: absolute;
   right: 22px;
@@ -144,4 +123,3 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .splash_skip.is-visible { opacity: 1; }
 
-@keyframes pulse { 50% { opacity: .35; } }

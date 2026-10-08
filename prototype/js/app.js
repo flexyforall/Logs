@@ -2,7 +2,6 @@
 (function () {
   var device = document.querySelector('[data-device]');
   var video = document.querySelector('[data-splash-video]');
-  var start = document.querySelector('[data-splash-start]');
   var skip = document.querySelector('[data-splash-skip]');
 
   // Scale the iPhone frame down to fit the window (never up).
@@ -22,16 +21,24 @@
     });
   }
 
-  // Browsers only allow sound after a tap, so the splash starts on the first tap.
+  // The splash starts on load. Browsers block autoplay with sound until the first tap,
+  // so if unmuted playback is refused it plays muted and the sound comes on at the first tap.
   function playSplash() {
     show('splash');
-    start.classList.add('is-hidden');
     video.currentTime = 0;
     video.muted = false;
     var p = video.play();
     if (p && p.catch) {
-      p.catch(function () { video.muted = true; video.play(); });
+      p.catch(function () {
+        video.muted = true;
+        video.play();
+        document.addEventListener('pointerdown', function unmute() {
+          video.muted = false;
+          document.removeEventListener('pointerdown', unmute);
+        });
+      });
     }
+    skip.classList.remove('is-visible');
     setTimeout(function () { skip.classList.add('is-visible'); }, 1200);
   }
 
@@ -41,9 +48,10 @@
     show('lobby');
   }
 
-  start.addEventListener('click', playSplash);
   skip.addEventListener('click', toLobby);
   video.addEventListener('ended', toLobby);
   // Prototype shortcut: the settings gear replays the splash.
   document.querySelector('[data-settings]').addEventListener('click', playSplash);
+
+  playSplash();
 })();
