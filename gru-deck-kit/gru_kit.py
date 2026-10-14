@@ -141,13 +141,29 @@ def G(x, y, w, h, dir='lr', a0=1.0, a1=0.0, n='shade'):
     return dict(t='g', x=x, y=y, w=w, h=h, dir=dir, a0=a0, a1=a1, n=n)
 
 
-def IMG(x, y, w, h, src, n=None, o=1, rd=0):
+def IMG(x, y, w, h, src, n=None, o=1, rd=0, hash=None, tf=None, src_node=None):
+    """Image box. In Figma: copy fills from src_node, or use an existing imageHash (FILL, or CROP
+    with transform tf), otherwise leave a named placeholder for an upload."""
     e = dict(t='i', x=x, y=y, w=w, h=h, s=src, n=n or ('img/' + src))
+    if hash:
+        e['hash'] = hash
+    if tf:
+        e['tf'] = tf
+    if src_node:
+        e['from'] = src_node
     if o != 1:
         e['o'] = o
     if rd:
         e['rd'] = rd
     return e
+
+
+def BG(src, hash, o=1.0, shade=('lr', 0.9, 0.2)):
+    """Full-bleed brand background (image from the Figma library) with a black shade on top."""
+    els = [IMG(0, 0, 1920, 1080, src, n='img/' + src, o=o, hash=hash)]
+    if shade:
+        els.append(G(0, 0, 1920, 1080, shade[0], shade[1], shade[2], n='bg-shade'))
+    return els
 
 
 def ARROW(x1, y1, x2, y2, o=0.6):
