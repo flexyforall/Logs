@@ -1,0 +1,23 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="118.2" height="118.2" viewBox="0 0 118.2 118.2" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="Sheets">
+<rect id="vector" x="4.925" y="27.0875" width="64.025" height="64.025" rx="4.925" fill="#029853"/>
+<g id="vector_2">
+<use xlink:href="#stroke0_0_12" fill="url(#paint0_linear_0_12)"/>
+<use xlink:href="#stroke0_0_12" fill="url(#paint1_linear_0_12)"/>
+</g>
+<path id="vector_3" d="M89.2656 46.7875V74.4906M89.2656 74.4906V86.1875M89.2656 74.4906H102.194M89.2656 74.4906H49.25" stroke-width="2.955" stroke-linecap="round" stroke="white"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_12" x1="14.775" y1="59.1" x2="114.506" y2="59.1" gradientUnits="userSpaceOnUse">
+<stop stop-color="#7BC8FE"/>
+<stop offset="0.676754" stop-color="#11BC5C"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_12" x1="64.9943" y1="98.5" x2="64.9943" y2="19.7" gradientUnits="userSpaceOnUse">
+<stop stop-color="#14BA61"/>
+<stop offset="0.19" stop-color="#14BA61" stop-opacity="0"/>
+<stop offset="0.81" stop-color="#14BA61" stop-opacity="0"/>
+<stop offset="1" stop-color="#14BA61"/>
+</linearGradient>
+<path id="stroke0_0_12" d="M14.775 24.625C14.775 21.905 16.98 19.7 19.7 19.7H109.581C112.301 19.7 114.506 21.905 114.506 24.625V93.575C114.506 96.295 112.301 98.5 109.581 98.5H19.7C16.98 98.5 14.775 96.295 14.775 93.575V24.625Z"/>
+</defs>
+</svg>
